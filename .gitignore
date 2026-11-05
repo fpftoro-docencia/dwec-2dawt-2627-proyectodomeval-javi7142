@@ -1,0 +1,23 @@
+# Dependencias: se reinstalan con `npm ci` a partir de package-lock.json (que sí se sube)
+node_modules/
+
+# Lo que generan las herramientas: se puede volver a crear y no es código
+dist/
+docs/
+coverage/
+playwright-report/
+test-results/
+
+# Ficheros del sistema operativo y del editor, que cada persona tiene distintos
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Variables de entorno y secretos: nunca deben llegar a un repositorio público
+.env
+.env.*
+
+# Registros y copias temporales
+*.log
+*.tmp

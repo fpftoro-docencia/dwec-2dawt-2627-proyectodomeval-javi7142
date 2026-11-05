@@ -180,6 +180,15 @@
 
 | Rama | Funcionalidad | *Pull request* |
 |------|---------------|----------------|
-| | | |
+| `estructura-inicial` | `.gitignore` y esqueleto vacío de páginas y módulos | <!-- enlace --> |
+
+**Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
+
+- El *merge* no reescribe nada: los commits conservan su identificador y la historia refleja lo que pasó de verdad, con la rama y el momento en que se fusionó.
+- Con *rebase* los commits se vuelven a crear con otros identificadores. Es más limpio de leer, pero obliga a forzar el `push` si la rama ya estaba subida, y eso es arriesgado cuando el repositorio es el que se corrige.
+- El enunciado pide no borrar las ramas: con *merge* se ven en el grafo como líneas que salen de `main` y vuelven a él.
+- Los *tags* `v0.1`, `v0.2` y `v1.0` apuntan a commits de `main` que no cambian de identificador.
+
+**`.gitignore`.** Deja fuera `node_modules/` (se reinstala con `npm ci`), lo que generan las herramientas (`dist/`, `docs/`, `coverage/`, `playwright-report/`, `test-results/`), los ficheros del sistema y del editor, los `.env` (por si algún día hubiera un secreto, en un repositorio público) y los registros. **No** deja fuera `package-lock.json`: sin él, `npm ci` falla en el *workflow*.
 
 **Versión de entrega:** `v1.0`
