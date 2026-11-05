@@ -183,10 +183,24 @@ Las reglas de usuario y correo son una primera propuesta que se confirma al escr
 
 ### Definición de Hecho
 
-<!-- Sprint 1. Tu lista de condiciones para dar una tarea por terminada. Cada una tiene que poder
-     comprobarse. Si la cambias en algún sprint, di qué cambiaste y por qué. -->
+Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condiciones. Cada una se comprueba con una orden, con el tablero o con lo que se ve en GitHub, no con una opinión.
 
-- [ ] <!-- … -->
+| Nº | Condición | Cómo se comprueba |
+|----|-----------|-------------------|
+| 1 | Cumple el «Hecho cuando» de su tarjeta | Se prueba a mano en el navegador o en la terminal, y se tacha la tarjeta solo después |
+| 2 | El código vive en una rama propia y llega a `main` por una *pull request* fusionada con *merge* | La pestaña de la *pull request* en GitHub: rama, fusión y rama conservada |
+| 3 | `npm run lint` y `npm run format:check` terminan sin errores | Se ejecutan en el contenedor y no sale ningún aviso |
+| 4 | Si la tarea tiene lógica, tiene sus tests y `npm test` pasa | Un test unitario para la lógica pura y los datos, y uno de integración para una página; la salida de `npm test` está en verde |
+| 5 | Desde el sprint 2: `npm run coverage` supera el umbral y, si la tarea toca un recorrido, `npm run e2e` pasa | La salida de ambas órdenes, sin fallos |
+| 6 | Desde que existe el *workflow* (tarjeta S1-18): sus trabajos están en verde en la *pull request* antes de fusionar | La pestaña **Checks** de la *pull request* |
+| 7 | No quedan `console.log`, código comentado, `TODO` sueltos, `var`, `==` ni variables globales | `npm run lint` y una búsqueda de `console.log` y `TODO` en el código |
+| 8 | No hay `innerHTML` con datos, estilos escritos desde JavaScript ni atributos `on…` en el HTML | Una búsqueda de `innerHTML`, `.style` y `onclick=` (o `onsubmit=`…) en `js/` y en las páginas |
+| 9 | Ningún dato es real: nombres, DNI, teléfonos y microchips son inventados | Se revisan los ficheros de la *pull request* antes de fusionar |
+| 10 | Los commits son pequeños y su mensaje dice qué cambia | `git log --oneline` de la rama se lee sin abrir los ficheros |
+| 11 | Si la tarea añade o cambia algo explicado en el README, el JSDoc o la tabla de oyentes, ya está actualizado | Se compara el código de la *pull request* con la sección correspondiente |
+| 12 | Se puede explicar: qué hace cada línea y qué pasaría si se cambiara | Se cuenta en voz alta antes de fusionar, como en la exposición |
+
+**Cambios en la definición:** ninguno todavía. Si se modifica en un sprint, se anotará aquí qué cambió y por qué.
 
 ### Sprints
 
@@ -213,7 +227,8 @@ Las reglas de usuario y correo son una primera propuesta que se confirma al escr
 |------|---------------|----------------|
 | `estructura-inicial` | `.gitignore` y esqueleto vacío de páginas y módulos | [#2](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/2) |
 | `package-lock` | `package-lock.json` y saltos de línea LF con `.gitattributes` | [#3](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/3) |
-| `mi-proyecto` | Sección «Mi proyecto» del README | <!-- enlace --> |
+| `mi-proyecto` | Sección «Mi proyecto» del README | [#4](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/4) |
+| `definicion-de-hecho` | Definición de Hecho del README | <!-- enlace --> |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
