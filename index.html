@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Huellas: el cuaderno de los voluntarios de una protectora de animales."
+    />
+    <meta name="theme-color" content="#b94e1f" />
+    <title>Iniciar sesión · Huellas</title>
+    <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body class="pagina-publica">
+    <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+    <div id="avisos" class="avisos avisos--arriba" role="status" aria-live="polite"></div>
+
+    <div class="acceso">
+      <aside class="acceso__hero">
+        <a class="marca marca--clara" href="index.html">
+          <img class="marca__logo" src="img/huella.svg" alt="" width="34" height="34" />
+          <span class="marca__nombre">Huellas</span>
+        </a>
+        <p class="hero__lema">Cada huella <em>cuenta.</em></p>
+        <p class="hero__texto">
+          El cuaderno de los voluntarios de la protectora: quién está en acogida, qué vacunas lleva
+          y cuándo encuentra un hogar.
+        </p>
+        <ul class="hero__puntos">
+          <li>Lleva el control de tus animales en acogida</li>
+          <li>Anota vacunas y estados en segundos</li>
+          <li>Cada voluntario ve solo lo suyo</li>
+        </ul>
+        <img
+          class="hero__ilustracion"
+          src="img/ilustracion-acogida.svg"
+          alt=""
+          width="400"
+          height="360"
+        />
+      </aside>
+
+      <main id="contenido" class="acceso__panel">
+        <div class="acceso__tarjeta">
+          <p class="sobretitulo">Zona de voluntarios</p>
+          <h1>Te damos la bienvenida</h1>
+          <p class="acceso__intro">Entra para ver a los animales que tienes en acogida.</p>
+
+          <form id="formulario-acceso" novalidate>
+            <div class="mb-3">
+              <label class="form-label" for="usuario">Usuario</label>
+              <input
+                class="form-control"
+                id="usuario"
+                name="usuario"
+                type="text"
+                autocomplete="username"
+                required
+                aria-describedby="error-usuario"
+              />
+              <div class="invalid-feedback" id="error-usuario"></div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label" for="clave">Contraseña</label>
+              <input
+                class="form-control"
+                id="clave"
+                name="clave"
+                type="password"
+                autocomplete="current-password"
+                required
+                aria-describedby="error-clave"
+              />
+              <div class="invalid-feedback" id="error-clave"></div>
+            </div>
+
+            <button class="btn btn-primary btn-lg w-100" type="submit">Entrar</button>
+          </form>
+
+          <p class="acceso__cambio">
+            ¿Primera vez por aquí? <a href="registro.html">Crea tu cuenta</a>
+          </p>
+          <p class="acceso__nota">
+            Aplicación de prácticas: todos los datos son inventados y se guardan solo en tu
+            navegador.
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="js/paginas/index.js"></script>
+  </body>
+</html>

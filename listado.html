@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Tus animales en acogida en Huellas." />
+    <meta name="theme-color" content="#b94e1f" />
+    <title>Mis animales · Huellas</title>
+    <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body class="pagina-privada">
+    <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <a class="marca" href="listado.html">
+          <img class="marca__logo" src="img/huella.svg" alt="" width="34" height="34" />
+          <span class="marca__nombre">Huellas</span>
+        </a>
+        <nav class="cabecera__nav" aria-label="Principal">
+          <ul class="menu">
+            <li><a href="listado.html" aria-current="page">Mis animales</a></li>
+            <li data-solo-admin hidden><a href="usuarios.html">Usuarios</a></li>
+          </ul>
+        </nav>
+        <div class="cabecera__usuario">
+          <p class="usuario-chip">
+            <span class="usuario-chip__inicial" aria-hidden="true" data-usuario-inicial></span>
+            <span class="usuario-chip__texto">
+              <strong data-usuario-actual></strong>
+              <small data-rol-actual></small>
+            </span>
+          </p>
+          <button class="btn btn-outline-secondary btn-sm" id="cerrar-sesion" type="button">
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div id="avisos" class="avisos" role="status" aria-live="polite"></div>
+
+    <main id="contenido" class="contenedor pagina">
+      <div class="encabezado-pagina">
+        <div>
+          <p class="sobretitulo">Tu cuaderno de acogida</p>
+          <h1>Mis animales</h1>
+          <p>Los animales que cuidas ahora mismo, con su estado y sus vacunas.</p>
+        </div>
+        <a class="btn btn-primary btn-lg" href="ficha.html">+ Nuevo animal</a>
+      </div>
+
+      <section aria-labelledby="titulo-resumen">
+        <h2 class="visually-hidden" id="titulo-resumen">Resumen</h2>
+        <dl class="resumen">
+          <div class="resumen__item" data-tipo="total">
+            <dt>En total</dt>
+            <dd data-estadistica="total">0</dd>
+          </div>
+          <div class="resumen__item" data-tipo="acogida">
+            <dt>En acogida</dt>
+            <dd data-estadistica="acogida">0</dd>
+          </div>
+          <div class="resumen__item" data-tipo="disponible">
+            <dt>Disponibles</dt>
+            <dd data-estadistica="disponible">0</dd>
+          </div>
+          <div class="resumen__item" data-tipo="adoptado">
+            <dt>Adoptados</dt>
+            <dd data-estadistica="adoptado">0</dd>
+          </div>
+        </dl>
+      </section>
+
+      <div class="herramientas" role="search">
+        <div class="buscador">
+          <label class="visually-hidden" for="buscador">Buscar un animal</label>
+          <input
+            class="form-control form-control-lg"
+            id="buscador"
+            name="buscador"
+            type="search"
+            placeholder="Nombre, especie o microchip"
+            autocomplete="off"
+          />
+        </div>
+        <p class="herramientas__contador" id="contador" aria-live="polite">0 animales</p>
+      </div>
+
+      <div class="vacio" id="sin-resultados" hidden>
+        <img src="img/huella.svg" alt="" width="72" height="72" />
+        <h2>No hay animales que mostrar</h2>
+        <p>Prueba con otra búsqueda o da de alta al primer animal que tengas en acogida.</p>
+        <a class="btn btn-primary" href="ficha.html">Dar de alta un animal</a>
+      </div>
+
+      <ul class="rejilla-animales" id="lista-animales"></ul>
+
+      <nav class="paginacion" id="paginacion" aria-label="Paginación del listado"></nav>
+    </main>
+
+    <template id="plantilla-animal">
+      <li class="animal">
+        <article class="animal__carta">
+          <div class="animal__cinta">
+            <span class="animal__avatar" aria-hidden="true"></span>
+            <span class="animal__estado"></span>
+          </div>
+          <div class="animal__cuerpo">
+            <h2 class="animal__nombre"></h2>
+            <p class="animal__subtitulo"></p>
+            <dl class="animal__datos">
+              <div>
+                <dt>Peso</dt>
+                <dd class="animal__peso"></dd>
+              </div>
+              <div>
+                <dt>Ingreso</dt>
+                <dd class="animal__ingreso"></dd>
+              </div>
+              <div>
+                <dt>Microchip</dt>
+                <dd class="animal__microchip"></dd>
+              </div>
+            </dl>
+            <p class="animal__vacunas">
+              <span class="vacunas-puntos" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="animal__vacunas-texto"></span>
+            </p>
+            <div class="animal__acciones">
+              <a class="btn btn-outline-secondary btn-sm" data-accion="editar" href="ficha.html">
+                Editar
+              </a>
+              <button class="btn btn-outline-danger btn-sm" data-accion="borrar" type="button">
+                Borrar
+              </button>
+            </div>
+          </div>
+        </article>
+      </li>
+    </template>
+
+    <dialog class="dialogo" id="dialogo-borrar" aria-labelledby="titulo-dialogo">
+      <form method="dialog">
+        <h2 id="titulo-dialogo">¿Borrar a <span id="dialogo-nombre"></span>?</h2>
+        <p>Su ficha desaparecerá de tu cuaderno y no se puede recuperar.</p>
+        <div class="dialogo__acciones">
+          <button class="btn btn-outline-secondary" value="cancelar" type="submit">Cancelar</button>
+          <button class="btn btn-danger" value="confirmar" type="submit">Sí, borrar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <footer class="pie">
+      <p>Huellas · proyecto de prácticas · todos los datos son inventados</p>
+    </footer>
+
+    <script type="module" src="js/paginas/listado.js"></script>
+  </body>
+</html>

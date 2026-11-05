@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Ficha de un animal en acogida en Huellas." />
+    <meta name="theme-color" content="#b94e1f" />
+    <title>Ficha del animal · Huellas</title>
+    <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body class="pagina-privada">
+    <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <a class="marca" href="listado.html">
+          <img class="marca__logo" src="img/huella.svg" alt="" width="34" height="34" />
+          <span class="marca__nombre">Huellas</span>
+        </a>
+        <nav class="cabecera__nav" aria-label="Principal">
+          <ul class="menu">
+            <li><a href="listado.html" aria-current="page">Mis animales</a></li>
+            <li data-solo-admin hidden><a href="usuarios.html">Usuarios</a></li>
+          </ul>
+        </nav>
+        <div class="cabecera__usuario">
+          <p class="usuario-chip">
+            <span class="usuario-chip__inicial" aria-hidden="true" data-usuario-inicial></span>
+            <span class="usuario-chip__texto">
+              <strong data-usuario-actual></strong>
+              <small data-rol-actual></small>
+            </span>
+          </p>
+          <button class="btn btn-outline-secondary btn-sm" id="cerrar-sesion" type="button">
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div id="avisos" class="avisos" role="status" aria-live="polite"></div>
+
+    <main id="contenido" class="contenedor pagina">
+      <a class="volver" href="listado.html">← Volver al listado</a>
+      <div class="encabezado-pagina">
+        <div>
+          <p class="sobretitulo">Ficha del animal</p>
+          <h1 id="titulo-ficha">Nuevo animal</h1>
+          <p id="subtitulo-ficha">
+            Rellena los datos del animal que acabas de recibir. Los campos con * son obligatorios.
+          </p>
+        </div>
+      </div>
+
+      <form class="ficha" id="formulario-animal" novalidate>
+        <fieldset class="bloque">
+          <legend>Datos básicos</legend>
+          <div class="bloque__rejilla">
+            <div>
+              <label class="form-label" for="nombre">Nombre *</label>
+              <input
+                class="form-control"
+                id="nombre"
+                name="nombre"
+                type="text"
+                autocomplete="off"
+                required
+                minlength="2"
+                maxlength="30"
+                data-validar="nombre"
+                aria-describedby="error-nombre"
+              />
+              <div class="invalid-feedback" id="error-nombre"></div>
+            </div>
+
+            <div>
+              <label class="form-label" for="especie">Especie *</label>
+              <select
+                class="form-select"
+                id="especie"
+                name="especie"
+                required
+                aria-describedby="error-especie"
+              >
+                <option value="">Elige una especie</option>
+                <option value="perro">Perro</option>
+                <option value="gato">Gato</option>
+                <option value="conejo">Conejo</option>
+                <option value="otro">Otro</option>
+              </select>
+              <div class="invalid-feedback" id="error-especie"></div>
+            </div>
+
+            <fieldset class="grupo-opciones" aria-describedby="error-sexo">
+              <legend>Sexo *</legend>
+              <div class="opciones">
+                <input
+                  class="btn-check"
+                  id="sexo-hembra"
+                  name="sexo"
+                  type="radio"
+                  value="hembra"
+                  required
+                />
+                <label class="btn btn-outline-secondary" for="sexo-hembra">Hembra</label>
+                <input class="btn-check" id="sexo-macho" name="sexo" type="radio" value="macho" />
+                <label class="btn btn-outline-secondary" for="sexo-macho">Macho</label>
+              </div>
+              <div class="invalid-feedback" id="error-sexo"></div>
+            </fieldset>
+
+            <div>
+              <label class="form-label" for="ingreso">Fecha de ingreso *</label>
+              <input
+                class="form-control"
+                id="ingreso"
+                name="ingreso"
+                type="date"
+                required
+                aria-describedby="error-ingreso"
+              />
+              <div class="invalid-feedback" id="error-ingreso"></div>
+            </div>
+
+            <div>
+              <label class="form-label" for="peso">Peso (kg) *</label>
+              <input
+                class="form-control"
+                id="peso"
+                name="peso"
+                type="number"
+                inputmode="decimal"
+                step="0.1"
+                required
+                aria-describedby="error-peso"
+              />
+              <div class="invalid-feedback" id="error-peso"></div>
+            </div>
+
+            <div>
+              <label class="form-label" for="microchip">Microchip *</label>
+              <input
+                class="form-control"
+                id="microchip"
+                name="microchip"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                required
+                pattern="\d{15}"
+                data-validar="microchip"
+                aria-describedby="ayuda-microchip error-microchip"
+              />
+              <div class="form-text" id="ayuda-microchip">15 dígitos, sin espacios.</div>
+              <div class="invalid-feedback" id="error-microchip"></div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="bloque">
+          <legend>Estado y esterilización</legend>
+          <div class="bloque__rejilla">
+            <fieldset class="grupo-opciones" aria-describedby="error-estado">
+              <legend>Estado *</legend>
+              <div class="opciones">
+                <input
+                  class="btn-check"
+                  id="estado-acogida"
+                  name="estado"
+                  type="radio"
+                  value="acogida"
+                  checked
+                  required
+                />
+                <label class="btn btn-outline-secondary" for="estado-acogida">En acogida</label>
+                <input
+                  class="btn-check"
+                  id="estado-disponible"
+                  name="estado"
+                  type="radio"
+                  value="disponible"
+                />
+                <label class="btn btn-outline-secondary" for="estado-disponible">Disponible</label>
+                <input
+                  class="btn-check"
+                  id="estado-adoptado"
+                  name="estado"
+                  type="radio"
+                  value="adoptado"
+                />
+                <label class="btn btn-outline-secondary" for="estado-adoptado">Adoptado</label>
+              </div>
+              <div class="invalid-feedback" id="error-estado"></div>
+            </fieldset>
+
+            <div class="form-check form-switch align-self-end">
+              <input
+                class="form-check-input"
+                id="esterilizado"
+                name="esterilizado"
+                type="checkbox"
+                role="switch"
+              />
+              <label class="form-check-label" for="esterilizado">Esterilizado</label>
+            </div>
+          </div>
+
+          <div class="condicional" id="bloque-esterilizacion" hidden>
+            <p class="condicional__titulo">Datos de la esterilización</p>
+            <label class="form-label" for="fecha-esterilizacion"> Fecha de esterilización * </label>
+            <input
+              class="form-control"
+              id="fecha-esterilizacion"
+              name="fechaEsterilizacion"
+              type="date"
+              required
+              disabled
+              aria-describedby="error-fecha-esterilizacion"
+            />
+            <div class="invalid-feedback" id="error-fecha-esterilizacion"></div>
+          </div>
+
+          <div class="condicional" id="bloque-adopcion" hidden>
+            <p class="condicional__titulo">Datos de la adopción</p>
+            <div class="bloque__rejilla">
+              <div>
+                <label class="form-label" for="adoptante-nombre">Nombre del adoptante *</label>
+                <input
+                  class="form-control"
+                  id="adoptante-nombre"
+                  name="adoptanteNombre"
+                  type="text"
+                  autocomplete="off"
+                  required
+                  disabled
+                  minlength="2"
+                  maxlength="30"
+                  data-validar="nombre"
+                  aria-describedby="error-adoptante-nombre"
+                />
+                <div class="invalid-feedback" id="error-adoptante-nombre"></div>
+              </div>
+
+              <div>
+                <label class="form-label" for="adoptante-dni">DNI del adoptante *</label>
+                <input
+                  class="form-control"
+                  id="adoptante-dni"
+                  name="adoptanteDni"
+                  type="text"
+                  autocomplete="off"
+                  required
+                  disabled
+                  maxlength="9"
+                  data-validar="dni"
+                  aria-describedby="ayuda-adoptante-dni error-adoptante-dni"
+                />
+                <div class="form-text" id="ayuda-adoptante-dni">
+                  8 cifras y su letra. Usa un DNI inventado.
+                </div>
+                <div class="invalid-feedback" id="error-adoptante-dni"></div>
+              </div>
+
+              <div>
+                <label class="form-label" for="adoptante-telefono">Teléfono del adoptante</label>
+                <input
+                  class="form-control"
+                  id="adoptante-telefono"
+                  name="adoptanteTelefono"
+                  type="tel"
+                  autocomplete="off"
+                  disabled
+                  data-validar="telefono"
+                  aria-describedby="error-adoptante-telefono"
+                />
+                <div class="invalid-feedback" id="error-adoptante-telefono"></div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="bloque">
+          <legend>Vacunas</legend>
+          <div class="vacunas__cabecera">
+            <p id="contador-vacunas" aria-live="polite">0 de 3 vacunas</p>
+            <button class="btn btn-outline-secondary btn-sm" id="anadir-vacuna" type="button">
+              + Añadir vacuna
+            </button>
+          </div>
+          <div class="vacunas__lista" id="grupo-vacunas"></div>
+          <p class="vacunas__vacio">Todavía no hay vacunas anotadas. Puedes añadir hasta tres.</p>
+        </fieldset>
+
+        <div class="ficha__acciones">
+          <a class="btn btn-outline-secondary btn-lg" href="listado.html">Cancelar</a>
+          <button class="btn btn-primary btn-lg" type="submit">Guardar ficha</button>
+        </div>
+      </form>
+    </main>
+
+    <template id="plantilla-vacuna">
+      <div class="vacuna">
+        <div>
+          <label class="form-label" data-campo="tipo">Vacuna *</label>
+          <select class="form-select" name="vacunaTipo" required>
+            <option value="">Elige una vacuna</option>
+            <option value="rabia">Rabia</option>
+            <option value="polivalente">Polivalente</option>
+            <option value="triple-felina">Triple felina</option>
+            <option value="leucemia-felina">Leucemia felina</option>
+            <option value="mixomatosis">Mixomatosis</option>
+            <option value="otra">Otra</option>
+          </select>
+          <div class="invalid-feedback" data-campo="error-tipo"></div>
+        </div>
+        <div>
+          <label class="form-label" data-campo="fecha">Fecha *</label>
+          <input class="form-control" name="vacunaFecha" type="date" required />
+          <div class="invalid-feedback" data-campo="error-fecha"></div>
+        </div>
+        <button
+          class="btn btn-outline-danger btn-sm vacuna__quitar"
+          data-accion="quitar"
+          type="button"
+        >
+          Quitar
+        </button>
+      </div>
+    </template>
+
+    <footer class="pie">
+      <p>Huellas · proyecto de prácticas · todos los datos son inventados</p>
+    </footer>
+
+    <script type="module" src="js/paginas/ficha.js"></script>
+  </body>
+</html>

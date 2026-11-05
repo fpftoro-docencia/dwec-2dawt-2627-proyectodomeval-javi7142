@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Crea tu cuenta de voluntario en Huellas, el cuaderno de una protectora de animales."
+    />
+    <meta name="theme-color" content="#b94e1f" />
+    <title>Crear cuenta · Huellas</title>
+    <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body class="pagina-publica">
+    <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+    <div id="avisos" class="avisos avisos--arriba" role="status" aria-live="polite"></div>
+
+    <div class="acceso">
+      <aside class="acceso__hero">
+        <a class="marca marca--clara" href="index.html">
+          <img class="marca__logo" src="img/huella.svg" alt="" width="34" height="34" />
+          <span class="marca__nombre">Huellas</span>
+        </a>
+        <p class="hero__lema">Súmate a la <em>acogida.</em></p>
+        <p class="hero__texto">
+          Con tu cuenta tendrás tu propio cuaderno: solo tú ves a los animales que cuidas en casa.
+        </p>
+        <ul class="hero__puntos">
+          <li>Registro en menos de un minuto</li>
+          <li>Tus datos se quedan en tu navegador</li>
+          <li>La primera cuenta es la de coordinación</li>
+        </ul>
+        <img
+          class="hero__ilustracion"
+          src="img/ilustracion-acogida.svg"
+          alt=""
+          width="400"
+          height="360"
+        />
+      </aside>
+
+      <main id="contenido" class="acceso__panel">
+        <div class="acceso__tarjeta">
+          <p class="sobretitulo">Nuevo voluntario</p>
+          <h1>Crea tu cuenta</h1>
+          <p class="acceso__intro">
+            La primera persona que se registra queda como administradora de la protectora.
+          </p>
+
+          <form id="formulario-registro" novalidate>
+            <div class="mb-3">
+              <label class="form-label" for="usuario">Usuario</label>
+              <input
+                class="form-control"
+                id="usuario"
+                name="usuario"
+                type="text"
+                autocomplete="username"
+                required
+                minlength="3"
+                maxlength="20"
+                data-validar="usuario"
+                aria-describedby="ayuda-usuario error-usuario"
+              />
+              <div class="form-text" id="ayuda-usuario">
+                De 3 a 20 caracteres, empezando por una letra.
+              </div>
+              <div class="invalid-feedback" id="error-usuario"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="correo">Correo electrónico</label>
+              <input
+                class="form-control"
+                id="correo"
+                name="correo"
+                type="email"
+                autocomplete="email"
+                required
+                data-validar="correo"
+                aria-describedby="error-correo"
+              />
+              <div class="invalid-feedback" id="error-correo"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="clave">Contraseña</label>
+              <input
+                class="form-control"
+                id="clave"
+                name="clave"
+                type="password"
+                autocomplete="new-password"
+                required
+                minlength="8"
+                data-validar="clave"
+                aria-describedby="requisitos-clave error-clave"
+              />
+              <ul class="requisitos" id="requisitos-clave" aria-label="Requisitos de la contraseña">
+                <li data-requisito="longitud">
+                  <span class="requisito__icono" aria-hidden="true"></span>
+                  Al menos 8 caracteres
+                </li>
+                <li data-requisito="minuscula">
+                  <span class="requisito__icono" aria-hidden="true"></span>
+                  Una letra minúscula
+                </li>
+                <li data-requisito="mayuscula">
+                  <span class="requisito__icono" aria-hidden="true"></span>
+                  Una letra mayúscula
+                </li>
+                <li data-requisito="cifra">
+                  <span class="requisito__icono" aria-hidden="true"></span>
+                  Una cifra
+                </li>
+              </ul>
+              <div class="invalid-feedback" id="error-clave"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="repetir-clave">Repite la contraseña</label>
+              <input
+                class="form-control"
+                id="repetir-clave"
+                name="repetirClave"
+                type="password"
+                autocomplete="new-password"
+                required
+                data-validar="repetir-clave"
+                aria-describedby="error-repetir-clave"
+              />
+              <div class="invalid-feedback" id="error-repetir-clave"></div>
+            </div>
+
+            <div class="mb-4">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  id="aceptacion"
+                  name="aceptacion"
+                  type="checkbox"
+                  required
+                  aria-describedby="error-aceptacion"
+                />
+                <label class="form-check-label" for="aceptacion">
+                  Acepto las condiciones de uso: es una aplicación de prácticas y mis datos solo se
+                  guardan en este navegador.
+                </label>
+              </div>
+              <div class="invalid-feedback" id="error-aceptacion"></div>
+            </div>
+
+            <button class="btn btn-primary btn-lg w-100" type="submit">Crear mi cuenta</button>
+          </form>
+
+          <p class="acceso__cambio">¿Ya tienes cuenta? <a href="index.html">Entra aquí</a></p>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="js/paginas/registro.js"></script>
+  </body>
+</html>

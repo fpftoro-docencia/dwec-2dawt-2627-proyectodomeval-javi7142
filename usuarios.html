@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Gestión de los voluntarios de la protectora en Huellas." />
+    <meta name="theme-color" content="#b94e1f" />
+    <title>Usuarios · Huellas</title>
+    <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body class="pagina-privada">
+    <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <a class="marca" href="listado.html">
+          <img class="marca__logo" src="img/huella.svg" alt="" width="34" height="34" />
+          <span class="marca__nombre">Huellas</span>
+        </a>
+        <nav class="cabecera__nav" aria-label="Principal">
+          <ul class="menu">
+            <li><a href="listado.html">Mis animales</a></li>
+            <li data-solo-admin hidden><a href="usuarios.html" aria-current="page">Usuarios</a></li>
+          </ul>
+        </nav>
+        <div class="cabecera__usuario">
+          <p class="usuario-chip">
+            <span class="usuario-chip__inicial" aria-hidden="true" data-usuario-inicial></span>
+            <span class="usuario-chip__texto">
+              <strong data-usuario-actual></strong>
+              <small data-rol-actual></small>
+            </span>
+          </p>
+          <button class="btn btn-outline-secondary btn-sm" id="cerrar-sesion" type="button">
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div id="avisos" class="avisos" role="status" aria-live="polite"></div>
+
+    <main id="contenido" class="contenedor pagina">
+      <div class="encabezado-pagina">
+        <div>
+          <p class="sobretitulo">Zona de coordinación</p>
+          <h1>Usuarios</h1>
+          <p>
+            Las personas que forman parte de la protectora. Desde aquí puedes dar o quitar el rol de
+            administrador.
+          </p>
+        </div>
+      </div>
+
+      <div class="herramientas" role="search">
+        <div class="buscador">
+          <label class="visually-hidden" for="buscador">Buscar un usuario</label>
+          <input
+            class="form-control form-control-lg"
+            id="buscador"
+            name="buscador"
+            type="search"
+            placeholder="Busca por nombre o correo"
+            autocomplete="off"
+          />
+        </div>
+        <p class="herramientas__contador" id="contador" aria-live="polite">0 usuarios</p>
+      </div>
+
+      <div class="vacio" id="sin-resultados" hidden>
+        <img src="img/huella.svg" alt="" width="72" height="72" />
+        <h2>No hay usuarios que mostrar</h2>
+        <p>Prueba con otra búsqueda.</p>
+      </div>
+
+      <ul class="voluntarios" id="lista-usuarios"></ul>
+
+      <nav class="paginacion" id="paginacion" aria-label="Paginación de usuarios"></nav>
+    </main>
+
+    <template id="plantilla-usuario">
+      <li class="voluntario">
+        <span class="voluntario__avatar" aria-hidden="true"></span>
+        <div>
+          <p class="voluntario__nombre">
+            <span class="voluntario__usuario"></span>
+            <span class="voluntario__rol"></span>
+          </p>
+          <p class="voluntario__correo"></p>
+        </div>
+        <div class="voluntario__acciones">
+          <button class="btn btn-outline-secondary btn-sm" data-accion="cambiar-rol" type="button">
+            Dar rol de administrador
+          </button>
+          <p class="voluntario__nota" hidden></p>
+        </div>
+      </li>
+    </template>
+
+    <footer class="pie">
+      <p>Huellas · proyecto de prácticas · todos los datos son inventados</p>
+    </footer>
+
+    <script type="module" src="js/paginas/usuarios.js"></script>
+  </body>
+</html>
