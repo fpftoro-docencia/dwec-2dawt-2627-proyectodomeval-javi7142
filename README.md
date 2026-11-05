@@ -1,4 +1,4 @@
-# Nombre de tu aplicación
+# Huellas · Gestión de una protectora de animales
 
 <!-- Sprint 2: la insignia de tu workflow, con tu organización y tu repositorio. -->
 ![Integración continua](https://github.com/<organización>/<repositorio>/actions/workflows/ci.yml/badge.svg)
@@ -9,34 +9,65 @@
 
 ## Mi proyecto
 
-<!-- Sprint 1. De qué es tu aplicación y para quién, en dos o tres frases. -->
+**Huellas** es una aplicación web para los voluntarios de una protectora de animales. Cada voluntario (o casa de acogida) lleva el control de los animales que tiene a su cargo: los da de alta, los edita, anota sus vacunas y marca cuándo los adoptan. El coordinador de la protectora, que es el administrador, gestiona además a los voluntarios.
+
+Está hecha con JavaScript sin librerías (solo el CSS de Bootstrap) y sin APIs remotas: los usuarios y los animales se guardan en el navegador.
+
+> ⚠️ **Todos los datos de ejemplo son inventados.** El repositorio y la web publicada son públicos, así que ningún nombre, DNI, teléfono ni microchip del proyecto pertenece a una persona o a un animal reales.
+
+**Roles:**
+
+| Rol | Quién es | Qué puede hacer |
+|-----|----------|-----------------|
+| Usuario | Voluntario o casa de acogida | Ver y gestionar solo sus animales |
+| Administrador | Coordinador. Es el primer usuario que se registra | Lo mismo que un usuario, y además entrar en «Usuarios» para dar o quitar el rol de administrador a otros |
 
 **Web publicada:** <!-- https://<proyecto>.vercel.app -->
 
 ### La entidad
 
-<!-- Sprint 2 (puedes adelantarla en el sprint 1). Una fila por campo, con los mínimos del requisito 13:
-     marca el campo condicional y el grupo dinámico (con su mínimo y su máximo). -->
+La entidad es el **animal** que el voluntario tiene en acogida. Este es el diseño inicial; en el sprint 2 se cierra con el código y los tests.
 
 | Campo | Control | Obligatorio | Regla de validación | Mensaje si no se cumple |
 |-------|---------|:-----------:|---------------------|-------------------------|
-| | | | | |
+| Nombre | Texto | Sí | Expresión regular `^\p{L}[\p{L} '-]{1,29}$` con la bandera `u` | «El nombre empieza por una letra y tiene de 2 a 30 caracteres: letras, espacios, apóstrofos o guiones» |
+| Especie | Lista desplegable | Sí | Una de la lista (perro, gato, conejo, otro) | «Elige una especie» |
+| Sexo | Botones de opción | Sí | Hembra o macho | «Elige el sexo» |
+| Fecha de ingreso | Fecha | Sí | No posterior a hoy (el `max` lo pone el código) | «La fecha de ingreso no puede ser futura» |
+| Peso (kg) | Número | Sí | Entre 0,1 y 100 | «El peso debe estar entre 0,1 y 100 kg» |
+| Microchip | Texto | Sí | Expresión regular `^\d{15}$` | «El microchip tiene 15 dígitos» |
+| Estado | Botones de opción | Sí | En acogida, disponible o adoptado | «Elige el estado» |
+| Esterilizado | Casilla | No | — | — |
+| **Fecha de esterilización** (campo condicional) | Fecha | Solo si está esterilizado | No futura y no anterior al ingreso | «La esterilización no puede ser futura ni anterior al ingreso» |
+| **Adoptante: nombre** (campo condicional) | Texto | Solo si está adoptado | La misma expresión regular que el nombre | «Escribe el nombre del adoptante» |
+| **Adoptante: DNI** (campo condicional) | Texto | Solo si está adoptado | Expresión regular `^\d{8}[A-Z]$` **y** letra de control: la letra de `TRWAGMYFPDXBNJZSQVHLCKE` en la posición del número módulo 23 | «DNI no válido: la letra no corresponde al número» |
+| **Adoptante: teléfono** (campo condicional) | Texto | No | Expresión regular `^[679]\d{8}$` | «El teléfono tiene 9 cifras y empieza por 6, 7 o 9» |
+| **Vacunas** (grupo dinámico, de **0 a 3**): tipo | Lista desplegable | Sí, en cada vacuna | Una de la lista | «Elige la vacuna» |
+| **Vacunas** (grupo dinámico, de **0 a 3**): fecha | Fecha | Sí, en cada vacuna | No futura y no anterior al ingreso | «La fecha de la vacuna no puede ser futura ni anterior al ingreso» |
+
+Los campos en negrita son el **campo condicional** y el **grupo dinámico** que pide el enunciado. Los cuatro validadores con expresión regular (nombre, microchip, DNI y teléfono) son propios del tema, y el del DNI comprueba además con código la letra de control.
 
 ### El registro de usuarios
 
+Las reglas de usuario y correo son una primera propuesta que se confirma al escribir los validadores.
+
 | Campo | Control | Regla | Mensaje |
 |-------|---------|-------|---------|
-| | | | |
+| Usuario | Texto | Expresión regular `^\p{L}[\p{L}\d_.-]{2,19}$` con la bandera `u`, y que no esté ocupado | «El usuario empieza por una letra y tiene de 3 a 20 caracteres» / «Ese usuario ya existe» |
+| Correo | Correo | Expresión regular `^[^\s@]+@[^\s@]+\.[^\s@]+$` | «Escribe un correo válido» |
+| Contraseña | Contraseña | Al menos 8 caracteres, una minúscula `\p{Ll}`, una mayúscula `\p{Lu}` y una cifra `\d`. Los requisitos se marcan mientras se escribe | «La contraseña no cumple todos los requisitos» |
+| Repetir contraseña | Contraseña | Igual que la contraseña | «Las contraseñas no coinciden» |
+| Aceptación | Casilla | Marcada | «Debes aceptar las condiciones» |
 
 ### Páginas
 
 | Página | Acceso | Qué hace |
 |--------|--------|----------|
-| `index.html` | Pública | |
-| `registro.html` | Pública | |
-| `listado.html` | Usuarios | |
-| `ficha.html` | Usuarios | |
-| `usuarios.html` | Administradores | |
+| `index.html` | Pública | Inicio de sesión. Si ya hay sesión, lleva directamente al listado |
+| `registro.html` | Pública | Alta de un voluntario con la validación de la contraseña en vivo. El primero que se registra es administrador |
+| `listado.html` | Usuarios | Los animales del usuario en tarjetas, con buscador, contador, paginación y borrado con confirmación |
+| `ficha.html` | Usuarios | Alta y edición de un animal, con campo condicional y grupo dinámico de vacunas |
+| `usuarios.html` | Administradores | Listado de voluntarios con buscador y paginación, para dar o quitar el rol de administrador |
 
 ## Arquitectura y módulos
 
@@ -181,7 +212,8 @@
 | Rama | Funcionalidad | *Pull request* |
 |------|---------------|----------------|
 | `estructura-inicial` | `.gitignore` y esqueleto vacío de páginas y módulos | [#2](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/2) |
-| `package-lock` | `package-lock.json` y saltos de línea LF con `.gitattributes` | <!-- enlace --> |
+| `package-lock` | `package-lock.json` y saltos de línea LF con `.gitattributes` | [#3](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/3) |
+| `mi-proyecto` | Sección «Mi proyecto» del README | <!-- enlace --> |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
