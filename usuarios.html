@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Las personas que forman parte de la protectora en Huellas." />
+    <meta name="theme-color" content="#1238c9" />
+    <title>Usuarios | Huellas</title>
+    <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body class="privada">
+    <a class="salto" href="#contenido">Saltar al contenido</a>
+
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <a class="marca" href="listado.html">
+          <svg class="marca__icono" aria-hidden="true">
+            <use href="img/iconos.svg#huella"></use>
+          </svg>
+          <span>huellas</span>
+        </a>
+        <nav class="cabecera__nav" aria-label="Principal">
+          <ul class="menu">
+            <li><a href="listado.html">Mis animales</a></li>
+            <li data-solo-admin hidden><a href="usuarios.html" aria-current="page">Usuarios</a></li>
+          </ul>
+        </nav>
+        <div class="cabecera__usuario">
+          <p class="usuario-chip">
+            <span class="usuario-chip__inicial" aria-hidden="true" data-usuario-inicial></span>
+            <span class="usuario-chip__texto">
+              <strong data-usuario-actual></strong>
+              <small data-rol-actual></small>
+            </span>
+          </p>
+          <button class="btn btn-clara btn-sm" id="cerrar-sesion" type="button">
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div id="avisos" class="avisos" role="status" aria-live="polite"></div>
+
+    <main id="contenido">
+      <section class="portada portada--sol" aria-labelledby="titulo-usuarios">
+        <div class="contenedor portada__interior">
+          <div class="portada__texto">
+            <h1 id="titulo-usuarios">Usuarios</h1>
+            <p class="portada__resumen" id="resumen"></p>
+          </div>
+          <img
+            class="portada__animal"
+            src="img/fotos/gato-2.webp"
+            alt=""
+            width="520"
+            height="520"
+          />
+        </div>
+      </section>
+
+      <div class="contenedor pagina">
+        <div class="herramientas">
+          <p class="contador contador--enlinea" id="contador" aria-live="polite"></p>
+          <div class="buscador" role="search">
+            <label class="visually-hidden" for="buscador">Buscar</label>
+            <div class="buscador__caja">
+              <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#buscar"></use></svg>
+              <input
+                class="form-control"
+                id="buscador"
+                name="buscador"
+                type="search"
+                placeholder="Nombre o correo"
+                autocomplete="off"
+              />
+              <kbd class="buscador__atajo" aria-hidden="true">/</kbd>
+            </div>
+          </div>
+        </div>
+
+        <div class="vacio" id="sin-resultados" hidden>
+          <div>
+            <h2>No hay nadie con ese nombre</h2>
+            <p>Prueba con otra búsqueda.</p>
+            <button class="btn btn-outline-secondary" id="limpiar-filtros" type="button">
+              Limpiar la búsqueda
+            </button>
+          </div>
+        </div>
+
+        <ul class="voluntarios" id="lista-usuarios"></ul>
+
+        <nav class="paginacion" id="paginacion" aria-label="Paginación de usuarios"></nav>
+      </div>
+    </main>
+
+    <template id="plantilla-usuario">
+      <li class="voluntario">
+        <span class="voluntario__avatar" aria-hidden="true"></span>
+        <div class="voluntario__identidad">
+          <p class="voluntario__usuario"></p>
+          <p class="voluntario__correo"></p>
+        </div>
+        <p class="voluntario__rol"></p>
+        <div class="voluntario__acciones">
+          <button class="btn btn-outline-secondary btn-sm" data-accion="cambiar-rol" type="button">
+            Dar rol de administrador
+          </button>
+          <p class="voluntario__nota" hidden></p>
+        </div>
+      </li>
+    </template>
+
+    <footer class="pie">
+      <p>
+        Huellas es una aplicación de prácticas. Los animales y sus datos son inventados. Fotos de
+        Unsplash.
+      </p>
+    </footer>
+  </body>
+</html>

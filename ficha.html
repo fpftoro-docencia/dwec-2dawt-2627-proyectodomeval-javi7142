@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="La cartilla de un animal en acogida en Huellas." />
+    <meta name="theme-color" content="#1238c9" />
+    <title>Cartilla del animal | Huellas</title>
+    <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body class="privada">
+    <a class="salto" href="#contenido">Saltar al contenido</a>
+
+    <header class="cabecera">
+      <div class="contenedor cabecera__interior">
+        <a class="marca" href="listado.html">
+          <svg class="marca__icono" aria-hidden="true">
+            <use href="img/iconos.svg#huella"></use>
+          </svg>
+          <span>huellas</span>
+        </a>
+        <nav class="cabecera__nav" aria-label="Principal">
+          <ul class="menu">
+            <li><a href="listado.html" aria-current="page">Mis animales</a></li>
+            <li data-solo-admin hidden><a href="usuarios.html">Usuarios</a></li>
+          </ul>
+        </nav>
+        <div class="cabecera__usuario">
+          <p class="usuario-chip">
+            <span class="usuario-chip__inicial" aria-hidden="true" data-usuario-inicial></span>
+            <span class="usuario-chip__texto">
+              <strong data-usuario-actual></strong>
+              <small data-rol-actual></small>
+            </span>
+          </p>
+          <button class="btn btn-clara btn-sm" id="cerrar-sesion" type="button">
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div id="avisos" class="avisos" role="status" aria-live="polite"></div>
+
+    <main id="contenido">
+      <section class="portada portada--ficha" aria-labelledby="titulo-ficha">
+        <div class="contenedor portada__texto">
+          <a class="volver" href="listado.html">
+            <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#volver"></use></svg>
+            Volver a mis animales
+          </a>
+          <h1 id="titulo-ficha">Nuevo animal</h1>
+          <p class="portada__resumen" id="subtitulo-ficha">
+            Mientras escribes, su cartilla se rellena sola. Los campos con * son obligatorios.
+          </p>
+        </div>
+      </section>
+
+      <div class="contenedor pagina">
+        <div class="ficha">
+          <form class="ficha__formulario" id="formulario-animal" novalidate>
+            <fieldset class="bloque">
+              <legend>
+                <svg class="bloque__icono" aria-hidden="true">
+                  <use href="img/iconos.svg#huella"></use>
+                </svg>
+                Quién es
+              </legend>
+              <div class="bloque__rejilla">
+                <div class="campo">
+                  <div class="campo__caja">
+                    <svg class="campo__icono" aria-hidden="true">
+                      <use href="img/iconos.svg#etiqueta"></use>
+                    </svg>
+                    <input
+                      class="form-control"
+                      id="nombre"
+                      name="nombre"
+                      type="text"
+                      placeholder=" "
+                      autocomplete="off"
+                      required
+                      minlength="2"
+                      maxlength="30"
+                      data-validar="nombre"
+                      aria-describedby="error-nombre"
+                    />
+                    <label class="form-label" for="nombre">Nombre *</label>
+                  </div>
+                  <div class="invalid-feedback" id="error-nombre"></div>
+                </div>
+
+                <div class="campo">
+                  <div class="campo__caja">
+                    <svg class="campo__icono" aria-hidden="true">
+                      <use href="img/iconos.svg#perro"></use>
+                    </svg>
+                    <select
+                      class="form-select"
+                      id="especie"
+                      name="especie"
+                      required
+                      aria-describedby="error-especie"
+                    >
+                      <option value="">Elige una especie</option>
+                      <option value="perro">Perro</option>
+                      <option value="gato">Gato</option>
+                      <option value="conejo">Conejo</option>
+                      <option value="otro">Otro</option>
+                    </select>
+                    <label class="form-label" for="especie">Especie *</label>
+                  </div>
+                  <div class="invalid-feedback" id="error-especie"></div>
+                </div>
+
+                <fieldset class="grupo-opciones" aria-describedby="error-sexo">
+                  <legend>Sexo *</legend>
+                  <div class="opciones">
+                    <input
+                      class="btn-check"
+                      id="sexo-hembra"
+                      name="sexo"
+                      type="radio"
+                      value="hembra"
+                      required
+                    />
+                    <label class="btn btn-outline-secondary" for="sexo-hembra">Hembra</label>
+                    <input
+                      class="btn-check"
+                      id="sexo-macho"
+                      name="sexo"
+                      type="radio"
+                      value="macho"
+                    />
+                    <label class="btn btn-outline-secondary" for="sexo-macho">Macho</label>
+                  </div>
+                  <div class="invalid-feedback" id="error-sexo"></div>
+                </fieldset>
+
+                <div class="campo">
+                  <div class="campo__caja">
+                    <svg class="campo__icono" aria-hidden="true">
+                      <use href="img/iconos.svg#calendario"></use>
+                    </svg>
+                    <input
+                      class="form-control"
+                      id="ingreso"
+                      name="ingreso"
+                      type="date"
+                      required
+                      aria-describedby="error-ingreso"
+                    />
+                    <label class="form-label" for="ingreso">Fecha de ingreso *</label>
+                  </div>
+                  <div class="invalid-feedback" id="error-ingreso"></div>
+                </div>
+
+                <div class="campo">
+                  <div class="campo__caja">
+                    <svg class="campo__icono" aria-hidden="true">
+                      <use href="img/iconos.svg#peso"></use>
+                    </svg>
+                    <input
+                      class="form-control"
+                      id="peso"
+                      name="peso"
+                      type="number"
+                      placeholder=" "
+                      inputmode="decimal"
+                      step="0.1"
+                      required
+                      aria-describedby="error-peso"
+                    />
+                    <label class="form-label" for="peso">Peso en kilos *</label>
+                  </div>
+                  <div class="invalid-feedback" id="error-peso"></div>
+                </div>
+
+                <div class="campo">
+                  <div class="campo__caja">
+                    <svg class="campo__icono" aria-hidden="true">
+                      <use href="img/iconos.svg#microchip"></use>
+                    </svg>
+                    <input
+                      class="form-control"
+                      id="microchip"
+                      name="microchip"
+                      type="text"
+                      placeholder=" "
+                      inputmode="numeric"
+                      autocomplete="off"
+                      required
+                      pattern="\d{15}"
+                      data-validar="microchip"
+                      aria-describedby="ayuda-microchip error-microchip"
+                    />
+                    <label class="form-label" for="microchip">Microchip *</label>
+                  </div>
+                  <div class="form-text" id="ayuda-microchip">15 dígitos, sin espacios.</div>
+                  <div class="invalid-feedback" id="error-microchip"></div>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="bloque" id="bloque-foto" disabled>
+              <legend>
+                <svg class="bloque__icono" aria-hidden="true">
+                  <use href="img/iconos.svg#foto"></use>
+                </svg>
+                Su foto
+              </legend>
+              <p class="bloque__ayuda" id="ayuda-foto">
+                Elige la especie y aquí aparecerán las fotos disponibles.
+              </p>
+              <div class="galeria" id="galeria-fotos"></div>
+            </fieldset>
+
+            <fieldset class="bloque">
+              <legend>
+                <svg class="bloque__icono" aria-hidden="true">
+                  <use href="img/iconos.svg#corazon"></use>
+                </svg>
+                Cómo está
+              </legend>
+              <div class="bloque__rejilla">
+                <fieldset class="grupo-opciones" aria-describedby="error-estado">
+                  <legend>Estado *</legend>
+                  <div class="opciones">
+                    <input
+                      class="btn-check"
+                      id="estado-acogida"
+                      name="estado"
+                      type="radio"
+                      value="acogida"
+                      checked
+                      required
+                    />
+                    <label class="btn btn-outline-secondary" for="estado-acogida">En acogida</label>
+                    <input
+                      class="btn-check"
+                      id="estado-disponible"
+                      name="estado"
+                      type="radio"
+                      value="disponible"
+                    />
+                    <label class="btn btn-outline-secondary" for="estado-disponible">
+                      Disponible
+                    </label>
+                    <input
+                      class="btn-check"
+                      id="estado-adoptado"
+                      name="estado"
+                      type="radio"
+                      value="adoptado"
+                    />
+                    <label class="btn btn-outline-secondary" for="estado-adoptado">Adoptado</label>
+                  </div>
+                  <div class="invalid-feedback" id="error-estado"></div>
+                </fieldset>
+
+                <div class="form-check form-switch interruptor">
+                  <input
+                    class="form-check-input"
+                    id="esterilizado"
+                    name="esterilizado"
+                    type="checkbox"
+                    role="switch"
+                  />
+                  <label class="form-check-label" for="esterilizado">Está esterilizado</label>
+                </div>
+              </div>
+
+              <div class="condicional" id="bloque-esterilizacion" hidden>
+                <div class="campo">
+                  <div class="campo__caja">
+                    <svg class="campo__icono" aria-hidden="true">
+                      <use href="img/iconos.svg#calendario"></use>
+                    </svg>
+                    <input
+                      class="form-control"
+                      id="fecha-esterilizacion"
+                      name="fechaEsterilizacion"
+                      type="date"
+                      required
+                      disabled
+                      aria-describedby="error-fecha-esterilizacion"
+                    />
+                    <label class="form-label" for="fecha-esterilizacion">
+                      Fecha de esterilización *
+                    </label>
+                  </div>
+                  <div class="invalid-feedback" id="error-fecha-esterilizacion"></div>
+                </div>
+              </div>
+
+              <div class="condicional" id="bloque-adopcion" hidden>
+                <p class="condicional__titulo">Quién lo adopta</p>
+                <div class="bloque__rejilla">
+                  <div class="campo">
+                    <div class="campo__caja">
+                      <svg class="campo__icono" aria-hidden="true">
+                        <use href="img/iconos.svg#usuario"></use>
+                      </svg>
+                      <input
+                        class="form-control"
+                        id="adoptante-nombre"
+                        name="adoptanteNombre"
+                        type="text"
+                        placeholder=" "
+                        autocomplete="off"
+                        required
+                        disabled
+                        minlength="2"
+                        maxlength="30"
+                        data-validar="nombre"
+                        aria-describedby="error-adoptante-nombre"
+                      />
+                      <label class="form-label" for="adoptante-nombre">Nombre *</label>
+                    </div>
+                    <div class="invalid-feedback" id="error-adoptante-nombre"></div>
+                  </div>
+
+                  <div class="campo">
+                    <div class="campo__caja">
+                      <svg class="campo__icono" aria-hidden="true">
+                        <use href="img/iconos.svg#dni"></use>
+                      </svg>
+                      <input
+                        class="form-control"
+                        id="adoptante-dni"
+                        name="adoptanteDni"
+                        type="text"
+                        placeholder=" "
+                        autocomplete="off"
+                        required
+                        disabled
+                        maxlength="9"
+                        data-validar="dni"
+                        aria-describedby="ayuda-adoptante-dni error-adoptante-dni"
+                      />
+                      <label class="form-label" for="adoptante-dni">DNI *</label>
+                    </div>
+                    <div class="form-text" id="ayuda-adoptante-dni">Usa un DNI inventado.</div>
+                    <div class="invalid-feedback" id="error-adoptante-dni"></div>
+                  </div>
+
+                  <div class="campo">
+                    <div class="campo__caja">
+                      <svg class="campo__icono" aria-hidden="true">
+                        <use href="img/iconos.svg#telefono"></use>
+                      </svg>
+                      <input
+                        class="form-control"
+                        id="adoptante-telefono"
+                        name="adoptanteTelefono"
+                        type="tel"
+                        placeholder=" "
+                        autocomplete="off"
+                        disabled
+                        data-validar="telefono"
+                        aria-describedby="error-adoptante-telefono"
+                      />
+                      <label class="form-label" for="adoptante-telefono">Teléfono</label>
+                    </div>
+                    <div class="invalid-feedback" id="error-adoptante-telefono"></div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="bloque">
+              <legend>
+                <svg class="bloque__icono" aria-hidden="true">
+                  <use href="img/iconos.svg#vacuna"></use>
+                </svg>
+                Sus vacunas
+              </legend>
+              <p class="bloque__ayuda" id="contador-vacunas" aria-live="polite">0 de 3 vacunas</p>
+              <div class="vacunas__lista" id="grupo-vacunas"></div>
+              <button class="boton-anadir" id="anadir-vacuna" type="button">
+                <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#mas"></use></svg>
+                Añadir vacuna
+              </button>
+            </fieldset>
+
+            <div class="ficha__acciones">
+              <a class="btn btn-outline-secondary" href="listado.html">Cancelar</a>
+              <button class="btn btn-primary boton-accion" type="submit">
+                Guardar la ficha
+                <span class="boton-accion__disco">
+                  <svg class="icono" aria-hidden="true">
+                    <use href="img/iconos.svg#huella"></use>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </form>
+
+          <aside class="cartilla-zona" aria-label="Vista previa de la cartilla">
+            <div class="cartilla" id="cartilla" data-estado="acogida" data-fondo="sol">
+              <div class="cartilla__cabecera">
+                <svg class="marca__icono" aria-hidden="true">
+                  <use href="img/iconos.svg#huella"></use>
+                </svg>
+                <p>Cartilla de acogida</p>
+              </div>
+
+              <div class="cartilla__retrato">
+                <span class="animal__arco"></span>
+                <img class="cartilla__foto" id="cartilla-foto" alt="" hidden />
+                <svg class="cartilla__silueta" id="cartilla-silueta" aria-hidden="true">
+                  <use href="img/iconos.svg#huella"></use>
+                </svg>
+                <span class="sello-adoptado" aria-hidden="true">Adoptado</span>
+              </div>
+
+              <h2 class="cartilla__nombre" id="cartilla-nombre">Sin nombre</h2>
+              <dl class="cartilla__datos">
+                <div>
+                  <dt>Especie</dt>
+                  <dd id="cartilla-especie">Por indicar</dd>
+                </div>
+                <div>
+                  <dt>Sexo</dt>
+                  <dd id="cartilla-sexo">Por indicar</dd>
+                </div>
+                <div>
+                  <dt>Ingreso</dt>
+                  <dd id="cartilla-ingreso">Por indicar</dd>
+                </div>
+                <div>
+                  <dt>Peso</dt>
+                  <dd id="cartilla-peso">Por indicar</dd>
+                </div>
+                <div class="cartilla__dato-ancho">
+                  <dt>Microchip</dt>
+                  <dd id="cartilla-microchip">Por indicar</dd>
+                </div>
+              </dl>
+
+              <p class="cartilla__etiqueta">Vacunas</p>
+              <ul class="sellos" id="cartilla-sellos" aria-label="Vacunas anotadas">
+                <li class="sello sello--vacio"></li>
+                <li class="sello sello--vacio"></li>
+                <li class="sello sello--vacio"></li>
+              </ul>
+
+              <label class="cartilla__progreso" for="progreso-ficha">
+                <span id="progreso-texto">Faltan 6 datos obligatorios</span>
+                <progress id="progreso-ficha" max="6" value="0"></progress>
+              </label>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <template id="plantilla-vacuna">
+      <div class="vacuna">
+        <div class="campo">
+          <div class="campo__caja">
+            <svg class="campo__icono" aria-hidden="true">
+              <use href="img/iconos.svg#vacuna"></use>
+            </svg>
+            <select class="form-select" name="vacunaTipo" required>
+              <option value="">Elige una vacuna</option>
+              <option value="rabia">Rabia</option>
+              <option value="polivalente">Polivalente</option>
+              <option value="triple-felina">Triple felina</option>
+              <option value="leucemia-felina">Leucemia felina</option>
+              <option value="mixomatosis">Mixomatosis</option>
+              <option value="otra">Otra</option>
+            </select>
+            <label class="form-label" data-campo="tipo">Vacuna *</label>
+          </div>
+          <div class="invalid-feedback" data-campo="error-tipo"></div>
+        </div>
+        <div class="campo">
+          <div class="campo__caja">
+            <svg class="campo__icono" aria-hidden="true">
+              <use href="img/iconos.svg#calendario"></use>
+            </svg>
+            <input class="form-control" name="vacunaFecha" type="date" required />
+            <label class="form-label" data-campo="fecha">Fecha *</label>
+          </div>
+          <div class="invalid-feedback" data-campo="error-fecha"></div>
+        </div>
+        <button
+          class="btn btn-outline-danger vacuna__quitar"
+          data-accion="quitar"
+          type="button"
+          aria-label="Quitar esta vacuna"
+        >
+          <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#borrar"></use></svg>
+        </button>
+      </div>
+    </template>
+
+    <template id="plantilla-foto">
+      <label class="foto-opcion">
+        <input class="visually-hidden" name="foto" type="radio" />
+        <span class="foto-opcion__marco">
+          <img class="foto-opcion__imagen" alt="" loading="lazy" />
+          <svg class="icono foto-opcion__marca" aria-hidden="true">
+            <use href="img/iconos.svg#hecho"></use>
+          </svg>
+        </span>
+      </label>
+    </template>
+
+    <footer class="pie">
+      <p>
+        Huellas es una aplicación de prácticas. Los animales y sus datos son inventados. Fotos de
+        Unsplash.
+      </p>
+    </footer>
+  </body>
+</html>
