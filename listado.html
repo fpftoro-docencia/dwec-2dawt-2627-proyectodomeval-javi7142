@@ -3,21 +3,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Tus animales en acogida en Huellas." />
-    <meta name="theme-color" content="#b94e1f" />
-    <title>Mis animales · Huellas</title>
+    <meta name="description" content="Los animales que cuidas en Huellas." />
+    <meta name="theme-color" content="#1238c9" />
+    <title>Mis animales | Huellas</title>
     <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/estilos.css" />
   </head>
-  <body class="pagina-privada">
-    <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+  <body class="privada">
+    <a class="salto" href="#contenido">Saltar al contenido</a>
 
     <header class="cabecera">
       <div class="contenedor cabecera__interior">
         <a class="marca" href="listado.html">
-          <img class="marca__logo" src="img/huella.svg" alt="" width="34" height="34" />
-          <span class="marca__nombre">Huellas</span>
+          <svg class="marca__icono" aria-hidden="true">
+            <use href="img/iconos.svg#huella"></use>
+          </svg>
+          <span>huellas</span>
         </a>
         <nav class="cabecera__nav" aria-label="Principal">
           <ul class="menu">
@@ -33,7 +35,7 @@
               <small data-rol-actual></small>
             </span>
           </p>
-          <button class="btn btn-outline-secondary btn-sm" id="cerrar-sesion" type="button">
+          <button class="btn btn-clara btn-sm" id="cerrar-sesion" type="button">
             Cerrar sesión
           </button>
         </div>
@@ -42,119 +44,170 @@
 
     <div id="avisos" class="avisos" role="status" aria-live="polite"></div>
 
-    <main id="contenido" class="contenedor pagina">
-      <div class="encabezado-pagina">
-        <div>
-          <p class="sobretitulo">Tu cuaderno de acogida</p>
-          <h1>Mis animales</h1>
-          <p>Los animales que cuidas ahora mismo, con su estado y sus vacunas.</p>
-        </div>
-        <a class="btn btn-primary btn-lg" href="ficha.html">+ Nuevo animal</a>
-      </div>
-
-      <section aria-labelledby="titulo-resumen">
-        <h2 class="visually-hidden" id="titulo-resumen">Resumen</h2>
-        <dl class="resumen">
-          <div class="resumen__item" data-tipo="total">
-            <dt>En total</dt>
-            <dd data-estadistica="total">0</dd>
+    <main id="contenido">
+      <section class="portada" aria-labelledby="saludo">
+        <div class="contenedor portada__interior">
+          <div class="portada__texto">
+            <h1 id="saludo">Mis animales</h1>
+            <p class="portada__resumen" id="resumen"></p>
+            <p class="portada__pendiente" id="pendiente" hidden>
+              <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#vacuna"></use></svg>
+              <span id="pendiente-texto"></span>
+            </p>
+            <a class="btn btn-primary btn-lg" href="ficha.html">
+              <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#mas"></use></svg>
+              Registrar un animal
+            </a>
           </div>
-          <div class="resumen__item" data-tipo="acogida">
-            <dt>En acogida</dt>
-            <dd data-estadistica="acogida">0</dd>
-          </div>
-          <div class="resumen__item" data-tipo="disponible">
-            <dt>Disponibles</dt>
-            <dd data-estadistica="disponible">0</dd>
-          </div>
-          <div class="resumen__item" data-tipo="adoptado">
-            <dt>Adoptados</dt>
-            <dd data-estadistica="adoptado">0</dd>
-          </div>
-        </dl>
-      </section>
-
-      <div class="herramientas" role="search">
-        <div class="buscador">
-          <label class="visually-hidden" for="buscador">Buscar un animal</label>
-          <input
-            class="form-control form-control-lg"
-            id="buscador"
-            name="buscador"
-            type="search"
-            placeholder="Nombre, especie o microchip"
-            autocomplete="off"
+          <img
+            class="portada__animal"
+            src="img/fotos/perro-5.webp"
+            alt=""
+            width="520"
+            height="780"
           />
         </div>
-        <p class="herramientas__contador" id="contador" aria-live="polite">0 animales</p>
+      </section>
+
+      <div class="contenedor pagina">
+        <div class="herramientas">
+          <div class="filtros-estado" role="group" aria-label="Filtrar por estado">
+            <button class="filtro" type="button" data-filtro="todos" aria-pressed="true">
+              Todos <span data-estadistica="total">0</span>
+            </button>
+            <button class="filtro" type="button" data-filtro="acogida" aria-pressed="false">
+              En acogida <span data-estadistica="acogida">0</span>
+            </button>
+            <button class="filtro" type="button" data-filtro="disponible" aria-pressed="false">
+              Disponibles <span data-estadistica="disponible">0</span>
+            </button>
+            <button class="filtro" type="button" data-filtro="adoptado" aria-pressed="false">
+              Adoptados <span data-estadistica="adoptado">0</span>
+            </button>
+          </div>
+
+          <div class="buscador" role="search">
+            <label class="visually-hidden" for="buscador">Buscar</label>
+            <div class="buscador__caja">
+              <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#buscar"></use></svg>
+              <input
+                class="form-control"
+                id="buscador"
+                name="buscador"
+                type="search"
+                placeholder="Nombre, especie o microchip"
+                autocomplete="off"
+              />
+              <kbd class="buscador__atajo" aria-hidden="true">/</kbd>
+            </div>
+          </div>
+        </div>
+
+        <p class="contador" id="contador" aria-live="polite"></p>
+
+        <div class="vacio" id="sin-resultados" hidden>
+          <img src="img/fotos/gato-6.webp" alt="" width="240" height="300" />
+          <div>
+            <h2 id="vacio-titulo">No hay ningún animal con ese nombre</h2>
+            <p id="vacio-texto">Prueba con otra búsqueda o cambia de filtro.</p>
+            <button class="btn btn-outline-secondary" id="limpiar-filtros" type="button">
+              Limpiar la búsqueda
+            </button>
+          </div>
+        </div>
+
+        <ul class="muro" id="lista-animales"></ul>
+
+        <nav class="paginacion" id="paginacion" aria-label="Paginación del listado"></nav>
       </div>
-
-      <div class="vacio" id="sin-resultados" hidden>
-        <img src="img/huella.svg" alt="" width="72" height="72" />
-        <h2>No hay animales que mostrar</h2>
-        <p>Prueba con otra búsqueda o da de alta al primer animal que tengas en acogida.</p>
-        <a class="btn btn-primary" href="ficha.html">Dar de alta un animal</a>
-      </div>
-
-      <ul class="rejilla-animales" id="lista-animales"></ul>
-
-      <nav class="paginacion" id="paginacion" aria-label="Paginación del listado"></nav>
     </main>
 
     <template id="plantilla-animal">
       <li class="animal">
-        <article class="animal__carta">
-          <div class="animal__cinta">
-            <span class="animal__avatar" aria-hidden="true"></span>
-            <span class="animal__estado"></span>
+        <button class="animal__retrato" data-accion="ver" type="button">
+          <span class="animal__arco"></span>
+          <img class="animal__foto" alt="" />
+          <span class="placa animal__estado"></span>
+          <span class="sello-adoptado" aria-hidden="true">Adoptado</span>
+        </button>
+        <div class="animal__texto">
+          <h2 class="animal__nombre"></h2>
+          <p class="animal__subtitulo"></p>
+          <p class="animal__vacunas">
+            <span class="vacunas-puntos" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="animal__vacunas-texto"></span>
+          </p>
+          <div class="animal__acciones">
+            <a class="btn btn-outline-secondary btn-sm" data-accion="editar" href="ficha.html">
+              <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#editar"></use></svg>
+              Editar
+            </a>
+            <button class="btn btn-outline-danger btn-sm" data-accion="borrar" type="button">
+              <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#borrar"></use></svg>
+              Borrar
+            </button>
           </div>
-          <div class="animal__cuerpo">
-            <h2 class="animal__nombre"></h2>
-            <p class="animal__subtitulo"></p>
-            <dl class="animal__datos">
-              <div>
-                <dt>Peso</dt>
-                <dd class="animal__peso"></dd>
-              </div>
-              <div>
-                <dt>Ingreso</dt>
-                <dd class="animal__ingreso"></dd>
-              </div>
-              <div>
-                <dt>Microchip</dt>
-                <dd class="animal__microchip"></dd>
-              </div>
-            </dl>
-            <p class="animal__vacunas">
-              <span class="vacunas-puntos" aria-hidden="true"><i></i><i></i><i></i></span>
-              <span class="animal__vacunas-texto"></span>
-            </p>
-            <div class="animal__acciones">
-              <a class="btn btn-outline-secondary btn-sm" data-accion="editar" href="ficha.html">
-                Editar
-              </a>
-              <button class="btn btn-outline-danger btn-sm" data-accion="borrar" type="button">
-                Borrar
-              </button>
-            </div>
-          </div>
-        </article>
+        </div>
       </li>
     </template>
 
+    <dialog class="perfil" id="perfil" aria-labelledby="perfil-nombre">
+      <div class="perfil__retrato" id="perfil-retrato">
+        <form method="dialog">
+          <button class="boton-redondo perfil__cerrar" type="submit" aria-label="Cerrar">
+            <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#cerrar"></use></svg>
+          </button>
+        </form>
+        <img class="perfil__foto" id="perfil-foto" alt="" />
+      </div>
+      <div class="perfil__cuerpo">
+        <h2 id="perfil-nombre"></h2>
+        <p class="perfil__subtitulo" id="perfil-subtitulo"></p>
+        <dl class="perfil__datos">
+          <div>
+            <dt>Peso</dt>
+            <dd id="perfil-peso"></dd>
+          </div>
+          <div>
+            <dt>En acogida desde</dt>
+            <dd id="perfil-ingreso"></dd>
+          </div>
+          <div>
+            <dt>Microchip</dt>
+            <dd id="perfil-microchip"></dd>
+          </div>
+          <div>
+            <dt>Esterilización</dt>
+            <dd id="perfil-esterilizacion"></dd>
+          </div>
+        </dl>
+        <h3>Vacunas</h3>
+        <ul class="perfil__vacunas" id="perfil-vacunas"></ul>
+        <a class="btn btn-primary btn-lg w-100" id="perfil-editar" href="ficha.html">
+          Editar la ficha
+        </a>
+      </div>
+    </dialog>
+
     <dialog class="dialogo" id="dialogo-borrar" aria-labelledby="titulo-dialogo">
       <form method="dialog">
-        <h2 id="titulo-dialogo">¿Borrar a <span id="dialogo-nombre"></span>?</h2>
-        <p>Su ficha desaparecerá de tu cuaderno y no se puede recuperar.</p>
+        <img class="dialogo__foto" id="dialogo-foto" alt="" />
+        <h2 id="titulo-dialogo">¿Borrar la ficha de <span id="dialogo-nombre"></span>?</h2>
+        <p>Desaparecerá de tu cuaderno y no se puede recuperar.</p>
         <div class="dialogo__acciones">
-          <button class="btn btn-outline-secondary" value="cancelar" type="submit">Cancelar</button>
-          <button class="btn btn-danger" value="confirmar" type="submit">Sí, borrar</button>
+          <button class="btn btn-outline-secondary" value="cancelar" type="submit" autofocus>
+            Cancelar
+          </button>
+          <button class="btn btn-danger" value="confirmar" type="submit">Borrar la ficha</button>
         </div>
       </form>
     </dialog>
 
     <footer class="pie">
-      <p>Huellas · proyecto de prácticas · todos los datos son inventados</p>
+      <p>
+        Huellas es una aplicación de prácticas. Los animales y sus datos son inventados. Fotos de
+        Unsplash.
+      </p>
     </footer>
 
     <script type="module" src="js/paginas/listado.js"></script>

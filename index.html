@@ -7,87 +7,152 @@
       name="description"
       content="Huellas: el cuaderno de los voluntarios de una protectora de animales."
     />
-    <meta name="theme-color" content="#b94e1f" />
-    <title>Iniciar sesión · Huellas</title>
+    <meta name="theme-color" content="#ffc91f" />
+    <title>Iniciar sesión | Huellas</title>
     <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/estilos.css" />
   </head>
-  <body class="pagina-publica">
-    <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+  <body class="publica">
+    <a class="salto" href="#contenido">Saltar al contenido</a>
+
     <div id="avisos" class="avisos avisos--arriba" role="status" aria-live="polite"></div>
 
-    <div class="acceso">
-      <aside class="acceso__hero">
-        <a class="marca marca--clara" href="index.html">
-          <img class="marca__logo" src="img/huella.svg" alt="" width="34" height="34" />
-          <span class="marca__nombre">Huellas</span>
-        </a>
-        <p class="hero__lema">Cada huella <em>cuenta.</em></p>
-        <p class="hero__texto">
-          El cuaderno de los voluntarios de la protectora: quién está en acogida, qué vacunas lleva
-          y cuándo encuentra un hogar.
+    <div class="escena" id="escena" data-mundo="sol">
+      <section class="escena__mundo" aria-label="Animales de la protectora">
+        <div class="pisadas" id="pisadas" aria-hidden="true"></div>
+
+        <p class="escena__titular" aria-hidden="true">
+          <span>h</span><span>u</span><span>e</span><span>l</span><span>l</span><span>a</span
+          ><span>s</span>
         </p>
-        <ul class="hero__puntos">
-          <li>Lleva el control de tus animales en acogida</li>
-          <li>Anota vacunas y estados en segundos</li>
-          <li>Cada voluntario ve solo lo suyo</li>
-        </ul>
-        <img
-          class="hero__ilustracion"
-          src="img/ilustracion-acogida.svg"
-          alt=""
-          width="400"
-          height="360"
-        />
-      </aside>
 
-      <main id="contenido" class="acceso__panel">
-        <div class="acceso__tarjeta">
-          <p class="sobretitulo">Zona de voluntarios</p>
-          <h1>Te damos la bienvenida</h1>
-          <p class="acceso__intro">Entra para ver a los animales que tienes en acogida.</p>
-
-          <form id="formulario-acceso" novalidate>
-            <div class="mb-3">
-              <label class="form-label" for="usuario">Usuario</label>
-              <input
-                class="form-control"
-                id="usuario"
-                name="usuario"
-                type="text"
-                autocomplete="username"
-                required
-                aria-describedby="error-usuario"
-              />
-              <div class="invalid-feedback" id="error-usuario"></div>
-            </div>
-
-            <div class="mb-4">
-              <label class="form-label" for="clave">Contraseña</label>
-              <input
-                class="form-control"
-                id="clave"
-                name="clave"
-                type="password"
-                autocomplete="current-password"
-                required
-                aria-describedby="error-clave"
-              />
-              <div class="invalid-feedback" id="error-clave"></div>
-            </div>
-
-            <button class="btn btn-primary btn-lg w-100" type="submit">Entrar</button>
-          </form>
-
-          <p class="acceso__cambio">
-            ¿Primera vez por aquí? <a href="registro.html">Crea tu cuenta</a>
-          </p>
-          <p class="acceso__nota">
-            Aplicación de prácticas: todos los datos son inventados y se guardan solo en tu
-            navegador.
-          </p>
+        <div class="escena__animales">
+          <img
+            class="escena__animal activo"
+            data-animal
+            data-mundo="sol"
+            data-pie="Luna lleva 23 días en casa de Ana."
+            src="img/fotos/perro-1.webp"
+            alt=""
+          />
+          <img
+            class="escena__animal"
+            data-animal
+            data-mundo="azul"
+            data-pie="Bimba encontró familia en septiembre."
+            src="img/fotos/perro-6.webp"
+            alt=""
+          />
+          <img
+            class="escena__animal"
+            data-animal
+            data-mundo="sol"
+            data-pie="Tigre ya tiene sus tres vacunas."
+            src="img/fotos/gato-4.webp"
+            alt=""
+          />
+          <img
+            class="escena__animal"
+            data-animal
+            data-mundo="azul"
+            data-pie="Simón busca casa desde octubre."
+            src="img/fotos/gato-5.webp"
+            alt=""
+          />
         </div>
+
+        <div class="escena__pie">
+          <p data-pie-texto>Luna lleva 23 días en casa de Ana.</p>
+        </div>
+      </section>
+
+      <main id="contenido" class="acceso">
+        <div class="huella">
+          <div class="huella__dedos" aria-hidden="true">
+            <span class="huella__dedo"></span>
+            <span class="huella__dedo"></span>
+            <span class="huella__dedo"></span>
+            <span class="huella__dedo"></span>
+          </div>
+
+          <div class="huella__almohadilla">
+            <h1>Alguien te espera en casa</h1>
+            <p class="huella__intro">Entra para ver a los animales que cuidas.</p>
+
+            <form id="formulario-acceso" novalidate>
+              <div class="campo">
+                <div class="campo__caja">
+                  <svg class="campo__icono" aria-hidden="true">
+                    <use href="img/iconos.svg#usuario"></use>
+                  </svg>
+                  <input
+                    class="form-control"
+                    id="usuario"
+                    name="usuario"
+                    type="text"
+                    placeholder=" "
+                    autocomplete="username"
+                    required
+                    aria-describedby="error-usuario"
+                  />
+                  <label class="form-label" for="usuario">Usuario</label>
+                </div>
+                <div class="invalid-feedback" id="error-usuario"></div>
+              </div>
+
+              <div class="campo">
+                <div class="campo__caja">
+                  <svg class="campo__icono" aria-hidden="true">
+                    <use href="img/iconos.svg#candado"></use>
+                  </svg>
+                  <input
+                    class="form-control"
+                    id="clave"
+                    name="clave"
+                    type="password"
+                    placeholder=" "
+                    autocomplete="current-password"
+                    required
+                    aria-describedby="error-clave"
+                  />
+                  <label class="form-label" for="clave">Contraseña</label>
+                  <button
+                    class="campo__ojo"
+                    data-ver-clave
+                    type="button"
+                    aria-label="Mostrar la contraseña"
+                    aria-pressed="false"
+                  >
+                    <svg class="icono icono--ver" aria-hidden="true">
+                      <use href="img/iconos.svg#ojo"></use>
+                    </svg>
+                    <svg class="icono icono--ocultar" aria-hidden="true">
+                      <use href="img/iconos.svg#ojo-tachado"></use>
+                    </svg>
+                  </button>
+                </div>
+                <div class="invalid-feedback" id="error-clave"></div>
+              </div>
+
+              <button class="btn btn-primary boton-accion" type="submit">
+                Entrar
+                <span class="boton-accion__disco">
+                  <svg class="icono" aria-hidden="true">
+                    <use href="img/iconos.svg#huella"></use>
+                  </svg>
+                </span>
+              </button>
+            </form>
+
+            <p class="huella__cambio">
+              ¿Es tu primera vez? <a href="registro.html">Crea tu cuenta</a>
+            </p>
+          </div>
+        </div>
+        <p class="acceso__nota">
+          Aplicación de prácticas. Los datos son inventados y se guardan solo en tu navegador.
+        </p>
       </main>
     </div>
 
