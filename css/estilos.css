@@ -1749,7 +1749,7 @@ input[type='number']::-webkit-inner-spin-button {
   align-items: center;
   gap: 0.6rem;
   max-width: calc(100% - 2rem);
-  padding: 0.3rem 1.1rem 0.3rem 0.3rem;
+  padding: 0.55rem 1.25rem;
   border-radius: 1.8rem;
   background: var(--noche);
   color: var(--blanco);
@@ -1759,15 +1759,6 @@ input[type='number']::-webkit-inner-spin-button {
   margin: 0;
   font-weight: 600;
   line-height: 1.25;
-}
-
-.boton-redondo .icono--reproducir,
-.boton-redondo[aria-pressed='true'] .icono--pausa {
-  display: none;
-}
-
-.boton-redondo[aria-pressed='true'] .icono--reproducir {
-  display: block;
 }
 
 .acceso {
