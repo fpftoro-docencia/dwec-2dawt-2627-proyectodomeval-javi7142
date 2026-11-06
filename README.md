@@ -193,7 +193,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | 1 | Cumple el «Hecho cuando» de su tarjeta | Se prueba a mano en el navegador o en la terminal, y se tacha la tarjeta solo después |
 | 2 | El código vive en una rama propia y llega a `main` por una *pull request* fusionada con *merge* | La pestaña de la *pull request* en GitHub: rama, fusión y rama conservada |
 | 3 | `npm run lint` y `npm run format:check` terminan sin errores | Se ejecutan en el contenedor y no sale ningún aviso |
-| 4 | Si la tarea tiene lógica, tiene sus tests y `npm test` pasa | Un test unitario para la lógica pura y los datos, y uno de integración para una página; la salida de `npm test` está en verde |
+| 4 | Si la tarea tiene lógica, sus tests están en esa tarea o en la tarjeta de tests que la cubre, y `npm test` pasa | Un test unitario para la lógica pura y los datos, y uno de integración para una página; la salida de `npm test` está en verde. Si los tests tienen tarjeta propia (S1-16, S1-17 y S2-22 a S2-25), la tarea se comprueba a mano y sus tests llegan con esa tarjeta |
 | 5 | Desde el sprint 2: `npm run coverage` supera el umbral y, si la tarea toca un recorrido, `npm run e2e` pasa | La salida de ambas órdenes, sin fallos |
 | 6 | Desde que existe el *workflow* (tarjeta S1-18): sus trabajos están en verde en la *pull request* antes de fusionar | La pestaña **Checks** de la *pull request* |
 | 7 | No quedan `console.log`, código comentado, `TODO` sueltos, `var`, `==` ni variables globales | `npm run lint` y una búsqueda de `console.log` y `TODO` en el código |
@@ -203,7 +203,9 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | 11 | Si la tarea añade o cambia algo explicado en el README, el JSDoc o la tabla de oyentes, ya está actualizado | Se compara el código de la *pull request* con la sección correspondiente |
 | 12 | Se puede explicar: qué hace cada línea y qué pasaría si se cambiara | Se cuenta en voz alta antes de fusionar, como en la exposición |
 
-**Cambios en la definición:** ninguno todavía. Si se modifica en un sprint, se anotará aquí qué cambió y por qué.
+**Cambios en la definición:** si se modifica en un sprint, se anota aquí qué cambió y por qué.
+
+- **Sprint 1, 6 de noviembre:** la condición 4 admite que los tests lleguen en su tarjeta propia. El tablero separa los módulos de sus tests (S1-16, S1-17 y S2-22 a S2-25) y la condición pedía lo contrario, así que una tarjeta de módulo no podía cerrarse.
 
 ### Sprints
 
@@ -234,6 +236,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `definicion-de-hecho` | Definición de Hecho del README | [#5](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/5) |
 | `paginas-base` | Las cinco páginas HTML, `css/estilos.css`, las fotos y los SVG de la marca | [#6](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/6) |
 | `limpieza-repositorio` | Deja el repositorio a la par de lo hecho: quita los módulos vacíos que aún no tocan, sus scripts y los estilos del botón de pausa | [#9](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/9) |
+| `definicion-de-hecho-tests` | Ajusta la condición 4 de la Definición de Hecho a las tarjetas de tests | [#10](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/10) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
