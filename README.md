@@ -36,6 +36,7 @@ La entidad es el **animal** que el voluntario tiene en acogida. Este es el dise�
 | Fecha de ingreso | Fecha | Sí | No posterior a hoy (el `max` lo pone el código) | «La fecha de ingreso no puede ser futura» |
 | Peso (kg) | Número | Sí | Entre 0,1 y 100 | «El peso debe estar entre 0,1 y 100 kg» |
 | Microchip | Texto | Sí | Expresión regular `^\d{15}$` | «El microchip tiene 15 dígitos» |
+| Foto | Galería de botones de opción con fotos | Sí | Una de las fotos de su especie; la galería se activa al elegir la especie | «Elige una foto» |
 | Estado | Botones de opción | Sí | En acogida, disponible o adoptado | «Elige el estado» |
 | Esterilizado | Casilla | No | — | — |
 | **Fecha de esterilización** (campo condicional) | Fecha | Solo si está esterilizado | No futura y no anterior al ingreso | «La esterilización no puede ser futura ni anterior al ingreso» |
@@ -46,6 +47,8 @@ La entidad es el **animal** que el voluntario tiene en acogida. Este es el dise�
 | **Vacunas** (grupo dinámico, de **0 a 3**): fecha | Fecha | Sí, en cada vacuna | No futura y no anterior al ingreso | «La fecha de la vacuna no puede ser futura ni anterior al ingreso» |
 
 Los campos en negrita son el **campo condicional** y el **grupo dinámico** que pide el enunciado. Los cuatro validadores con expresión regular (nombre, microchip, DNI y teléfono) son propios del tema, y el del DNI comprueba además con código la letra de control.
+
+Las fotos de los animales son recortes de imágenes de Unsplash (licencia gratuita); sus autores están en [img/fotos/CREDITOS.md](img/fotos/CREDITOS.md). Los animales y sus datos son inventados.
 
 ### El registro de usuarios
 
@@ -229,7 +232,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `package-lock` | `package-lock.json` y saltos de línea LF con `.gitattributes` | [#3](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/3) |
 | `mi-proyecto` | Sección «Mi proyecto» del README | [#4](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/4) |
 | `definicion-de-hecho` | Definición de Hecho del README | [#5](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/5) |
-| `paginas-base` | Las cinco páginas HTML, `css/estilos.css` y los SVG de la marca | <!-- enlace --> |
+| `paginas-base` | Las cinco páginas HTML, `css/estilos.css`, las fotos y los SVG de la marca | [#6](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/6) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
