@@ -243,6 +243,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `validadores-registro` | `js/logica/validadores.js`: usuario, correo y requisitos de la contraseña | [#14](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/14) |
 | `avisos` | `js/componentes/avisos.js`: evento propio `aviso`, un único oyente y avisos para la página siguiente | [#15](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/15) |
 | `registro-requisitos` | Registro: requisitos de la contraseña en vivo y error con un nombre ocupado | [#16](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/16) |
+| `ver-clave` | Botón del ojo para ver u ocultar la contraseña | [#17](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/17) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
