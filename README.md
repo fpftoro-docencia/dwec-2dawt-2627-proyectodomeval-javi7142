@@ -295,6 +295,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `tests-usuarios-sesion` | Tests unitarios de los módulos de sesión y de usuarios | [#23](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/23) |
 | `tests-validadores` | Tests unitarios de los validadores del registro con `it.each` | [#24](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/24) |
 | `workflow-ci` | Workflow de integración continua, paso 1: trabajos `Calidad` y `Tests` | [#25](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/25) |
+| `blog-sprint-1` | Entrada del sprint 1 en el blog | [#26](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/26) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
