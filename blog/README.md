@@ -28,7 +28,7 @@ La regla estaba bien escrita, pero no ganaba. La que dibuja la huella era `.camp
 
 Así no compiten dos reglas por la misma propiedad: la posición la decide la caja según lo que lleva dentro (ojo, desplegable o calendario). Además, la huella ahora aparece, se queda un momento y se va, en lugar de quedarse fija para siempre.
 
-**Un clic de más creaba dos usuarios.** Al probar el registro pulsando «Crear mi cuenta» varias veces muy rápido, se podían colar dos altas. El motivo es que `resumirClave` devuelve una promesa: mientras el navegador calcula el resumen de la contraseña, la página sigue respondiendo y cada clic lanza otro `submit`. Desactivar el botón ayuda, pero no tapa todo (también se puede enviar con Intro), así que en `js/paginas/registro.js` uso una variable que corta cualquier envío mientras hay uno en marcha:
+**Que varios clics rápidos no creen dos usuarios.** El enunciado pide que, si pulsas «Crear mi cuenta» muchas veces seguidas, solo se cree un usuario. Al principio no veía cómo podía colarse un segundo, si el código va en orden. El motivo es que `resumirClave` devuelve una promesa: mientras el navegador calcula el resumen de la contraseña, la página sigue respondiendo y cada clic lanza otro `submit`, que empieza su propio registro antes de que el primero termine. Desactivar el botón ayuda, pero no lo tapa todo (también se puede enviar con Intro), así que en `js/paginas/registro.js` uso una variable que corta cualquier envío mientras hay uno en marcha:
 
 ```js
 if (enviando) {
