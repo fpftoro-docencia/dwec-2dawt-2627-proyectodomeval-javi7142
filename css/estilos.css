@@ -431,30 +431,60 @@ input[type='number']::-webkit-inner-spin-button {
   scale: 0.78;
 }
 
-/* Cada campo bien rellenado deja su huella al salir de él */
+/* Cada campo bien rellenado deja su huella al salir de él: se estampa, se queda un momento y se va.
+   La distancia al borde es una variable para dejar sitio al ojo, a la flecha o al calendario. */
+.campo__caja {
+  --huella-derecha: 0.9rem;
+}
+
+.campo__caja:has(.campo__ojo) {
+  --huella-derecha: 3.4rem;
+}
+
+.campo__caja:has(.form-select),
+.campo__caja:has(input[type='date']) {
+  --huella-derecha: 2.6rem;
+}
+
 .campo__caja:has(.form-control:user-valid:not(:placeholder-shown))::after,
 .campo__caja:has(.form-select:user-valid)::after {
   content: '';
   position: absolute;
   top: 50%;
-  right: 0.9rem;
+  right: var(--huella-derecha);
   width: 1.15rem;
   height: 1.15rem;
   margin-top: -0.575rem;
   background: var(--azul);
   -webkit-mask: url('../img/huella.svg') center / contain no-repeat;
   mask: url('../img/huella.svg') center / contain no-repeat;
-  animation: estampar var(--lento) var(--al-entrar);
+  opacity: 0;
+  animation: huella-pasajera 1600ms var(--al-entrar);
   pointer-events: none;
 }
 
-.campo__caja:has(.campo__ojo)::after {
-  right: 3.4rem;
-}
+@keyframes huella-pasajera {
+  0% {
+    opacity: 0;
+    scale: 1.8;
+  }
 
-.campo__caja:has(.form-select)::after,
-.campo__caja:has(input[type='date'])::after {
-  right: 2.6rem;
+  15% {
+    opacity: 1;
+    scale: 0.95;
+  }
+
+  25% {
+    scale: 1;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 .campo__ojo {
