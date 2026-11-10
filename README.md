@@ -257,11 +257,11 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 
 | Sprint | *Tag* | Qué incluye | Reflexión |
 |--------|-------|-------------|-----------|
-| 1 | `v0.1` | | |
+| 1 | `v0.1` | Las cinco páginas con su diseño; registro con requisitos de la contraseña en vivo; inicio de sesión; roles (el primero es administrador); cabecera común; protección de las páginas por sesión y por rol; cierre de sesión; avisos con evento propio; cuatro reglas de ESLint; 91 tests unitarios; *workflow* con `Calidad` y `Tests` | Salió bien trabajar por tarjetas pequeñas, cada una en su rama y su *pull request*, y que los módulos reciban el almacenamiento y la navegación como parámetros: así los tests con `AlmacenFalso` fueron directos. Salió mal adelantarme: rehíce el diseño con una versión que ya funcionaba entera y tuve que quitar el código que no tocaba todavía (PR 7 a 9). Al revisar la Definición de Hecho vi que la condición 4 chocaba con las tarjetas de tests y la cambié. Para el sprint 2: una tarjeta cada vez, comprobar en el navegador antes de cada *pull request* y no fusionar sin el *workflow* en verde |
 | 2 | `v0.2` | | |
 | 3 | `v1.0` | | |
 
-**Tablero de Trello:** <!-- enlace (compartido con el profesor) -->
+**Tablero de Trello:** <https://trello.com/b/P3FzyJnK/huellas-proyecto-dom-protectora-de-animales>
 
 **Blog del proyecto:** [blog/README.md](blog/README.md) <!-- dificultades y problemas conceptuales de cada sprint -->
 
@@ -296,6 +296,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `tests-validadores` | Tests unitarios de los validadores del registro con `it.each` | [#24](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/24) |
 | `workflow-ci` | Workflow de integración continua, paso 1: trabajos `Calidad` y `Tests` | [#25](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/25) |
 | `blog-sprint-1` | Entrada del sprint 1 en el blog | [#26](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/26) |
+| `cierre-sprint-1` | Reflexión del sprint 1 y enlace al tablero | [#27](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/27) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
