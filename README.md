@@ -146,9 +146,41 @@ Las reglas de formato están en `js/logica/validadores.js`: cada validador devue
 
 ### ESLint y Prettier
 
-<!-- Sprint 1. Las reglas que has añadido a eslint.config.js (al menos tres): qué comprueba cada una
-     y por qué la quieres. Pega la salida de `npm run lint` y de `npm run format:check`. Cuenta un
-     problema real que encontraras con el depurador de las DevTools y cómo lo resolviste. -->
+Además de las reglas recomendadas y de `no-var`, `prefer-const` y `eqeqeq`, que ya traía el punto de partida, `eslint.config.js` añade estas cuatro:
+
+| Regla | Qué comprueba | Por qué la quiero |
+|-------|---------------|-------------------|
+| `camelcase` (con `properties: 'never'`) | Que las variables y funciones se llamen en *camelCase*: `leerSesion`, no `leer_sesion` | Todo el proyecto nombra así y un nombre distinto despista al leer. Las propiedades quedan fuera porque algunas vienen de fuera, como las claves que guarda el navegador |
+| `curly` (con `multi-line`) | Que un `if`, `else`, `for` o `while` que ocupe más de una línea lleve llaves | Sin llaves, añadir una segunda línea a un `if` la deja fuera de él sin que se note. En una sola línea se permite, como en `tests/integracion/ejemplo.test.js` |
+| `no-param-reassign` | Que no se asigne otro valor a un parámetro (`valor = valor.trim()`) | Los módulos reciben el almacenamiento, la sesión o la navegación como parámetros: si una función los cambiara, quien la llama dejaría de saber con qué trabaja. Se usa una variable nueva (`const usuario = valor.trim()`) |
+| `no-else-return` | Que no haya un `else` después de un `if` que ya termina en `return` | El `else` sobra: el código queda más plano y se lee de arriba abajo, con los casos que salen antes, como en `iniciarAcceso` |
+
+No se usa `no-console`: fallaría en `scripts/construir.js`, que escribe en la terminal y no se modifica.
+
+Para comprobar que funcionan, un fichero con un fallo de cada una da cuatro errores:
+
+```text
+  2:17  error  Identifier 'con_guion_bajo' is not in camel case  camelcase
+  3:3   error  Assignment to function parameter 'valor'          no-param-reassign
+  5:5   error  Expected { after 'if' condition                   curly
+  8:10  error  Unnecessary 'else' after 'return'                 no-else-return
+✖ 4 problems (4 errors, 0 warnings)
+```
+
+Con el código del proyecto, las dos órdenes terminan sin errores:
+
+```text
+$ npm run lint
+> eslint .
+
+$ npm run format:check
+> prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+```
+
+<!-- Pendiente: un problema real que encontraras con el depurador de las DevTools y cómo lo
+     resolviste, contado por ti. -->
 
 ### El workflow
 
@@ -248,6 +280,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `registro-alta` | Registro: alta, sesión iniciada, aviso y paso al listado, sin doble envío | [#19](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/19) |
 | `inicio-sesion` | Inicio de sesión: entrar, contraseña incorrecta y redirección si ya hay sesión | [#20](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/20) |
 | `proteger-paginas` | Protección de las páginas privadas por sesión y por rol, y «Cerrar sesión» | [#21](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/21) |
+| `reglas-eslint` | Cuatro reglas de ESLint propias, explicadas en el README | [#22](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/22) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
