@@ -2974,7 +2974,14 @@ input[type='number']::-webkit-inner-spin-button {
 
 /* 15. Movimiento: entrada de cada página, cambios del listado y scroll
    -------------------------------------------------------------------------- */
-.privada main {
+/* Las páginas privadas no se ven hasta que su JS comprueba la sesión y marca el body. Sin esta
+   regla, al entrar sin sesión se veía la página un momento antes de volver a index.html */
+.privada:not([data-sesion-comprobada]) {
+  visibility: hidden;
+}
+
+/* La entrada empieza al quitarse la ocultación, no mientras la página sigue invisible */
+.privada[data-sesion-comprobada] main {
   animation: pagina-entra var(--lento) var(--al-entrar) backwards;
 }
 
