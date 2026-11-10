@@ -247,6 +247,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `huella-campo-valido` | La huella de los campos válidos aparece y se va, y deja sitio al ojo | [#18](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/18) |
 | `registro-alta` | Registro: alta, sesión iniciada, aviso y paso al listado, sin doble envío | [#19](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/19) |
 | `inicio-sesion` | Inicio de sesión: entrar, contraseña incorrecta y redirección si ya hay sesión | [#20](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/20) |
+| `proteger-paginas` | Protección de las páginas privadas por sesión y por rol, y «Cerrar sesión» | [#21](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/21) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
