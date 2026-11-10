@@ -8,6 +8,8 @@ const sesion = leerSesion(sessionStorage);
 const navegar = (pagina) => location.replace(pagina);
 
 if (protegerPagina(sesion, { almacenSesion: sessionStorage, navegar })) {
+  // Puede quedarse: con esta marca el CSS deja ver la página, que hasta ahora estaba oculta
+  document.body.dataset.sesionComprobada = '';
   iniciarAvisos(document, sessionStorage);
   iniciarCabecera(document.querySelector('.cabecera'), sesion);
   iniciarCierreSesion(document.querySelector('#cerrar-sesion'), {

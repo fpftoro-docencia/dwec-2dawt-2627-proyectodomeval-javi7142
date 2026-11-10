@@ -297,6 +297,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `workflow-ci` | Workflow de integración continua, paso 1: trabajos `Calidad` y `Tests` | [#25](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/25) |
 | `blog-sprint-1` | Entrada del sprint 1 en el blog | [#26](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/26) |
 | `cierre-sprint-1` | Reflexión del sprint 1 y enlace al tablero | [#27](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/27) |
+| `paginas-privadas-sin-parpadeo` | Las páginas privadas no se ven antes de redirigir sin sesión | [#28](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/28) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
