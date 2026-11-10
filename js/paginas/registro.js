@@ -10,6 +10,7 @@
 import { iniciarAvisos } from '../componentes/avisos.js';
 import { iniciarEscena } from '../componentes/escena.js';
 import { iniciarPisadas } from '../componentes/pisadas.js';
+import { iniciarVerClave } from '../componentes/ver-clave.js';
 import { existeUsuario } from '../datos/usuarios.js';
 import { requisitosClave } from '../logica/validadores.js';
 
@@ -74,4 +75,5 @@ export function iniciarRegistro(documento, { almacenUsuarios }) {
 iniciarAvisos(document, sessionStorage);
 iniciarEscena(document.querySelector('#escena'));
 iniciarPisadas(document.querySelector('#pisadas'));
+iniciarVerClave(document.querySelector('#formulario-registro'));
 iniciarRegistro(document, { almacenUsuarios: localStorage });
