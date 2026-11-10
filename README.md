@@ -241,6 +241,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `cabecera` | Cabecera común de las páginas privadas y sus módulos de página | [#12](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/12) |
 | `modulo-usuarios` | `js/datos/usuarios.js`: alta con rol, nombres repetidos y comprobación de la contraseña | [#13](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/13) |
 | `validadores-registro` | `js/logica/validadores.js`: usuario, correo y requisitos de la contraseña | [#14](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/14) |
+| `avisos` | `js/componentes/avisos.js`: evento propio `aviso`, un único oyente y avisos para la página siguiente | [#15](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/15) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
