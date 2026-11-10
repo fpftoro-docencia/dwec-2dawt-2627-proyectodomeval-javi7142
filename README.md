@@ -52,13 +52,13 @@ Las fotos de los animales son recortes de imágenes de Unsplash (licencia gratui
 
 ### El registro de usuarios
 
-Las reglas de usuario y correo son una primera propuesta que se confirma al escribir los validadores.
+Las reglas de formato están en `js/logica/validadores.js`: cada validador devuelve el mensaje de error, o nada si el valor es válido. Un campo vacío lo controla el atributo `required`.
 
 | Campo | Control | Regla | Mensaje |
 |-------|---------|-------|---------|
-| Usuario | Texto | Expresión regular `^\p{L}[\p{L}\d_.-]{2,19}$` con la bandera `u`, y que no esté ocupado | «El usuario empieza por una letra y tiene de 3 a 20 caracteres» / «Ese usuario ya existe» |
-| Correo | Correo | Expresión regular `^[^\s@]+@[^\s@]+\.[^\s@]+$` | «Escribe un correo válido» |
-| Contraseña | Contraseña | Al menos 8 caracteres, una minúscula `\p{Ll}`, una mayúscula `\p{Lu}` y una cifra `\d`. Los requisitos se marcan mientras se escribe | «La contraseña no cumple todos los requisitos» |
+| Usuario | Texto | Expresión regular `^\p{L}[\p{L}\d_.-]{2,19}$` con la bandera `u`, y que no esté ocupado | «El usuario empieza por una letra y tiene de 3 a 20 caracteres: letras, cifras, puntos o guiones.» / «Ese usuario ya existe» |
+| Correo | Correo | Expresión regular `^[^\s@]+@[^\s@]+\.[^\s@]+$` | «Escribe un correo como nombre@ejemplo.org.» |
+| Contraseña | Contraseña | Al menos 8 caracteres, una minúscula `\p{Ll}`, una mayúscula `\p{Lu}` y una cifra `\d`. Los requisitos se marcan mientras se escribe | «La contraseña necesita 8 caracteres o más, una minúscula, una mayúscula y una cifra.» |
 | Repetir contraseña | Contraseña | Igual que la contraseña | «Las contraseñas no coinciden» |
 | Aceptación | Casilla | Marcada | «Debes aceptar las condiciones» |
 
@@ -240,6 +240,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `modulo-sesion` | `js/datos/sesion.js`: guardar, leer y borrar la sesión (usuario y rol) | [#11](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/11) |
 | `cabecera` | Cabecera común de las páginas privadas y sus módulos de página | [#12](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/12) |
 | `modulo-usuarios` | `js/datos/usuarios.js`: alta con rol, nombres repetidos y comprobación de la contraseña | [#13](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/13) |
+| `validadores-registro` | `js/logica/validadores.js`: usuario, correo y requisitos de la contraseña | [#14](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/14) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
