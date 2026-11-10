@@ -237,6 +237,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `paginas-base` | Las cinco páginas HTML, `css/estilos.css`, las fotos y los SVG de la marca | [#6](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/6) |
 | `limpieza-repositorio` | Deja el repositorio a la par de lo hecho: quita los módulos vacíos que aún no tocan, sus scripts y los estilos del botón de pausa | [#9](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/9) |
 | `definicion-de-hecho-tests` | Ajusta la condición 4 de la Definición de Hecho a las tarjetas de tests | [#10](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/10) |
+| `modulo-sesion` | `js/datos/sesion.js`: guardar, leer y borrar la sesión (usuario y rol) | [#11](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/11) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
