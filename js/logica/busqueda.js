@@ -64,3 +64,28 @@ export function filtrarPorTexto(lista, texto, campos) {
     }),
   );
 }
+
+/**
+ * Crea una versión «con espera» de una función: la nueva función no llama a la original enseguida,
+ * sino cuando han pasado `espera` milisegundos sin que se la vuelva a llamar. Si se la llama otra
+ * vez antes, la cuenta empieza de nuevo. Así el buscador filtra cuando se deja de escribir, y no con
+ * cada tecla.
+ *
+ * La original recibe los argumentos de la última llamada. Funciona con `setTimeout` y
+ * `clearTimeout`, sin librerías, y no toca el DOM.
+ * @param {Function} funcion La función que se llama al terminar la espera.
+ * @param {number} espera Los milisegundos que tienen que pasar sin llamadas nuevas.
+ * @returns {Function} La función con espera. Recibe los mismos argumentos que `funcion`.
+ * @example
+ * const buscar = debounce((texto) => filtrar(texto), 300);
+ * buscar('s');
+ * buscar('si');
+ * buscar('simon'); // 300 ms después, se llama una sola vez a filtrar('simon')
+ */
+export function debounce(funcion, espera) {
+  let temporizador;
+  return (...argumentos) => {
+    clearTimeout(temporizador);
+    temporizador = setTimeout(() => funcion(...argumentos), espera);
+  };
+}
