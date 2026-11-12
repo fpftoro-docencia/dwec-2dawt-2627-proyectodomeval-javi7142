@@ -6,6 +6,9 @@ import {
   validadores,
   validarClave,
   validarCorreo,
+  validarMicrochip,
+  validarNombre,
+  validarTelefono,
   validarUsuario,
 } from '../../js/logica/validadores.js';
 
@@ -96,6 +99,9 @@ describe('validadores', () => {
       usuario: validarUsuario,
       correo: validarCorreo,
       clave: validarClave,
+      nombre: validarNombre,
+      microchip: validarMicrochip,
+      telefono: validarTelefono,
     });
   });
 

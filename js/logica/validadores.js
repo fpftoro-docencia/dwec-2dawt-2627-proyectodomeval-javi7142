@@ -18,6 +18,15 @@ const USUARIO = /^\p{L}[\p{L}\d_.-]{2,19}$/u;
 /** Correo: algo, una arroba, algo, un punto y algo, sin espacios ni más arrobas. */
 const CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/** Nombre: empieza por una letra y sigue con 1 a 29 letras, espacios, apóstrofos o guiones. */
+const NOMBRE = /^\p{L}[\p{L} '-]{1,29}$/u;
+
+/** Microchip: exactamente 15 dígitos. */
+const MICROCHIP = /^\d{15}$/;
+
+/** Teléfono: 9 cifras, empezando por 6, 7 o 9. */
+const TELEFONO = /^[679]\d{8}$/;
+
 /** Los cuatro requisitos de la contraseña, cada uno con su expresión regular. */
 const REQUISITOS_CLAVE = Object.freeze({
   longitud: /^.{8,}$/u,
@@ -87,6 +96,55 @@ export function validarClave(valor) {
 }
 
 /**
+ * Valida un nombre: el del animal y el del adoptante. Los espacios del principio y del final no
+ * cuentan.
+ * @param {string} valor
+ * @returns {string} El mensaje de error, o `''` si es válido.
+ * @example
+ * validarNombre("Toñi d'Ávila"); // ''
+ * validarNombre('L'); // 'El nombre empieza por una letra…'
+ */
+export function validarNombre(valor) {
+  const nombre = valor.trim();
+  if (nombre === '' || NOMBRE.test(nombre)) {
+    return '';
+  }
+  return 'El nombre empieza por una letra y tiene de 2 a 30 caracteres: letras, espacios, apóstrofos o guiones.';
+}
+
+/**
+ * Valida el microchip del animal. Los espacios del principio y del final no cuentan.
+ * @param {string} valor
+ * @returns {string} El mensaje de error, o `''` si es válido.
+ * @example
+ * validarMicrochip('941000024680135'); // ''
+ * validarMicrochip('94100002468013'); // 'El microchip tiene 15 dígitos.'
+ */
+export function validarMicrochip(valor) {
+  const microchip = valor.trim();
+  if (microchip === '' || MICROCHIP.test(microchip)) {
+    return '';
+  }
+  return 'El microchip tiene 15 dígitos.';
+}
+
+/**
+ * Valida el teléfono del adoptante. Los espacios del principio y del final no cuentan.
+ * @param {string} valor
+ * @returns {string} El mensaje de error, o `''` si es válido.
+ * @example
+ * validarTelefono('612345678'); // ''
+ * validarTelefono('812345678'); // 'El teléfono tiene 9 cifras y empieza por 6, 7 o 9.'
+ */
+export function validarTelefono(valor) {
+  const telefono = valor.trim();
+  if (telefono === '' || TELEFONO.test(telefono)) {
+    return '';
+  }
+  return 'El teléfono tiene 9 cifras y empieza por 6, 7 o 9.';
+}
+
+/**
  * Los validadores de formato, por el nombre que lleva el campo en `data-validar`.
  * @type {Object<string, function(string): string>}
  */
@@ -94,4 +152,7 @@ export const validadores = Object.freeze({
   usuario: validarUsuario,
   correo: validarCorreo,
   clave: validarClave,
+  nombre: validarNombre,
+  microchip: validarMicrochip,
+  telefono: validarTelefono,
 });
