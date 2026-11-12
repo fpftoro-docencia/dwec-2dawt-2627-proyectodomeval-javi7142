@@ -24,6 +24,9 @@ const NOMBRE = /^\p{L}[\p{L} '-]{1,29}$/u;
 /** Microchip: exactamente 15 dígitos. */
 const MICROCHIP = /^\d{15}$/;
 
+/** Teléfono: 9 cifras, empezando por 6, 7 o 9. */
+const TELEFONO = /^[679]\d{8}$/;
+
 /** Los cuatro requisitos de la contraseña, cada uno con su expresión regular. */
 const REQUISITOS_CLAVE = Object.freeze({
   longitud: /^.{8,}$/u,
@@ -123,6 +126,22 @@ export function validarMicrochip(valor) {
     return '';
   }
   return 'El microchip tiene 15 dígitos';
+}
+
+/**
+ * Valida el teléfono del adoptante. Los espacios del principio y del final no cuentan.
+ * @param {string} valor
+ * @returns {string} El mensaje de error, o `''` si es válido.
+ * @example
+ * validarTelefono('612345678'); // ''
+ * validarTelefono('812345678'); // 'El teléfono tiene 9 cifras y empieza por 6, 7 o 9'
+ */
+export function validarTelefono(valor) {
+  const telefono = valor.trim();
+  if (telefono === '' || TELEFONO.test(telefono)) {
+    return '';
+  }
+  return 'El teléfono tiene 9 cifras y empieza por 6, 7 o 9';
 }
 
 /**
