@@ -21,6 +21,9 @@ const CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Nombre: empieza por una letra y sigue con 1 a 29 letras, espacios, apóstrofos o guiones. */
 const NOMBRE = /^\p{L}[\p{L} '-]{1,29}$/u;
 
+/** Microchip: exactamente 15 dígitos. */
+const MICROCHIP = /^\d{15}$/;
+
 /** Los cuatro requisitos de la contraseña, cada uno con su expresión regular. */
 const REQUISITOS_CLAVE = Object.freeze({
   longitud: /^.{8,}$/u,
@@ -104,6 +107,22 @@ export function validarNombre(valor) {
     return '';
   }
   return 'El nombre empieza por una letra y tiene de 2 a 30 caracteres: letras, espacios, apóstrofos o guiones';
+}
+
+/**
+ * Valida el microchip del animal. Los espacios del principio y del final no cuentan.
+ * @param {string} valor
+ * @returns {string} El mensaje de error, o `''` si es válido.
+ * @example
+ * validarMicrochip('941000024680135'); // ''
+ * validarMicrochip('94100002468013'); // 'El microchip tiene 15 dígitos'
+ */
+export function validarMicrochip(valor) {
+  const microchip = valor.trim();
+  if (microchip === '' || MICROCHIP.test(microchip)) {
+    return '';
+  }
+  return 'El microchip tiene 15 dígitos';
 }
 
 /**
