@@ -109,7 +109,7 @@ export function validarNombre(valor) {
   if (nombre === '' || NOMBRE.test(nombre)) {
     return '';
   }
-  return 'El nombre empieza por una letra y tiene de 2 a 30 caracteres: letras, espacios, apóstrofos o guiones';
+  return 'El nombre empieza por una letra y tiene de 2 a 30 caracteres: letras, espacios, apóstrofos o guiones.';
 }
 
 /**
@@ -118,14 +118,14 @@ export function validarNombre(valor) {
  * @returns {string} El mensaje de error, o `''` si es válido.
  * @example
  * validarMicrochip('941000024680135'); // ''
- * validarMicrochip('94100002468013'); // 'El microchip tiene 15 dígitos'
+ * validarMicrochip('94100002468013'); // 'El microchip tiene 15 dígitos.'
  */
 export function validarMicrochip(valor) {
   const microchip = valor.trim();
   if (microchip === '' || MICROCHIP.test(microchip)) {
     return '';
   }
-  return 'El microchip tiene 15 dígitos';
+  return 'El microchip tiene 15 dígitos.';
 }
 
 /**
@@ -134,14 +134,14 @@ export function validarMicrochip(valor) {
  * @returns {string} El mensaje de error, o `''` si es válido.
  * @example
  * validarTelefono('612345678'); // ''
- * validarTelefono('812345678'); // 'El teléfono tiene 9 cifras y empieza por 6, 7 o 9'
+ * validarTelefono('812345678'); // 'El teléfono tiene 9 cifras y empieza por 6, 7 o 9.'
  */
 export function validarTelefono(valor) {
   const telefono = valor.trim();
   if (telefono === '' || TELEFONO.test(telefono)) {
     return '';
   }
-  return 'El teléfono tiene 9 cifras y empieza por 6, 7 o 9';
+  return 'El teléfono tiene 9 cifras y empieza por 6, 7 o 9.';
 }
 
 /**
