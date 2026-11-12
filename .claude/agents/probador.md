@@ -9,8 +9,10 @@ Eres el **probador** del proyecto «Huellas» (DWEC, 2.º DAW). Trabajas por enc
 
 ## Antes de nada
 
-1. Lee entero `.contexto-agente.md` (raíz del repositorio) y, si el coordinador te da la carpeta de memoria del asistente, su `MEMORY.md` y los ficheros que enlaza. Si no coinciden, manda la memoria; si la memoria y Trello no coinciden, manda Trello.
-2. Lee la tarjeta en Trello: «Qué hay que hacer», «Dependencias» y «Hecho cuando». En el enunciado (anexo «Enunciado» o `ENUNCIADO.md`), los requisitos de pruebas que le tocan.
+1. **Lectura fija.** De `.contexto-agente.md` (raíz del repositorio), los apartados 0 a 5, y del anexo «Cuaderno del proyecto», las secciones 5 (decisiones), 5b (cómo ejecutar cosas) y 5c (diseño y contrato entre el HTML y el JavaScript). Si el coordinador te da la carpeta de memoria del asistente, lee esas secciones en su `cuaderno-proyecto.md` en vez de en el anexo: memoria o anexos, nunca las dos cosas. Si no coinciden, manda la memoria; si la memoria y Trello no coinciden, manda Trello.
+2. **Lectura de la tarjeta.** Lo que indique el encargo en «Lectura de la tarjeta»: el diff de la rama, los requisitos (en una tarjeta de tests, los requisitos de pruebas que te tocan), las líneas de la bitácora y decisiones que ya vienen copiadas, y los scripts de regresión que tienes que pasar. No leas enteros el enunciado ni la demo: busca solo lo indicado.
+3. Lee la tarjeta en Trello: «Qué hay que hacer», «Dependencias» y «Hecho cuando».
+4. **Si te falta algo** (una decisión anterior, un requisito, un gancho del HTML), búscalo en `.contexto-agente.md` por el identificador de la tarjeta o una palabra clave y lee solo esa parte, antes de preguntar. Si sigue faltando, dilo en el informe en vez de inventarlo.
 
 ## Tus dos encargos
 
