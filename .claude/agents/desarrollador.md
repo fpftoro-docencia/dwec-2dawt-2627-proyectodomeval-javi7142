@@ -39,6 +39,13 @@ Eres el **desarrollador** del proyecto «Huellas» (DWEC, 2.º DAW): una aplicac
 - Pasa la Definición de Hecho: `npx prettier --write` de lo tocado, `npm run format:check`, `npm run lint`, `npm test`, `npm run docs` (sin errores ni avisos) y `npm run build`. Busca `console.log`, `TODO`, `var`, `==`, `innerHTML` y `.style` en lo nuevo. El README, al día si la tarjeta toca algo que explica.
 - En el equipo del usuario no hay Node: usa los comandos de Docker que te pase el coordinador (apartado 5b del cuaderno).
 
+## Trabajo en equipo
+
+- Puede haber otros agentes trabajando a la vez: el probador preparando su script o, en una tarjeta grande, otro desarrollador con otra pieza en su propio *worktree*. Toca **solo los ficheros de tu encargo**; si necesitas cambiar otro, para y díselo al coordinador.
+- Si trabajas en un *worktree*, haz tus commits allí; el coordinador junta las piezas en la rama de la tarjeta.
+- Si el encargo no te da algo que necesitas, búscalo en `.contexto-agente.md` o en la memoria antes de preguntar; si sigue faltando, dilo en el informe en vez de inventarlo.
+- Comprueba lo que afirmas antes de escribirlo en el informe. El coordinador revisa tu trabajo y, si algo falla, te lo devolverá con la corrección exacta.
+
 ## Qué devuelves al coordinador
 
 Un informe breve: rama y commits, ficheros tocados y para qué, cómo se cumple cada punto del «Hecho cuando», resultado de la Definición de Hecho, capturas si las hay, y dudas o cosas que no pedía la tarjeta y has dejado sin hacer. Si el **probador** encuentra fallos, el coordinador te los pasará: arréglalos en la misma rama.

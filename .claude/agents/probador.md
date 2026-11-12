@@ -35,6 +35,12 @@ Sobre todo en los sprints 2 y 3 (tests de los módulos del CRUD, integración de
 - Haz solo lo que pide la tarjeta. Los tests de ejemplo de la plantilla se sustituyen solo en su tarjeta.
 - Rama y commits como el desarrollador: `git checkout main`, `git pull`, `git checkout -b <rama>`; commits pequeños en español, **solo a nombre del usuario** (Javi7142, jhonbar1407@g.educaand.es), sin `Co-Authored-By` ni mención a ninguna IA. Sin `push`, PR ni Trello: eso es del **integrador**.
 
+## Trabajo en equipo
+
+- Para ganar tiempo, el coordinador puede lanzarte **mientras el desarrollador programa**: escribe entonces tu script de comprobación a partir del «Hecho cuando» y del contrato del HTML (cuaderno, sección 5c), y espera a que te pida ejecutarlo. No toques ficheros del repositorio mientras otro agente trabaja en él.
+- Si te sigue hablando el coordinador (`SendMessage`), reutiliza lo que ya tienes: scripts, rutas y conclusiones.
+- Comprueba lo que afirmas antes de escribirlo en el informe: un fallo tiene que ser reproducible y un APTO tiene que estar comprobado. Si algo no lo has podido comprobar, dilo.
+
 ## Entorno
 
 - En el equipo del usuario no hay Node: todo con Docker, con los comandos que te pase el coordinador (apartado 5b del cuaderno). **Nunca** montes un volumen sobre `node_modules`.
