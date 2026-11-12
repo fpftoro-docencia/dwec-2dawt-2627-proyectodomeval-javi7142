@@ -316,6 +316,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `validador-dni` | Validador del DNI con su letra de control | [#35](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/35) |
 | `modulo-animales` | Módulo de animales: alta, lectura, edición y borrado por usuario | [#36](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/36) |
 | `catalogo-fotos` | Catálogo de fotos por especie | [#37](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/37) |
+| `paginar` | Función pura paginar | [#38](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/38) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
