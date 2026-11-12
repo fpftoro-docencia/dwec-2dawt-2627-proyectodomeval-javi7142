@@ -43,10 +43,14 @@ function esUsuario(valor) {
 
 /**
  * Dos nombres son el mismo usuario aunque cambien las mayúsculas: «Lola» y «lola» no pueden convivir.
+ * También la usa el módulo de animales, para que la clave de cada usuario no dependa de cómo
+ * escribió su nombre al entrar.
  * @param {string} nombre
  * @returns {string}
+ * @example
+ * normalizarNombre('  Lola '); // 'lola'
  */
-function normalizarNombre(nombre) {
+export function normalizarNombre(nombre) {
   return nombre.trim().toLocaleLowerCase('es');
 }
 
