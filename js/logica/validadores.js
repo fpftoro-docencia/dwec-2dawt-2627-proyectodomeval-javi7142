@@ -18,6 +18,9 @@ const USUARIO = /^\p{L}[\p{L}\d_.-]{2,19}$/u;
 /** Correo: algo, una arroba, algo, un punto y algo, sin espacios ni más arrobas. */
 const CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/** Nombre: empieza por una letra y sigue con 1 a 29 letras, espacios, apóstrofos o guiones. */
+const NOMBRE = /^\p{L}[\p{L} '-]{1,29}$/u;
+
 /** Los cuatro requisitos de la contraseña, cada uno con su expresión regular. */
 const REQUISITOS_CLAVE = Object.freeze({
   longitud: /^.{8,}$/u,
@@ -84,6 +87,23 @@ export function validarClave(valor) {
     return '';
   }
   return 'La contraseña necesita 8 caracteres o más, una minúscula, una mayúscula y una cifra.';
+}
+
+/**
+ * Valida un nombre: el del animal y el del adoptante. Los espacios del principio y del final no
+ * cuentan.
+ * @param {string} valor
+ * @returns {string} El mensaje de error, o `''` si es válido.
+ * @example
+ * validarNombre("Toñi d'Ávila"); // ''
+ * validarNombre('L'); // 'El nombre empieza por una letra…'
+ */
+export function validarNombre(valor) {
+  const nombre = valor.trim();
+  if (nombre === '' || NOMBRE.test(nombre)) {
+    return '';
+  }
+  return 'El nombre empieza por una letra y tiene de 2 a 30 caracteres: letras, espacios, apóstrofos o guiones';
 }
 
 /**
