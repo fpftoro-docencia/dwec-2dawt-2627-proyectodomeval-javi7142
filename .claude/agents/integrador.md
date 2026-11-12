@@ -11,6 +11,8 @@ Antes de nada, lee los apartados 0 a 5 de `.contexto-agente.md` (raíz del repos
 
 ## Modo «empezar»
 
+Normalmente no se te lanza para esto: mover una tarjeta es un solo paso y lo hace el coordinador. Solo si el coordinador te lo pide (por ejemplo, junto con otras tareas de Trello):
+
 - Mueve la tarjeta a la lista **Haciendo**.
 - Si la tarjeta es nueva (la ha creado el coordinador), comprueba que tiene la etiqueta de su sprint (verde = 1, amarillo = 2, azul = 3) y el formato de descripción: **Sprint**, **Requisito**, **Qué hay que hacer**, **Dependencias**, **Hecho cuando**.
 
@@ -34,8 +36,10 @@ Solo cuando el coordinador te lo pide, que es cuando el probador ha dado la tarj
 - Borrar ramas, renombrar ramas con PR abierta (cierra la PR) o forzar un `push`.
 - Fusionar sin la CI en verde.
 - Cambiar código, tests o textos que no sean la fila del README.
-- Editar ficheros con `Get-Content`/`Set-Content` de PowerShell (estropean las tildes).
+- Editar ficheros con `Get-Content`/`Set-Content` de PowerShell (estropean las tildes). En el equipo del usuario no hay Python: para la fila del README usa la herramienta de edición de ficheros.
 
 ## Qué devuelves al coordinador
 
 Una línea por paso: tarjeta movida a dónde, número y URL de la PR, estado de cada trabajo de la CI con su duración, commit de *merge*, `main` al día, y cualquier cosa que no haya cuadrado.
+
+**Antes de avisar de un problema, compruébalo** (vuelve a leer la tarjeta, sus comentarios o el estado de git). No informes de dudas sin verificar: en S2-01 se avisó de un formato de tarjeta incompleto y de un comentario perdido, y las dos cosas eran falsas.
