@@ -26,27 +26,36 @@ Está hecha con JavaScript sin librerías (solo el CSS de Bootstrap) y sin APIs 
 
 ### La entidad
 
-La entidad es el **animal** que el voluntario tiene en acogida. Este es el diseño inicial; en el sprint 2 se cierra con el código y los tests.
+La entidad es el **animal** que el voluntario tiene a su cargo. La ficha (`ficha.html`) tiene un campo por fila de esta tabla, y la última columna dice dónde queda cada dato en el objeto que se guarda. Ese objeto está descrito con `@typedef` en `js/datos/animales.js` (`Animal`, `Vacuna` y `Adopcion`), y los valores que guarda son los `value` del formulario.
 
-| Campo | Control | Obligatorio | Regla de validación | Mensaje si no se cumple |
-|-------|---------|:-----------:|---------------------|-------------------------|
-| Nombre | Texto | Sí | Expresión regular `^\p{L}[\p{L} '-]{1,29}$` con la bandera `u` | «El nombre empieza por una letra y tiene de 2 a 30 caracteres: letras, espacios, apóstrofos o guiones» |
-| Especie | Lista desplegable | Sí | Una de la lista (perro, gato, conejo, otro) | «Elige una especie» |
-| Sexo | Botones de opción | Sí | Hembra o macho | «Elige el sexo» |
-| Fecha de ingreso | Fecha | Sí | No posterior a hoy (el `max` lo pone el código) | «La fecha de ingreso no puede ser futura» |
-| Peso (kg) | Número | Sí | Entre 0,1 y 100 | «El peso debe estar entre 0,1 y 100 kg» |
-| Microchip | Texto | Sí | Expresión regular `^\d{15}$` | «El microchip tiene 15 dígitos» |
-| Foto | Galería de botones de opción con fotos | Sí | Una de las fotos de su especie; la galería se activa al elegir la especie | «Elige una foto» |
-| Estado | Botones de opción | Sí | En acogida, disponible o adoptado | «Elige el estado» |
-| Esterilizado | Casilla | No | — | — |
-| **Fecha de esterilización** (campo condicional) | Fecha | Solo si está esterilizado | No futura y no anterior al ingreso | «La esterilización no puede ser futura ni anterior al ingreso» |
-| **Adoptante: nombre** (campo condicional) | Texto | Solo si está adoptado | La misma expresión regular que el nombre | «Escribe el nombre del adoptante» |
-| **Adoptante: DNI** (campo condicional) | Texto | Solo si está adoptado | Expresión regular `^\d{8}[A-Z]$` **y** letra de control: la letra de `TRWAGMYFPDXBNJZSQVHLCKE` en la posición del número módulo 23 | «DNI no válido: la letra no corresponde al número» |
-| **Adoptante: teléfono** (campo condicional) | Texto | No | Expresión regular `^[679]\d{8}$` | «El teléfono tiene 9 cifras y empieza por 6, 7 o 9» |
-| **Vacunas** (grupo dinámico, de **0 a 3**): tipo | Lista desplegable | Sí, en cada vacuna | Una de la lista | «Elige la vacuna» |
-| **Vacunas** (grupo dinámico, de **0 a 3**): fecha | Fecha | Sí, en cada vacuna | No futura y no anterior al ingreso | «La fecha de la vacuna no puede ser futura ni anterior al ingreso» |
+| Campo | Control en la ficha | Obligatorio | Regla de validación | Mensaje si no se cumple | Se guarda en |
+|-------|---------------------|:-----------:|---------------------|-------------------------|--------------|
+| Nombre | Texto (`#nombre`) | Sí | Expresión regular `^\p{L}[\p{L} '-]{1,29}$` con la bandera `u` | «El nombre empieza por una letra y tiene de 2 a 30 caracteres: letras, espacios, apóstrofos o guiones» | `nombre`, sin espacios a los lados |
+| Especie | Lista desplegable (`#especie`) | Sí | Una de la lista: `perro`, `gato`, `conejo` u `otro` | «Elige una especie» | `especie` |
+| Sexo | Botones de opción (`sexo`) | Sí | `hembra` o `macho` | «Elige el sexo» | `sexo` |
+| Fecha de ingreso | Fecha (`#ingreso`) | Sí | No posterior a hoy (el `max` lo pone el código) | «La fecha de ingreso no puede ser futura» | `ingreso`, como `AAAA-MM-DD` |
+| Peso (kg) | Número (`#peso`) | Sí | Entre 0,1 y 100, con un decimal como mucho (`step="0.1"`) | «El peso debe estar entre 0,1 y 100 kg, con un decimal como mucho» | `peso`, como número |
+| Microchip | Texto (`#microchip`) | Sí | Expresión regular `^\d{15}$` | «El microchip tiene 15 dígitos» | `microchip`, como texto (así no se pierden los ceros del principio) |
+| Foto | Galería de botones de opción con fotos (`foto`, en `#galeria-fotos`) | Sí | Una de las fotos de su especie; la galería se activa al elegir la especie | «Elige una foto» | `foto`: el nombre del archivo de `img/fotos/` sin la extensión (`perro-1`) |
+| Estado | Botones de opción (`estado`; empieza en «En acogida») | Sí | `acogida`, `disponible` o `adoptado` | «Elige el estado» | `estado` |
+| Esterilizado | Casilla (`#esterilizado`) | No | — | — | `esterilizado`, `true` o `false` |
+| **Fecha de esterilización** (campo condicional: solo si la casilla está marcada) | Fecha (`#fecha-esterilizacion`) | Sí, si está esterilizado | No futura y no anterior al ingreso | «La esterilización no puede ser futura ni anterior al ingreso» | `fechaEsterilizacion`, o `null` si no está esterilizado |
+| **Adoptante: nombre** (campo condicional: solo si el estado es «Adoptado») | Texto (`#adoptante-nombre`) | Sí, si está adoptado | El mismo validador que el nombre (`data-validar="nombre"`) | «Escribe el nombre del adoptante» si falta; si no cumple la regla, el mismo mensaje que el nombre | `adopcion.nombre` |
+| **Adoptante: DNI** (campo condicional) | Texto (`#adoptante-dni`) | Sí, si está adoptado | Expresión regular `^\d{8}[A-Z]$` **y** letra de control (abajo) | «El DNI tiene 8 cifras y una letra, como 12345678Z» / «La letra no corresponde al número del DNI» | `adopcion.dni` |
+| **Adoptante: teléfono** (campo condicional) | Teléfono (`#adoptante-telefono`) | No | Expresión regular `^[679]\d{8}$` | «El teléfono tiene 9 cifras y empieza por 6, 7 o 9» | `adopcion.telefono`, o `null` si se deja vacío |
+| **Vacunas** (grupo dinámico, de **0 a 3**): tipo | Lista desplegable (`vacunaTipo`, desde `#plantilla-vacuna`) | Sí, en cada vacuna | `rabia`, `polivalente`, `triple-felina`, `leucemia-felina`, `mixomatosis` u `otra` | «Elige la vacuna» | `vacunas[i].tipo` |
+| **Vacunas** (grupo dinámico, de **0 a 3**): fecha | Fecha (`vacunaFecha`, desde `#plantilla-vacuna`) | Sí, en cada vacuna | No futura y no anterior al ingreso | «La fecha de la vacuna no puede ser futura ni anterior al ingreso» | `vacunas[i].fecha` |
 
-Los campos en negrita son el **campo condicional** y el **grupo dinámico** que pide el enunciado. Los cuatro validadores con expresión regular (nombre, microchip, DNI y teléfono) son propios del tema, y el del DNI comprueba además con código la letra de control.
+Además, cada animal tiene un `id` único, que pone el módulo de datos al darlo de alta, y `adopcion` vale `null` si el estado no es «Adoptado». Las fechas se guardan como las da el campo de fecha (`AAAA-MM-DD`).
+
+**Cómo cumple los mínimos del requisito 13:**
+
+- **Cinco campos o más, con tres tipos de control o más:** nueve campos fijos, más los condicionales y las vacunas, con siete controles distintos (texto, número, fecha, lista desplegable, botones de opción, casilla y teléfono).
+- **Campo condicional:** la fecha de esterilización solo aparece con la casilla marcada, y los datos del adoptante, con el estado «Adoptado». Mientras no tocan están ocultos y desactivados (`hidden` y `disabled`), así que no se envían ni se guardan.
+- **Grupo dinámico:** las vacunas, de 0 a 3, se añaden desde el `<template>` `#plantilla-vacuna` y cada una se puede quitar. «Añadir vacuna» se desactiva al llegar a 3.
+- **Tres validadores con expresión regular o más:** nombre, microchip, DNI y teléfono, los cuatro propios del tema. El del DNI comprueba además con código la letra de control.
+
+**La letra de control va en el DNI del adoptante,** no en un código de ficha: el DNI es un dato que se pide de verdad al adoptar, ya está en la ficha y su regla es conocida, mientras que un código de ficha sería un dato inventado solo para tener algo que comprobar. La regla: 8 cifras y una letra, que es la de `TRWAGMYFPDXBNJZSQVHLCKE` en la posición del resto de dividir el número entre 23. Por ejemplo, 12345678 entre 23 da de resto 14, la posición de la `Z`: `12345678Z` es válido y `12345678A` no. En la aplicación se usan siempre DNI inventados.
 
 Las fotos de los animales son recortes de imágenes de Unsplash (licencia gratuita); sus autores están en [img/fotos/CREDITOS.md](img/fotos/CREDITOS.md). Los animales y sus datos son inventados.
 
@@ -300,6 +309,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `paginas-privadas-sin-parpadeo` | Las páginas privadas no se ven antes de redirigir sin sesión | [#28](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/28) |
 | `contexto-agente` | Fichero de contexto para continuar o recrear el proyecto | [#29](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/29) |
 | `agentes-de-trabajo` | Agentes de trabajo: desarrollador, probador e integrador, y contexto actualizado | [#30](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/30) |
+| `entidad-animal` | Entidad Animal: tabla de la entidad, letra de control del DNI y `@typedef` | [#31](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/31) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
