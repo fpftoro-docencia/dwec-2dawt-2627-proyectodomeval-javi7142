@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Huellas: el cuaderno de los voluntarios de una protectora de animales."
+    />
+    <meta name="theme-color" content="#ffc91f" />
+    <title>Iniciar sesión | Huellas</title>
+    <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body class="publica">
+    <a class="salto" href="#contenido">Saltar al contenido</a>
+
+    <div id="avisos" class="avisos avisos--arriba" role="status" aria-live="polite"></div>
+
+    <div class="escena" id="escena" data-mundo="sol">
+      <section class="escena__mundo" aria-label="Animales de la protectora">
+        <div class="pisadas" id="pisadas" aria-hidden="true"></div>
+
+        <p class="escena__titular" aria-hidden="true">
+          <span>h</span><span>u</span><span>e</span><span>l</span><span>l</span><span>a</span
+          ><span>s</span>
+        </p>
+
+        <div class="escena__animales">
+          <img
+            class="escena__animal activo"
+            data-animal
+            data-mundo="sol"
+            data-pie="Luna lleva 23 días en casa de Ana."
+            src="img/fotos/perro-1.webp"
+            alt=""
+          />
+          <img
+            class="escena__animal"
+            data-animal
+            data-mundo="azul"
+            data-pie="Bimba encontró familia en septiembre."
+            src="img/fotos/perro-6.webp"
+            alt=""
+          />
+          <img
+            class="escena__animal"
+            data-animal
+            data-mundo="sol"
+            data-pie="Tigre ya tiene sus tres vacunas."
+            src="img/fotos/gato-4.webp"
+            alt=""
+          />
+          <img
+            class="escena__animal"
+            data-animal
+            data-mundo="azul"
+            data-pie="Simón busca casa desde octubre."
+            src="img/fotos/gato-5.webp"
+            alt=""
+          />
+        </div>
+
+        <div class="escena__pie">
+          <p data-pie-texto>Luna lleva 23 días en casa de Ana.</p>
+        </div>
+      </section>
+
+      <main id="contenido" class="acceso">
+        <div class="huella">
+          <div class="huella__dedos" aria-hidden="true">
+            <span class="huella__dedo"></span>
+            <span class="huella__dedo"></span>
+            <span class="huella__dedo"></span>
+            <span class="huella__dedo"></span>
+          </div>
+
+          <div class="huella__almohadilla">
+            <h1>Alguien te espera en casa</h1>
+            <p class="huella__intro">Entra para ver a los animales que cuidas.</p>
+
+            <form id="formulario-acceso" novalidate>
+              <div class="campo">
+                <div class="campo__caja">
+                  <svg class="campo__icono" aria-hidden="true">
+                    <use href="img/iconos.svg#usuario"></use>
+                  </svg>
+                  <input
+                    class="form-control"
+                    id="usuario"
+                    name="usuario"
+                    type="text"
+                    placeholder=" "
+                    autocomplete="username"
+                    required
+                    aria-describedby="error-usuario"
+                  />
+                  <label class="form-label" for="usuario">Usuario</label>
+                </div>
+                <div class="invalid-feedback" id="error-usuario"></div>
+              </div>
+
+              <div class="campo">
+                <div class="campo__caja">
+                  <svg class="campo__icono" aria-hidden="true">
+                    <use href="img/iconos.svg#candado"></use>
+                  </svg>
+                  <input
+                    class="form-control"
+                    id="clave"
+                    name="clave"
+                    type="password"
+                    placeholder=" "
+                    autocomplete="current-password"
+                    required
+                    aria-describedby="error-clave"
+                  />
+                  <label class="form-label" for="clave">Contraseña</label>
+                  <button
+                    class="campo__ojo"
+                    data-ver-clave
+                    type="button"
+                    aria-label="Mostrar la contraseña"
+                    aria-pressed="false"
+                  >
+                    <svg class="icono icono--ver" aria-hidden="true">
+                      <use href="img/iconos.svg#ojo"></use>
+                    </svg>
+                    <svg class="icono icono--ocultar" aria-hidden="true">
+                      <use href="img/iconos.svg#ojo-tachado"></use>
+                    </svg>
+                  </button>
+                </div>
+                <div class="invalid-feedback" id="error-clave"></div>
+              </div>
+
+              <button class="btn btn-primary boton-accion" type="submit">
+                Entrar
+                <span class="boton-accion__disco">
+                  <svg class="icono" aria-hidden="true">
+                    <use href="img/iconos.svg#huella"></use>
+                  </svg>
+                </span>
+              </button>
+            </form>
+
+            <p class="huella__cambio">
+              ¿Es tu primera vez? <a href="registro.html">Crea tu cuenta</a>
+            </p>
+          </div>
+        </div>
+        <p class="acceso__nota">
+          Aplicación de prácticas. Los datos son inventados y se guardan solo en tu navegador.
+        </p>
+      </main>
+    </div>
+
+    <script type="module" src="js/paginas/index.js"></script>
+  </body>
+</html>
