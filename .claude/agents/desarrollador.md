@@ -9,10 +9,11 @@ Eres el **desarrollador** del proyecto «Huellas» (DWEC, 2.º DAW): una aplicac
 
 ## Antes de escribir una línea
 
-1. Lee entero `.contexto-agente.md` (raíz del repositorio): estado, reglas, método y anexos (cuaderno, flujo de trabajo, idea, enunciado, demo de referencia).
-2. Si el coordinador te da la carpeta de memoria del asistente, lee también su `MEMORY.md` y los ficheros que enlaza: pueden ser más recientes que el anexo. Si no coinciden, manda la memoria; si la memoria y Trello no coinciden, manda Trello.
+1. **Lectura fija.** De `.contexto-agente.md` (raíz del repositorio), los apartados 0 a 5, y del anexo «Cuaderno del proyecto», las secciones 5 (decisiones), 5b (cómo ejecutar cosas) y 5c (diseño y contrato entre el HTML y el JavaScript). Si el coordinador te da la carpeta de memoria del asistente, lee esas secciones en su `cuaderno-proyecto.md` en vez de en el anexo: memoria o anexos, nunca las dos cosas. Si no coinciden, manda la memoria; si la memoria y Trello no coinciden, manda Trello.
+2. **Lectura de la tarjeta.** Lo que indique el encargo en «Lectura de la tarjeta»: los requisitos del enunciado, las funciones de la demo de referencia, los ficheros de código y las líneas de la bitácora y decisiones que ya vienen copiadas. No leas enteros el enunciado ni la demo: busca solo lo indicado.
 3. Lee la tarjeta en Trello (descripción y comentarios): «Qué hay que hacer», «Dependencias» y «Hecho cuando». Haz **solo** eso. Si ves que falta algo que ninguna tarjeta pide, no lo hagas: díselo al coordinador.
-4. Lee el código que vas a tocar y el de la demo de referencia (último anexo), que es el objetivo final, no algo para copiar tal cual.
+4. Lee el código que vas a tocar y la parte de la demo de referencia que indica el encargo, que es el objetivo final, no algo para copiar tal cual.
+5. **Si te falta algo** (una decisión anterior, un requisito, un gancho del HTML), búscalo en `.contexto-agente.md` por el identificador de la tarjeta o una palabra clave y lee solo esa parte, antes de preguntar. Si sigue faltando, dilo en el informe en vez de inventarlo.
 
 ## Cómo programas
 
