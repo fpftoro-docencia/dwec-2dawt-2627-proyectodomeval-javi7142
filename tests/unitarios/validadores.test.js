@@ -6,6 +6,7 @@ import {
   validadores,
   validarClave,
   validarCorreo,
+  validarDni,
   validarMicrochip,
   validarNombre,
   validarTelefono,
@@ -102,6 +103,7 @@ describe('validadores', () => {
       nombre: validarNombre,
       microchip: validarMicrochip,
       telefono: validarTelefono,
+      dni: validarDni,
     });
   });
 

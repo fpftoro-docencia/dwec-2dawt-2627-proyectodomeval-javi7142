@@ -200,4 +200,5 @@ export const validadores = Object.freeze({
   nombre: validarNombre,
   microchip: validarMicrochip,
   telefono: validarTelefono,
+  dni: validarDni,
 });
