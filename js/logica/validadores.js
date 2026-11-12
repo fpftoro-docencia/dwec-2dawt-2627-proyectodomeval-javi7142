@@ -27,6 +27,9 @@ const MICROCHIP = /^\d{15}$/;
 /** Teléfono: 9 cifras, empezando por 6, 7 o 9. */
 const TELEFONO = /^[679]\d{8}$/;
 
+/** Letras de control del DNI: la que toca es la de la posición del resto de dividir el número entre 23. */
+const LETRAS_DNI = 'TRWAGMYFPDXBNJZSQVHLCKE';
+
 /** Los cuatro requisitos de la contraseña, cada uno con su expresión regular. */
 const REQUISITOS_CLAVE = Object.freeze({
   longitud: /^.{8,}$/u,
@@ -142,6 +145,19 @@ export function validarTelefono(valor) {
     return '';
   }
   return 'El teléfono tiene 9 cifras y empieza por 6, 7 o 9.';
+}
+
+/**
+ * Calcula la letra de control de un DNI: la de `TRWAGMYFPDXBNJZSQVHLCKE` en la posición del resto
+ * de dividir el número entre 23.
+ * @param {string} numero Las 8 cifras del DNI.
+ * @returns {string} La letra que le corresponde.
+ * @example
+ * letraDni('12345678'); // 'Z' (12345678 entre 23 da de resto 14)
+ * letraDni('00000000'); // 'T' (resto 0)
+ */
+export function letraDni(numero) {
+  return LETRAS_DNI[Number(numero) % 23];
 }
 
 /**
