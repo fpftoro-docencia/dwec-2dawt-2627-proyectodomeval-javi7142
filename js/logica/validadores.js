@@ -27,6 +27,9 @@ const MICROCHIP = /^\d{15}$/;
 /** Teléfono: 9 cifras, empezando por 6, 7 o 9. */
 const TELEFONO = /^[679]\d{8}$/;
 
+/** DNI: 8 cifras y una letra mayúscula. */
+const DNI = /^\d{8}[A-Z]$/;
+
 /** Letras de control del DNI: la que toca es la de la posición del resto de dividir el número entre 23. */
 const LETRAS_DNI = 'TRWAGMYFPDXBNJZSQVHLCKE';
 
@@ -158,6 +161,32 @@ export function validarTelefono(valor) {
  */
 export function letraDni(numero) {
   return LETRAS_DNI[Number(numero) % 23];
+}
+
+/**
+ * Valida el DNI del adoptante: primero el formato con la expresión regular y, si es bueno, la letra
+ * de control. Los espacios del principio y del final no cuentan.
+ * @param {string} valor
+ * @returns {string} El mensaje de error, o `''` si es válido.
+ * @example
+ * validarDni('12345678Z'); // ''
+ * validarDni('1234567Z'); // 'El DNI tiene 8 cifras y una letra, como 12345678Z.'
+ * validarDni('12345678A'); // 'La letra no corresponde al número del DNI.'
+ */
+export function validarDni(valor) {
+  const dni = valor.trim();
+  if (dni === '') {
+    return '';
+  }
+  if (!DNI.test(dni)) {
+    return 'El DNI tiene 8 cifras y una letra, como 12345678Z.';
+  }
+  const numero = dni.slice(0, 8);
+  const letra = dni.slice(8);
+  if (letra !== letraDni(numero)) {
+    return 'La letra no corresponde al número del DNI.';
+  }
+  return '';
 }
 
 /**
