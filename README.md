@@ -323,6 +323,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `bloques-y-herramientas` | Bloques, tarjetas en paralelo y herramientas fijas | [#42](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/42) |
 | `tests-unitarios-ficha` | Tests unitarios de los validadores de la ficha, paginar y animales | [#43](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/43) |
 | `controles-paginacion` | Controles de paginación con delegación de eventos | [#44](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/44) |
+| `listado-tarjetas` | Listado paginado con una tarjeta por animal desde un `<template>` | [#45](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/45) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
