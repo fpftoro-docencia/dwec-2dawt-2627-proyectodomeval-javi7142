@@ -22,6 +22,18 @@ Normalmente no se te lanza para esto: mover una tarjeta es un solo paso y lo hac
 
 Solo cuando el coordinador te lo pide, que es cuando el probador ha dado la tarjeta por **APTA**.
 
+### Con el guion `cerrar-tarjeta.sh` (lo normal)
+
+El coordinador te da la ruta de la carpeta de herramientas (fuera del repositorio), donde está `cerrar-tarjeta.sh`. Ejecútalo desde la carpeta del repositorio:
+
+1. `sh <herramientas>/cerrar-tarjeta.sh preparar <rama>`: comprueba la rama y la autoría, trae lo último de `main` si otra tarjeta se cerró antes y te dice el número de la PR. Si termina en `PARADA: …`, para y devuelve su salida literal al coordinador.
+2. En `README.md`, tabla «Ramas y versiones», añade al final la fila con ese número (formato del paso 3 de abajo) y guárdala en un commit: «Añade la rama <rama> a la tabla de ramas del README».
+3. `sh <herramientas>/cerrar-tarjeta.sh publicar <rama> "<Qué hace> (Sx-nn)" <fichero de descripción>`: sube la rama, abre la PR, comprueba que su número es el de la fila, espera la CI, fusiona con *merge* solo si todo está en verde y pone `main` al día. Si termina en `PARADA: …`, para y devuelve su salida literal.
+4. Mueve la tarjeta al **final** de la lista **Hecho** (`pos: bottom`).
+5. Si el coordinador lo pide al cerrar un sprint: tag anotado sobre `main` (`git tag -a v0.2 -m "…"` y `git push origin v0.2`).
+
+### Sin el guion (si no está disponible)
+
 1. Comprueba la rama: `git status` limpio, estás en la rama de la tarjeta, y todos los commits son del usuario (`git log main..HEAD --format='%an <%ae>%n%b'`): **Javi7142 <jhonbar1407@g.educaand.es>**, sin `Co-Authored-By` ni menciones a ninguna IA. Si algo no cuadra, para y avisa.
 2. Número de la PR: `gh pr list --state all --limit 1 --json number` y suma 1.
 3. En `README.md`, tabla «Ramas y versiones», añade al final una fila con el mismo formato que las demás: `` | `<rama>` | <qué hace, en una línea> | [#N](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/N) | ``. Commit: «Añade la rama <rama> a la tabla de ramas del README». No toques los títulos `##`.
