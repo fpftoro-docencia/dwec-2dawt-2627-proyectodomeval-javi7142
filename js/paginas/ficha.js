@@ -1,5 +1,6 @@
 import { iniciarAvisos } from '../componentes/avisos.js';
 import { iniciarCabecera } from '../componentes/cabecera.js';
+import { iniciarGaleriaFotos } from '../componentes/galeria-fotos.js';
 import { iniciarCierreSesion, protegerPagina } from '../componentes/proteccion.js';
 import { leerSesion } from '../datos/sesion.js';
 
@@ -12,6 +13,13 @@ if (protegerPagina(sesion, { almacenSesion: sessionStorage, navegar })) {
   document.body.dataset.sesionComprobada = '';
   iniciarAvisos(document, sessionStorage);
   iniciarCabecera(document.querySelector('.cabecera'), sesion);
+  iniciarGaleriaFotos({
+    especie: document.querySelector('#especie'),
+    bloque: document.querySelector('#bloque-foto'),
+    galeria: document.querySelector('#galeria-fotos'),
+    plantilla: document.querySelector('#plantilla-foto'),
+    ayuda: document.querySelector('#ayuda-foto'),
+  });
   iniciarCierreSesion(document.querySelector('#cerrar-sesion'), {
     almacenSesion: sessionStorage,
     navegar,

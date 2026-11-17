@@ -150,6 +150,8 @@ Las reglas de formato están en `js/logica/validadores.js`: cada validador devue
 
 Son unitarios porque prueban módulos de datos sin DOM: reciben el almacenamiento como parámetro y se les da un `AlmacenFalso`. La función que calcula el resumen de la contraseña también se puede sustituir por un doble (`vi.fn`).
 
+**Cobertura:** `npm run coverage` mide solo las funciones puras (`js/logica/validadores.js` y `js/logica/paginacion.js`) y exige al menos un 90 % de líneas (`thresholds` en `vitest.config.js`): si baja, el comando falla y la CI se pone en rojo. Hoy llega al 100 % de líneas, ramas y funciones en los dos ficheros. Quitar los tests de un validador la hace bajar: comprobado con los tests de validadores y de animales desactivados, la cobertura cayó al 32 % y el comando falló con el 90 % sin cumplir.
+
 <!-- 1. Tabla de la pirámide: tipo (unitario, de integración o de extremo a extremo), fichero,
         qué prueba y cuántos tests tiene. Por qué cada cosa se prueba en ese nivel y no en otro.
      2. Cómo simulas al usuario (eventos, requestSubmit), los servicios (AlmacenFalso, el resumen
@@ -324,6 +326,11 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `tests-unitarios-ficha` | Tests unitarios de los validadores de la ficha, paginar y animales | [#43](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/43) |
 | `controles-paginacion` | Controles de paginación con delegación de eventos | [#44](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/44) |
 | `listado-tarjetas` | Listado paginado con una tarjeta por animal desde un `<template>` | [#45](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/45) |
+| `repaso-formulario-ficha` | Formulario de la ficha ajustado a la tabla de la entidad | [#46](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/46) |
+| `umbral-cobertura` | Umbral de cobertura del 90 % de líneas en las funciones puras | [#47](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/47) |
+| `validacion-tiempo-real` | Componente de validación de formularios en tiempo real | [#48](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/48) |
+| `galeria-fotos` | Galería de fotos de la ficha según la especie | [#49](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/49) |
+| `listado-resumen` | Saludo, resumen y aviso de animales sin vacunas en el listado | [#50](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/50) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
