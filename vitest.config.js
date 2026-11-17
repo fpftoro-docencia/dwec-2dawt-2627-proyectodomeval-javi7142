@@ -8,8 +8,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'], // `text` en la terminal y `html` en coverage/, que sube el workflow
-      // TODO: include con los ficheros de tus funciones puras (validadores y paginar)
-      // TODO: thresholds con el umbral de líneas (al menos el 90 %): si no se llega, `npm run coverage` falla
+      include: ['js/logica/validadores.js', 'js/logica/paginacion.js'], // las funciones puras
+      thresholds: { lines: 90 }, // si baja del 90 % de líneas, `npm run coverage` falla
     },
   },
 });
