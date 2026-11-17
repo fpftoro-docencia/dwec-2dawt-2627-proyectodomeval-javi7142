@@ -85,8 +85,8 @@ function textoSubtitulo(animal) {
  * Crea la tarjeta de un animal copiando la plantilla.
  *
  * Si la foto del animal no está en el catálogo (`buscarFoto` devuelve `null`), la tarjeta no pone
- * ni `src` ni `data-fondo` y `data-lado`: el CSS usa sus valores por defecto. Si el estado no se
- * reconoce, se trata como «En acogida».
+ * ni `src` ni `data-fondo` y `data-lado` (el CSS usa sus valores por defecto) y oculta la imagen
+ * con `hidden`. Si el estado no se reconoce, se trata como «En acogida».
  * @param {HTMLTemplateElement} plantilla La plantilla `#plantilla-animal`.
  * @param {module:datos/animales~Animal} animal El animal que se muestra.
  * @returns {HTMLLIElement} El `<li class="animal">` relleno, listo para añadir a la lista.
@@ -105,6 +105,9 @@ export function crearTarjeta(plantilla, animal) {
     tarjeta.dataset.fondo = foto.fondo;
     tarjeta.dataset.lado = foto.lado;
     tarjeta.querySelector('.animal__foto').src = `img/fotos/${foto.archivo}.webp`;
+  } else {
+    // Sin foto válida no hay nada que enseñar: se oculta la imagen para que no salga rota
+    tarjeta.querySelector('.animal__foto').hidden = true;
   }
   tarjeta
     .querySelector('.animal__retrato')
