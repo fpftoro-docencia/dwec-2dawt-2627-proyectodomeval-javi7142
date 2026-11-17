@@ -331,6 +331,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `validacion-tiempo-real` | Componente de validación de formularios en tiempo real | [#48](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/48) |
 | `galeria-fotos` | Galería de fotos de la ficha según la especie | [#49](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/49) |
 | `listado-resumen` | Saludo, resumen y aviso de animales sin vacunas en el listado | [#50](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/50) |
+| `listado-borrar` | Borrar un animal del listado con confirmación en un diálogo | [#51](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/51) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 

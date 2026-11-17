@@ -2,17 +2,18 @@
  * Página del listado de animales (`listado.html`).
  *
  * Necesita del HTML: la lista `#lista-animales`, la plantilla `#plantilla-animal`, el contenedor
- * `#paginacion`, la portada (`#saludo`, `#resumen`, `#pendiente` y `#pendiente-texto`) y la
+ * `#paginacion`, el diálogo de borrado `#dialogo-borrar`, la portada (`#saludo`, `#resumen`, `#pendiente` y `#pendiente-texto`) y la
  * cabecera común. Además inicia los avisos, la cabecera y «Cerrar sesión».
  *
  * @module paginas/listado
  */
-import { iniciarAvisos } from '../componentes/avisos.js';
+import { iniciarAvisos, lanzarAviso } from '../componentes/avisos.js';
 import { iniciarCabecera } from '../componentes/cabecera.js';
 import { iniciarControles, pintarControles } from '../componentes/controles-paginacion.js';
 import { iniciarCierreSesion, protegerPagina } from '../componentes/proteccion.js';
 import { crearTarjeta } from '../componentes/tarjeta-animal.js';
-import { leerAnimales } from '../datos/animales.js';
+import { borrarAnimal, buscarAnimal, leerAnimales } from '../datos/animales.js';
+import { buscarFoto } from '../datos/fotos.js';
 import { leerSesion } from '../datos/sesion.js';
 import { paginar } from '../logica/paginacion.js';
 import {
@@ -32,12 +33,18 @@ const POR_PAGINA = 6;
  * solo vive en memoria. Cada vez que se pinta, también se actualiza la portada (saludo,
  * resumen y aviso de animales sin vacunas), así que cualquier cambio en los animales se ve sin
  * recargar.
+ *
+ * El botón «Borrar» de cada tarjeta se atiende con un solo oyente en la lista (delegación con
+ * `closest`): abre `#dialogo-borrar` con el nombre y la foto del animal y, solo si se confirma,
+ * se borra, se vuelve a pintar y se avisa. Cancelar o pulsar Esc no borra nada.
  * @param {Document} documento
  * @param {object} dependencias
  * @param {Storage} dependencias.almacenSesion Donde está la sesión y los avisos (`sessionStorage`).
  * @param {Storage} dependencias.almacenAnimales Donde están los animales (`localStorage`).
  * @param {function(string): void} dependencias.navegar Cómo ir a otra página.
  * @listens click
+ * @listens close
+ * @fires aviso
  */
 export function iniciarListado(documento, { almacenSesion, almacenAnimales, navegar }) {
   const sesion = leerSesion(almacenSesion);
@@ -53,7 +60,9 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
   const lista = documento.querySelector('#lista-animales');
   const plantilla = documento.querySelector('#plantilla-animal');
   const controles = documento.querySelector('#paginacion');
+  const dialogo = documento.querySelector('#dialogo-borrar');
   let paginaActual = 1;
+  let idParaBorrar = null;
 
   /**
    * Rellena la portada: el saludo, cuántos animales cuida el usuario y los nombres de los que no
@@ -80,6 +89,49 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
     pintarControles(controles, pagina, totalPaginas);
     pintarResumen(animales);
   }
+
+  /**
+   * Abre el diálogo de confirmación para el animal de la tarjeta donde se ha pulsado «Borrar».
+   * @param {HTMLElement} tarjeta El `li.animal` del animal.
+   */
+  function pedirConfirmacion(tarjeta) {
+    const animal = buscarAnimal(almacenAnimales, sesion.usuario, tarjeta.dataset.id);
+    if (!animal) {
+      return;
+    }
+    const foto = buscarFoto(animal.foto);
+    idParaBorrar = animal.id;
+    // Si no, tras una confirmación anterior `returnValue` seguiría valiendo «confirmar» al pulsar Esc
+    dialogo.returnValue = '';
+    documento.querySelector('#dialogo-nombre').textContent = animal.nombre;
+    const imagen = documento.querySelector('#dialogo-foto');
+    imagen.hidden = foto === null;
+    if (foto) {
+      imagen.src = `img/fotos/${foto.archivo}.webp`;
+    }
+    dialogo.showModal();
+  }
+
+  lista.addEventListener('click', (evento) => {
+    const boton = evento.target.closest('[data-accion="borrar"]');
+    if (boton) {
+      pedirConfirmacion(boton.closest('.animal'));
+    }
+  });
+
+  dialogo.addEventListener('close', () => {
+    const id = idParaBorrar;
+    idParaBorrar = null;
+    if (dialogo.returnValue !== 'confirmar' || id === null) {
+      return;
+    }
+    const animal = buscarAnimal(almacenAnimales, sesion.usuario, id);
+    if (animal && borrarAnimal(almacenAnimales, sesion.usuario, id)) {
+      pintar();
+      // Se avisa desde la lista, porque la tarjeta del animal ya no está en la página
+      lanzarAviso(lista, `Has borrado la ficha de ${animal.nombre}.`);
+    }
+  });
 
   iniciarControles(controles, (pagina) => {
     paginaActual = pagina;
