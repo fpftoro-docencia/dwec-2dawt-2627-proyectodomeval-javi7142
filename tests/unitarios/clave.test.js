@@ -1,6 +1,6 @@
-// Ejemplo de test unitario: una función pura, sin DOM y sin almacenamiento (UD3, tema 9).
-// Sustitúyelo por tus tests (requisitos 10 y 21): validadores con `it.each`, `paginar` y tus
-// módulos de datos con `AlmacenFalso` (importa `../AlmacenFalso.js`, como en la UD4, tema 8).
+// Tests de `resumirClave`, el resumen SHA-256 de las contraseñas: una función pura, sin DOM y sin
+// almacenamiento (UD3, tema 9). Los tests del módulo de usuarios la sustituyen por un doble, así
+// que aquí se comprueba la real, con resúmenes conocidos.
 import { describe, it, expect } from 'vitest';
 import { resumirClave } from '../../js/clave.js';
 
