@@ -169,6 +169,8 @@
                       type="number"
                       placeholder=" "
                       inputmode="decimal"
+                      min="0.1"
+                      max="100"
                       step="0.1"
                       required
                       aria-describedby="error-peso"
@@ -204,7 +206,12 @@
               </div>
             </fieldset>
 
-            <fieldset class="bloque" id="bloque-foto" disabled>
+            <fieldset
+              class="bloque"
+              id="bloque-foto"
+              aria-describedby="ayuda-foto error-foto"
+              disabled
+            >
               <legend>
                 <svg class="bloque__icono" aria-hidden="true">
                   <use href="img/iconos.svg#foto"></use>
@@ -215,6 +222,7 @@
                 Elige la especie y aquí aparecerán las fotos disponibles.
               </p>
               <div class="galeria" id="galeria-fotos"></div>
+              <div class="invalid-feedback" id="error-foto"></div>
             </fieldset>
 
             <fieldset class="bloque">
@@ -356,6 +364,7 @@
                         id="adoptante-telefono"
                         name="adoptanteTelefono"
                         type="tel"
+                        maxlength="9"
                         placeholder=" "
                         autocomplete="off"
                         disabled
@@ -448,8 +457,8 @@
               </ul>
 
               <label class="cartilla__progreso" for="progreso-ficha">
-                <span id="progreso-texto">Faltan 6 datos obligatorios</span>
-                <progress id="progreso-ficha" max="6" value="0"></progress>
+                <span id="progreso-texto">Faltan 8 datos obligatorios</span>
+                <progress id="progreso-ficha" max="8" value="0"></progress>
               </label>
             </div>
           </aside>
@@ -500,7 +509,7 @@
 
     <template id="plantilla-foto">
       <label class="foto-opcion">
-        <input class="visually-hidden" name="foto" type="radio" />
+        <input class="visually-hidden" name="foto" type="radio" required />
         <span class="foto-opcion__marco">
           <img class="foto-opcion__imagen" alt="" loading="lazy" />
           <svg class="icono foto-opcion__marca" aria-hidden="true">
