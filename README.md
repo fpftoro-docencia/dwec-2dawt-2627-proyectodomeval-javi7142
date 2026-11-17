@@ -330,6 +330,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `umbral-cobertura` | Umbral de cobertura del 90 % de líneas en las funciones puras | [#47](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/47) |
 | `validacion-tiempo-real` | Componente de validación de formularios en tiempo real | [#48](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/48) |
 | `galeria-fotos` | Galería de fotos de la ficha según la especie | [#49](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/49) |
+| `listado-resumen` | Saludo, resumen y aviso de animales sin vacunas en el listado | [#50](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/50) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
