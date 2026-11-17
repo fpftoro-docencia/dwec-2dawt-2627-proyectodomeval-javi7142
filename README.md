@@ -150,6 +150,8 @@ Las reglas de formato están en `js/logica/validadores.js`: cada validador devue
 
 Son unitarios porque prueban módulos de datos sin DOM: reciben el almacenamiento como parámetro y se les da un `AlmacenFalso`. La función que calcula el resumen de la contraseña también se puede sustituir por un doble (`vi.fn`).
 
+**Cobertura:** `npm run coverage` mide solo las funciones puras (`js/logica/validadores.js` y `js/logica/paginacion.js`) y exige al menos un 90 % de líneas (`thresholds` en `vitest.config.js`): si baja, el comando falla y la CI se pone en rojo. Hoy llega al 100 % de líneas, ramas y funciones en los dos ficheros. Quitar los tests de un validador la hace bajar: comprobado con los tests de validadores y de animales desactivados, la cobertura cayó al 32 % y el comando falló con el 90 % sin cumplir.
+
 <!-- 1. Tabla de la pirámide: tipo (unitario, de integración o de extremo a extremo), fichero,
         qué prueba y cuántos tests tiene. Por qué cada cosa se prueba en ese nivel y no en otro.
      2. Cómo simulas al usuario (eventos, requestSubmit), los servicios (AlmacenFalso, el resumen
