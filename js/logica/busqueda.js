@@ -89,3 +89,18 @@ export function debounce(funcion, espera) {
     temporizador = setTimeout(() => funcion(...argumentos), espera);
   };
 }
+
+/**
+ * Escribe el contador de resultados del buscador, en singular o en plural.
+ * @param {number} cantidad Cuántos elementos coinciden con la búsqueda (en todas las páginas).
+ * @param {string} singular Cómo se llama uno solo.
+ * @param {string} plural Cómo se llaman varios o ninguno.
+ * @returns {string}
+ * @example
+ * textoContador(1, 'animal', 'animales'); // '1 animal'
+ * textoContador(0, 'animal', 'animales'); // '0 animales'
+ * textoContador(8, 'animal', 'animales'); // '8 animales'
+ */
+export function textoContador(cantidad, singular, plural) {
+  return `${cantidad} ${cantidad === 1 ? singular : plural}`;
+}
