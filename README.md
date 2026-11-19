@@ -285,7 +285,7 @@ All matched files use Prettier code style!
 
 <!-- Sprint 2: los artefactos (coverage/ y playwright-report/), concurrency y el trabajo E2E. -->
 
-**Ejecución en verde con sus artefactos:** <!-- enlace -->
+**Ejecución en verde con sus artefactos:** [ejecución 44555368232](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/actions/runs/44555368232) (*pull request* 66: los tres trabajos en verde y el artefacto `cobertura`)
 
 ## Despliegue continuo
 
