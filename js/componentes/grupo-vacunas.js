@@ -8,7 +8,8 @@
  *
  * «Añadir vacuna» y los botones «Quitar» se atienden con dos oyentes de `click`: uno en el botón de
  * añadir y otro en el grupo, que sirve para todas las filas, también las que se añadan después
- * (delegación con `closest`). En el máximo, «Añadir vacuna» se desactiva con `disabled`.
+ * (delegación con `closest`). En el máximo, «Añadir vacuna» se desactiva con `disabled`. Cada vez
+ * que cambia el número de filas, el grupo lanza el evento propio `cambio-vacunas` (con burbuja).
  *
  * @module componentes/grupo-vacunas
  */
@@ -85,6 +86,7 @@ export function crearFilaVacuna(plantilla, numero, vacuna = null) {
  * @param {ElementosVacunas} elementos Los elementos de la ficha.
  * @returns {GrupoVacunas}
  * @listens click
+ * @fires cambio-vacunas
  * @example
  * const vacunas = iniciarGrupoVacunas({ grupo, boton, contador, plantilla });
  * vacunas.anadir({ tipo: 'rabia', fecha: '2026-10-15' });
@@ -93,11 +95,16 @@ export function iniciarGrupoVacunas(elementos) {
   const { grupo, boton, contador, plantilla } = elementos;
   let siguiente = 1;
 
-  /** Pone el contador y activa o desactiva «Añadir vacuna» según cuántas filas hay. */
+  /**
+   * Pone el contador y activa o desactiva «Añadir vacuna» según cuántas filas hay. Después lanza
+   * `cambio-vacunas`, que sube hasta el formulario: añadir o quitar una fila no lanza `input` ni
+   * `change`, y así la cartilla también se entera.
+   */
   function actualizar() {
     const cantidad = grupo.querySelectorAll('.vacuna').length;
     boton.disabled = cantidad >= MAX_VACUNAS;
     contador.textContent = textoContador(cantidad);
+    grupo.dispatchEvent(new CustomEvent('cambio-vacunas', { bubbles: true, detail: { cantidad } }));
   }
 
   /**
