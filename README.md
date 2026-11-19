@@ -347,6 +347,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `ficha-edicion` | Edición de un animal e id inexistente en la ficha | [#61](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/61) |
 | `tests-integracion-listado` | Test de integración del listado: búsqueda con debounce y paginación | [#62](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/62) |
 | `e2e-crud` | Recorrido E2E del CRUD de animales | [#63](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/63) |
+| `usuarios-listado` | Listado de usuarios con buscador y paginación reutilizados | [#64](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/64) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
