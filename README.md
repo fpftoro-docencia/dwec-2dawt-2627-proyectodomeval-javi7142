@@ -149,6 +149,7 @@ Las reglas de formato están en `js/logica/validadores.js`: cada validador devue
 | Unitario | `tests/unitarios/validadores.test.js` | Los validadores del registro con tablas `it.each`: casos válidos con los límites (3 y 20 caracteres, 8 en la contraseña, tildes y ñ) y al menos un caso no válido por cada regla, con su motivo | 40 |
 | Integración | `tests/integracion/listado.test.js` | `listado.html` real en happy-dom con `AlmacenFalso` y dobles de navegación y dirección: búsqueda con el debounce de 250 ms (`vi.useFakeTimers()`), cambio de página y `?pagina`, contador y mensajes vacíos, filtros por estado y borrado con el diálogo | 37 |
 | Extremo a extremo | `e2e/sesion.spec.js` (con `e2e/ayudas.js`) | El recorrido de la sesión en Chromium: el primer usuario se registra y ve «Usuarios», cierra sesión y vuelve a entrar, contraseña incorrecta, un segundo usuario normal sin «Usuarios», acceso sin sesión y con sesión | 6 |
+| Extremo a extremo | `e2e/crud.spec.js` (con `e2e/ayudas.js`) | El recorrido del CRUD en Chromium: dar de alta un animal rellenando la ficha completa (especie, foto, estado, esterilización y vacuna) y verlo en el listado, abrirlo desde «Editar» con todos sus datos, editarlo sin duplicarlo, cancelar el borrado y borrarlo con confirmación; en cada paso se recarga la página para comprobar que lo guardado sigue ahí | 5 |
 
 Son unitarios porque prueban módulos de datos sin DOM: reciben el almacenamiento como parámetro y se les da un `AlmacenFalso`. La función que calcula el resumen de la contraseña también se puede sustituir por un doble (`vi.fn`).
 
@@ -345,6 +346,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `ficha-guardado` | Fechas, FormData y guardado de la ficha | [#60](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/60) |
 | `ficha-edicion` | Edición de un animal e id inexistente en la ficha | [#61](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/61) |
 | `tests-integracion-listado` | Test de integración del listado: búsqueda con debounce y paginación | [#62](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/62) |
+| `e2e-crud` | Recorrido E2E del CRUD de animales | [#63](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/63) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
