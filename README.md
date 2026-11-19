@@ -352,6 +352,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `e2e-crud` | Recorrido E2E del CRUD de animales | [#63](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/63) |
 | `usuarios-listado` | Listado de usuarios con buscador y paginación reutilizados | [#64](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/64) |
 | `usuarios-rol` | Dar y quitar el rol de administrador | [#65](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/65) |
+| `ci-paso-2` | Workflow de CI con E2E, artefacto de cobertura e insignia | [#66](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/66) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
