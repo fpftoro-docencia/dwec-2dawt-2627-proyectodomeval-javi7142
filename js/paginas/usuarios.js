@@ -11,14 +11,14 @@
  *
  * @module paginas/usuarios
  */
-import { iniciarAvisos } from '../componentes/avisos.js';
+import { iniciarAvisos, lanzarAviso } from '../componentes/avisos.js';
 import { iniciarCabecera } from '../componentes/cabecera.js';
 import { iniciarControles, pintarControles } from '../componentes/controles-paginacion.js';
 import { iniciarAtajoBusqueda } from '../componentes/atajo-busqueda.js';
 import { crearFilaUsuario } from '../componentes/fila-usuario.js';
 import { iniciarCierreSesion, protegerPagina } from '../componentes/proteccion.js';
-import { leerSesion } from '../datos/sesion.js';
-import { leerUsuarios, normalizarNombre } from '../datos/usuarios.js';
+import { guardarSesion, leerSesion, ROLES } from '../datos/sesion.js';
+import { cambiarRol, leerUsuarios, normalizarNombre, rolDeUsuario } from '../datos/usuarios.js';
 import { debounce, filtrarPorTexto, textoContador } from '../logica/busqueda.js';
 import { paginar } from '../logica/paginacion.js';
 import { escribirPagina, leerPagina } from '../logica/pagina-url.js';
@@ -46,6 +46,16 @@ const CAMPOS_BUSQUEDA = ['usuario', 'correo'];
  * teclear 250 ms (`debounce`), y vuelve a la página 1. El contador dice cuántas personas coinciden
  * en total y, si no hay ninguna, se enseña `#sin-resultados`. «Limpiar la búsqueda» vacía el
  * buscador y la tecla `/` lleva el foco a él.
+ *
+ * El botón de cada chapa da o quita el rol de administrador; se atienden todos con un solo oyente
+ * en la lista (delegación con `closest`). Tras el cambio se vuelve a pintar, se avisa y el foco
+ * vuelve al botón de esa persona. **Siempre queda al menos un administrador:** tu propio botón
+ * está desactivado (con una nota que lo explica) y, además, `cambiarRol` no le quita el rol al
+ * último que queda.
+ *
+ * El rol que vale es el guardado en la lista de usuarios, no la copia de la sesión: al entrar y
+ * antes de cada cambio se pone la sesión al día. Si otro administrador te ha quitado el rol (en
+ * otra pestaña, por ejemplo), no puedes seguir aquí con la sesión vieja: vuelves al listado.
  * @param {Document} documento
  * @param {object} dependencias
  * @param {Storage} dependencias.almacenSesion Donde está la sesión y los avisos (`sessionStorage`).
@@ -58,10 +68,29 @@ const CAMPOS_BUSQUEDA = ['usuario', 'correo'];
  *   dirección sin recargar la página ni añadir un paso al historial (`history.replaceState`).
  * @listens click
  * @listens input
+ * @fires aviso
  */
 export function iniciarUsuarios(documento, { almacenSesion, almacenUsuarios, navegar, direccion }) {
-  const sesion = leerSesion(almacenSesion);
-  if (!protegerPagina(sesion, { almacenSesion, navegar, soloAdministradores: true })) {
+  let sesion = leerSesion(almacenSesion);
+
+  /**
+   * Pone el rol de la sesión al día con el guardado en la lista de usuarios (si ya no existe, deja
+   * de ser administrador) y dice si puede seguir en la página. Si no puede, `protegerPagina` ya lo
+   * ha llevado a otra.
+   * @returns {boolean} `true` si sigue siendo administrador.
+   */
+  function comprobarPermiso() {
+    if (sesion) {
+      const rol = rolDeUsuario(almacenUsuarios, sesion.usuario) ?? ROLES.usuario;
+      if (rol !== sesion.rol) {
+        sesion = { usuario: sesion.usuario, rol };
+        guardarSesion(almacenSesion, sesion);
+      }
+    }
+    return protegerPagina(sesion, { almacenSesion, navegar, soloAdministradores: true });
+  }
+
+  if (!comprobarPermiso()) {
     return;
   }
   // Puede quedarse: con esta marca el CSS deja ver la página, que hasta ahora estaba oculta
@@ -109,6 +138,52 @@ export function iniciarUsuarios(documento, { almacenSesion, almacenUsuarios, nav
     documento.querySelector('#sin-resultados').hidden = encontrados.length > 0;
     documento.querySelector('#resumen').textContent = textoResumenUsuarios(usuarios);
   }
+
+  /**
+   * Da el rol de administrador a quien no lo tiene, o se lo quita a quien lo tiene, y avisa.
+   * @param {string} nombre El usuario de la chapa pulsada (`data-usuario`).
+   */
+  function alternarRol(nombre) {
+    // Con la sesión vieja no se cambia nada; tampoco el propio rol, aunque alguien quite el
+    // `disabled` del botón con las DevTools
+    if (!comprobarPermiso() || normalizarNombre(nombre) === normalizarNombre(sesion.usuario)) {
+      return;
+    }
+    const rolNuevo =
+      rolDeUsuario(almacenUsuarios, nombre) === ROLES.administrador
+        ? ROLES.usuario
+        : ROLES.administrador;
+    if (!cambiarRol(almacenUsuarios, nombre, rolNuevo)) {
+      // Se vuelve a pintar por si la lista guardada ha cambiado desde que se abrió la página
+      pintar();
+      lanzarAviso(
+        lista,
+        `No se ha podido cambiar el rol de ${nombre}: siempre debe quedar al menos un administrador.`,
+        'danger',
+      );
+      return;
+    }
+    pintar();
+    // La chapa se ha creado de nuevo: el foco vuelve al botón de la misma persona
+    const fila = [...lista.querySelectorAll('.voluntario')].find(
+      (elemento) => elemento.dataset.usuario === nombre,
+    );
+    fila?.querySelector('[data-accion="cambiar-rol"]').focus();
+    lanzarAviso(
+      lista,
+      rolNuevo === ROLES.administrador
+        ? `Has dado el rol de administrador a ${nombre}.`
+        : `Has quitado el rol de administrador a ${nombre}.`,
+    );
+  }
+
+  // Un solo oyente para los botones de todas las chapas (delegación con `closest`)
+  lista.addEventListener('click', (evento) => {
+    const boton = evento.target.closest('[data-accion="cambiar-rol"]');
+    if (boton) {
+      alternarRol(boton.closest('.voluntario').dataset.usuario);
+    }
+  });
 
   // Se busca al dejar de teclear, no con cada tecla; al buscar se vuelve a la página 1
   buscador.addEventListener(
