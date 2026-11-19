@@ -77,7 +77,13 @@ export function iniciarAcceso(documento, { almacenUsuarios, almacenSesion, naveg
     navegar('listado.html');
   }
 
-  iniciarValidacion(formulario, { alEnviar: entrar });
+  iniciarValidacion(formulario, {
+    mensajes: {
+      usuario: { valueMissing: 'Escribe tu usuario.' },
+      clave: { valueMissing: 'Escribe tu contraseña.' },
+    },
+    alEnviar: entrar,
+  });
 }
 
 iniciarAvisos(document, sessionStorage);

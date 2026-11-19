@@ -24,6 +24,20 @@ const NOMBRE_OCUPADO = 'Ese usuario ya existe. Elige otro nombre.';
 const CLAVES_DISTINTAS = 'Las contraseñas no coinciden.';
 
 /**
+ * Los textos del registro para lo que ve el navegador, por el `name` de cada campo: si falta un
+ * campo obligatorio, qué hay que escribir, y el de la casilla de la tabla del README. Los errores
+ * de formato los dan los validadores.
+ * @type {Object<string, module:componentes/validacion-formulario~MensajesCampo>}
+ */
+const MENSAJES_REGISTRO = {
+  usuario: { valueMissing: 'Escribe un nombre de usuario.' },
+  correo: { valueMissing: 'Escribe tu correo, como nombre@ejemplo.org.' },
+  clave: { valueMissing: 'Escribe una contraseña.' },
+  repetirClave: { valueMissing: 'Repite la contraseña.' },
+  aceptacion: { valueMissing: 'Debes aceptar las condiciones.' },
+};
+
+/**
  * Marca con `data-cumple` los requisitos que cumple la contraseña. El CSS pone la huella en los que
  * se cumplen y enciende un dedo de la huella del formulario por cada uno.
  * @param {HTMLElement} lista La lista `#requisitos-clave`.
@@ -87,6 +101,7 @@ export function iniciarRegistro(documento, { almacenUsuarios, almacenSesion, nav
 
   const validacion = iniciarValidacion(formulario, {
     reglasExtra: reglasRegistro(almacenUsuarios),
+    mensajes: MENSAJES_REGISTRO,
     alEnviar: registrar,
   });
 
