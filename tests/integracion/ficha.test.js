@@ -277,6 +277,16 @@ describe('ficha.html en happy-dom', () => {
       expect(campo('sexo-hembra').classList.contains('is-invalid')).toBe(false);
     });
 
+    it('al salir del sexo sin elegir sale el error y se quita al elegir la otra opción (S2-18b)', () => {
+      preparar();
+      salir(campo('sexo-hembra'));
+      expect(textoError('sexo')).toBe('Elige el sexo.');
+      pulsar(campo('sexo-macho'));
+      escribir(campo('sexo-macho'), 'macho');
+      expect(textoError('sexo')).toBe('');
+      expect(campo('sexo-macho').classList.contains('is-invalid')).toBe(false);
+    });
+
     describe('los campos condicionales', () => {
       it('la fecha de esterilización no puede ser anterior al ingreso ni futura', () => {
         preparar();
