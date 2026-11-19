@@ -1,7 +1,6 @@
 # Huellas · Gestión de una protectora de animales
 
-<!-- Sprint 2: la insignia de tu workflow, con tu organización y tu repositorio. -->
-![Integración continua](https://github.com/<organización>/<repositorio>/actions/workflows/ci.yml/badge.svg)
+[![Integración continua](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/actions/workflows/ci.yml/badge.svg)](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/actions/workflows/ci.yml)
 
 <!-- Completa cada sección a medida que avanzas en los sprints. Borra los comentarios como este
      cuando termines. Este README es también la portada de la documentación que genera `npm run docs`.
@@ -211,12 +210,16 @@ All matched files use Prettier code style!
 | Trabajo | Espera a | Pasos | Artefacto |
 |---------|----------|-------|-----------|
 | `Calidad` | — | `npm run lint` y `npm run format:check` | — |
-| `Tests` | `Calidad` (`needs`) | `npm test` | — |
-| `E2E` | | | |
+| `Tests` | `Calidad` (`needs`) | `npm run coverage`: pasa los tests y comprueba el umbral de cobertura | `cobertura`: la carpeta `coverage/` con el informe en HTML |
+| `E2E` | `Tests` (`needs`) | `npx playwright install --with-deps chromium` y `npm run e2e` | `playwright-report`: el informe de Playwright, **solo si algo falla** (`if: failure()`) |
 
-**Por qué en ese orden:** revisar el código es lo más rápido y barato. Si falla, no tiene sentido gastar minutos en los tests: `needs` hace que `Tests` ni empiece. En el sprint 2 se añade `E2E`, que espera a `Tests` por la misma razón.
+**Por qué en ese orden:** revisar el código es lo más rápido y barato. Si falla, no tiene sentido gastar minutos en los tests: `needs` hace que `Tests` ni empiece. Por la misma razón `E2E` espera a `Tests`: instalar Chromium y recorrer la web en un navegador es lo más lento, y no merece la pena si ya fallan los tests o el umbral de cobertura.
 
-<!-- Sprint 2: los artefactos (coverage/ y playwright-report/), concurrency y el trabajo E2E. -->
+**Una sola ejecución por rama:** el bloque `concurrency` agrupa las ejecuciones por *workflow* y por rama (`github.ref`) y, con `cancel-in-progress: true`, cancela la anterior cuando subes otro commit a la misma rama. Así no se gastan minutos en comprobar un commit que ya está desfasado.
+
+**Cómo descargar la cobertura:** en GitHub, pestaña **Actions** → la ejecución que quieras → al final de la página, el apartado **Artifacts** → `cobertura`. Se baja un `.zip`; al descomprimirlo, el informe se abre con `index.html` en el navegador. Si `E2E` falla, ahí aparece también `playwright-report`, que se abre igual. Los artefactos se conservan 90 días.
+
+**Insignia:** la que está al principio de este README muestra el resultado de la última ejecución del *workflow* en `main` (verde si pasa, roja si falla) y enlaza con la lista de ejecuciones.
 
 **Ejecución en verde con sus artefactos:** <!-- enlace -->
 
