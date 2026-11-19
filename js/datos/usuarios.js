@@ -1,5 +1,6 @@
 /**
- * Usuarios: el registro de voluntarios, la comprobación de su contraseña y su rol.
+ * Usuarios: el registro de voluntarios, la comprobación de su contraseña y su rol, que los
+ * administradores pueden cambiar.
  *
  * Se guardan en `localStorage`, en JSON, bajo una sola clave. De cada usuario se guarda el nombre,
  * el correo, el rol y el **resumen** de su contraseña (`resumirClave`), nunca la contraseña.
@@ -126,6 +127,53 @@ export async function registrarUsuario(
   const nuevo = { usuario: usuario.trim(), correo: correo.trim(), rol, resumen };
   guardarUsuarios(almacen, [...usuarios, nuevo]);
   return { usuario: nuevo.usuario, rol };
+}
+
+/**
+ * Dice qué rol tiene guardado un usuario, sin distinguir mayúsculas en el nombre. Es el rol que
+ * vale: el de la sesión es una copia que se queda vieja si otro administrador lo cambia.
+ * @param {Storage} almacen
+ * @param {string} nombre
+ * @returns {'administrador' | 'usuario' | null} Su rol, o `null` si no existe.
+ * @example
+ * rolDeUsuario(localStorage, 'Lola'); // 'administrador'
+ */
+export function rolDeUsuario(almacen, nombre) {
+  return buscarUsuario(almacen, nombre)?.rol ?? null;
+}
+
+/**
+ * Cambia el rol de un usuario y guarda la lista. **Siempre queda al menos un administrador:** si el
+ * usuario es el único administrador, no se le puede quitar el rol y no se guarda nada.
+ * @param {Storage} almacen
+ * @param {string} nombre El usuario, sin distinguir mayúsculas.
+ * @param {'administrador' | 'usuario'} rol El rol nuevo.
+ * @returns {boolean} `true` si el usuario queda con ese rol; `false` si no existe, si el rol no es
+ *   uno de los dos o si se le quitaría el rol al último administrador.
+ * @example
+ * cambiarRol(localStorage, 'iker', 'administrador'); // true
+ * cambiarRol(localStorage, 'lola', 'usuario'); // false si lola es la única administradora
+ */
+export function cambiarRol(almacen, nombre, rol) {
+  const usuarios = leerUsuarios(almacen);
+  const buscado = normalizarNombre(nombre);
+  const elegido = usuarios.find((usuario) => normalizarNombre(usuario.usuario) === buscado);
+  if (!elegido || !Object.values(ROLES).includes(rol)) {
+    return false;
+  }
+  const administradores = usuarios.filter((usuario) => usuario.rol === ROLES.administrador);
+  const quitaAlUltimo =
+    elegido.rol === ROLES.administrador &&
+    rol !== ROLES.administrador &&
+    administradores.length <= 1;
+  if (quitaAlUltimo) {
+    return false;
+  }
+  guardarUsuarios(
+    almacen,
+    usuarios.map((usuario) => (usuario === elegido ? { ...usuario, rol } : usuario)),
+  );
+  return true;
 }
 
 /**
