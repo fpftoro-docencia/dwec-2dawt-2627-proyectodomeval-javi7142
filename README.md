@@ -337,6 +337,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `listado-perfil` | Perfil lateral de un animal en un diálogo | [#53](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/53) |
 | `listado-buscador` | Buscador con debounce, contador y mensaje vacío del listado | [#54](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/54) |
 | `listado-filtros` | Filtros por estado con contadores en el listado | [#55](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/55) |
+| `listado-pagina-url` | Página del listado en la dirección | [#56](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/56) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
