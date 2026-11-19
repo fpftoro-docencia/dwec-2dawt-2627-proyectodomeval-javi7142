@@ -1,0 +1,3 @@
+# Saltos de línea LF en todos los equipos. Prettier espera LF, y en Windows Git los convertiría a
+# CRLF (core.autocrlf) y `npm run format:check` fallaría dentro del Dev Container.
+* text=auto eol=lf

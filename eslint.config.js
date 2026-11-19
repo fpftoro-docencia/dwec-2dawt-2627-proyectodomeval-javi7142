@@ -15,6 +15,11 @@ export default [
       'no-var': 'error',
       'prefer-const': 'error',
       eqeqeq: 'error',
+      // Reglas propias del proyecto: por qué se eligió cada una, en la sección «Integración continua» del README
+      camelcase: ['error', { properties: 'never' }],
+      curly: ['error', 'multi-line'],
+      'no-param-reassign': 'error',
+      'no-else-return': 'error',
     },
   },
 ];

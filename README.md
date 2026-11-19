@@ -1,7 +1,6 @@
-# Nombre de tu aplicación
+# Huellas · Gestión de una protectora de animales
 
-<!-- Sprint 2: la insignia de tu workflow, con tu organización y tu repositorio. -->
-![Integración continua](https://github.com/<organización>/<repositorio>/actions/workflows/ci.yml/badge.svg)
+[![Integración continua](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/actions/workflows/ci.yml/badge.svg)](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/actions/workflows/ci.yml)
 
 <!-- Completa cada sección a medida que avanzas en los sprints. Borra los comentarios como este
      cuando termines. Este README es también la portada de la documentación que genera `npm run docs`.
@@ -9,34 +8,77 @@
 
 ## Mi proyecto
 
-<!-- Sprint 1. De qué es tu aplicación y para quién, en dos o tres frases. -->
+**Huellas** es una aplicación web para los voluntarios de una protectora de animales. Cada voluntario (o casa de acogida) lleva el control de los animales que tiene a su cargo: los da de alta, los edita, anota sus vacunas y marca cuándo los adoptan. El coordinador de la protectora, que es el administrador, gestiona además a los voluntarios.
+
+Está hecha con JavaScript sin librerías (solo el CSS de Bootstrap) y sin APIs remotas: los usuarios y los animales se guardan en el navegador.
+
+> ⚠️ **Todos los datos de ejemplo son inventados.** El repositorio y la web publicada son públicos, así que ningún nombre, DNI, teléfono ni microchip del proyecto pertenece a una persona o a un animal reales.
+
+**Roles:**
+
+| Rol | Quién es | Qué puede hacer |
+|-----|----------|-----------------|
+| Usuario | Voluntario o casa de acogida | Ver y gestionar solo sus animales |
+| Administrador | Coordinador. Es el primer usuario que se registra | Lo mismo que un usuario, y además entrar en «Usuarios» para dar o quitar el rol de administrador a otros |
 
 **Web publicada:** <!-- https://<proyecto>.vercel.app -->
 
 ### La entidad
 
-<!-- Sprint 2 (puedes adelantarla en el sprint 1). Una fila por campo, con los mínimos del requisito 13:
-     marca el campo condicional y el grupo dinámico (con su mínimo y su máximo). -->
+La entidad es el **animal** que el voluntario tiene a su cargo. La ficha (`ficha.html`) tiene un campo por fila de esta tabla, y la última columna dice dónde queda cada dato en el objeto que se guarda. Ese objeto está descrito con `@typedef` en `js/datos/animales.js` (`Animal`, `Vacuna` y `Adopcion`), y los valores que guarda son los `value` del formulario.
 
-| Campo | Control | Obligatorio | Regla de validación | Mensaje si no se cumple |
-|-------|---------|:-----------:|---------------------|-------------------------|
-| | | | | |
+| Campo | Control en la ficha | Obligatorio | Regla de validación | Mensaje si no se cumple | Se guarda en |
+|-------|---------------------|:-----------:|---------------------|-------------------------|--------------|
+| Nombre | Texto (`#nombre`) | Sí | Expresión regular `^\p{L}[\p{L} '-]{1,29}$` con la bandera `u` | «El nombre empieza por una letra y tiene de 2 a 30 caracteres: letras, espacios, apóstrofos o guiones.» | `nombre`, sin espacios a los lados |
+| Especie | Lista desplegable (`#especie`) | Sí | Una de la lista: `perro`, `gato`, `conejo` u `otro` | «Elige una especie.» | `especie` |
+| Sexo | Botones de opción (`sexo`) | Sí | `hembra` o `macho` | «Elige el sexo.» | `sexo` |
+| Fecha de ingreso | Fecha (`#ingreso`) | Sí | No posterior a hoy (el `max` lo pone el código) | «La fecha de ingreso no puede ser futura.» | `ingreso`, como `AAAA-MM-DD` |
+| Peso (kg) | Número (`#peso`) | Sí | Entre 0,1 y 100, con un decimal como mucho (`step="0.1"`) | «El peso debe estar entre 0,1 y 100 kg, con un decimal como mucho.» | `peso`, como número |
+| Microchip | Texto (`#microchip`) | Sí | Expresión regular `^\d{15}$` | «El microchip tiene 15 dígitos.» | `microchip`, como texto (así no se pierden los ceros del principio) |
+| Foto | Galería de botones de opción con fotos (`foto`, en `#galeria-fotos`) | Sí | Una de las fotos de su especie; la galería se activa al elegir la especie | «Elige una foto.» | `foto`: el nombre del archivo de `img/fotos/` sin la extensión (`perro-1`) |
+| Estado | Botones de opción (`estado`; empieza en «En acogida») | Sí | `acogida`, `disponible` o `adoptado` | «Elige el estado.» | `estado` |
+| Esterilizado | Casilla (`#esterilizado`) | No | — | — | `esterilizado`, `true` o `false` |
+| **Fecha de esterilización** (campo condicional: solo si la casilla está marcada) | Fecha (`#fecha-esterilizacion`) | Sí, si está esterilizado | No futura y no anterior al ingreso | «La esterilización no puede ser futura ni anterior al ingreso.» | `fechaEsterilizacion`, o `null` si no está esterilizado |
+| **Adoptante: nombre** (campo condicional: solo si el estado es «Adoptado») | Texto (`#adoptante-nombre`) | Sí, si está adoptado | El mismo validador que el nombre (`data-validar="nombre"`) | «Escribe el nombre del adoptante.» si falta; si no cumple la regla, el mismo mensaje que el nombre | `adopcion.nombre` |
+| **Adoptante: DNI** (campo condicional) | Texto (`#adoptante-dni`) | Sí, si está adoptado | Expresión regular `^\d{8}[A-Z]$` **y** letra de control (abajo) | «El DNI tiene 8 cifras y una letra, como 12345678Z.» / «La letra no corresponde al número del DNI.» | `adopcion.dni` |
+| **Adoptante: teléfono** (campo condicional) | Teléfono (`#adoptante-telefono`) | No | Expresión regular `^[679]\d{8}$` | «El teléfono tiene 9 cifras y empieza por 6, 7 o 9.» | `adopcion.telefono`, o `null` si se deja vacío |
+| **Vacunas** (grupo dinámico, de **0 a 3**): tipo | Lista desplegable (`vacunaTipo`, desde `#plantilla-vacuna`) | Sí, en cada vacuna | `rabia`, `polivalente`, `triple-felina`, `leucemia-felina`, `mixomatosis` u `otra` | «Elige la vacuna.» | `vacunas[i].tipo` |
+| **Vacunas** (grupo dinámico, de **0 a 3**): fecha | Fecha (`vacunaFecha`, desde `#plantilla-vacuna`) | Sí, en cada vacuna | No futura y no anterior al ingreso | «La fecha de la vacuna no puede ser futura ni anterior al ingreso.» | `vacunas[i].fecha` |
+
+Además, cada animal tiene un `id` único, que pone el módulo de datos al darlo de alta, y `adopcion` vale `null` si el estado no es «Adoptado». Las fechas se guardan como las da el campo de fecha (`AAAA-MM-DD`). Si falta un campo obligatorio, el mensaje dice qué hay que escribir o elegir («Escribe la fecha de ingreso.», «Elige el sexo.»); los textos de cada campo están en `MENSAJES_FICHA` de `js/paginas/ficha.js`.
+
+**Cómo cumple los mínimos del requisito 13:**
+
+- **Cinco campos o más, con tres tipos de control o más:** nueve campos fijos, más los condicionales y las vacunas, con siete controles distintos (texto, número, fecha, lista desplegable, botones de opción, casilla y teléfono).
+- **Campo condicional:** la fecha de esterilización solo aparece con la casilla marcada, y los datos del adoptante, con el estado «Adoptado». Mientras no tocan están ocultos y desactivados (`hidden` y `disabled`), así que no se envían ni se guardan.
+- **Grupo dinámico:** las vacunas, de 0 a 3, se añaden desde el `<template>` `#plantilla-vacuna` y cada una se puede quitar. «Añadir vacuna» se desactiva al llegar a 3.
+- **Tres validadores con expresión regular o más:** nombre, microchip, DNI y teléfono, los cuatro propios del tema. El del DNI comprueba además con código la letra de control.
+
+**La letra de control va en el DNI del adoptante,** no en un código de ficha: el DNI es un dato que se pide de verdad al adoptar, ya está en la ficha y su regla es conocida, mientras que un código de ficha sería un dato inventado solo para tener algo que comprobar. La regla: 8 cifras y una letra, que es la de `TRWAGMYFPDXBNJZSQVHLCKE` en la posición del resto de dividir el número entre 23. Por ejemplo, 12345678 entre 23 da de resto 14, la posición de la `Z`: `12345678Z` es válido y `12345678A` no. En la aplicación se usan siempre DNI inventados.
+
+Las fotos de los animales son recortes de imágenes de Unsplash (licencia gratuita); sus autores están en [img/fotos/CREDITOS.md](img/fotos/CREDITOS.md). Los animales y sus datos son inventados.
 
 ### El registro de usuarios
 
+Las reglas de formato están en `js/logica/validadores.js`: cada validador devuelve el mensaje de error, o nada si el valor es válido. Un campo vacío lo controla el atributo `required`, y su mensaje dice qué hay que escribir («Escribe una contraseña.», «Repite la contraseña.»).
+
 | Campo | Control | Regla | Mensaje |
 |-------|---------|-------|---------|
-| | | | |
+| Usuario | Texto | Expresión regular `^\p{L}[\p{L}\d_.-]{2,19}$` con la bandera `u`, y que no esté ocupado | «El usuario empieza por una letra y tiene de 3 a 20 caracteres: letras, cifras, puntos o guiones.» / «Ese usuario ya existe. Elige otro nombre.» |
+| Correo | Correo | Expresión regular `^[^\s@]+@[^\s@]+\.[^\s@]+$` | «Escribe un correo como nombre@ejemplo.org.» |
+| Contraseña | Contraseña | Al menos 8 caracteres, una minúscula `\p{Ll}`, una mayúscula `\p{Lu}` y una cifra `\d`. Los requisitos se marcan mientras se escribe | «La contraseña necesita 8 caracteres o más, una minúscula, una mayúscula y una cifra.» |
+| Repetir contraseña | Contraseña | Igual que la contraseña | «Las contraseñas no coinciden.» |
+| Aceptación | Casilla | Marcada | «Debes aceptar las condiciones.» |
 
 ### Páginas
 
 | Página | Acceso | Qué hace |
 |--------|--------|----------|
-| `index.html` | Pública | |
-| `registro.html` | Pública | |
-| `listado.html` | Usuarios | |
-| `ficha.html` | Usuarios | |
-| `usuarios.html` | Administradores | |
+| `index.html` | Pública | Inicio de sesión. Si ya hay sesión, lleva directamente al listado |
+| `registro.html` | Pública | Alta de un voluntario con la validación de la contraseña en vivo. El primero que se registra es administrador |
+| `listado.html` | Usuarios | Los animales del usuario en tarjetas, con buscador, contador, paginación y borrado con confirmación |
+| `ficha.html` | Usuarios | Alta y edición de un animal, con campo condicional y grupo dinámico de vacunas |
+| `usuarios.html` | Administradores | Listado de voluntarios con buscador y paginación, para dar o quitar el rol de administrador |
 
 ## Arquitectura y módulos
 
@@ -81,23 +123,105 @@
 
 ### Eventos en el HTML
 
-<!-- Qué consigues con el HTML sin escribir oyentes (envío con Intro, novalidate y los atributos de
-     validación, dialog, label for…) y por qué no usas atributos on…. -->
+Antes de escribir un solo oyente, el HTML ya hace bastante. Esto no necesita JavaScript:
+
+- **Enviar con Intro.** Los formularios de acceso, registro y ficha llevan un `<button type="submit">`. Al pulsar Intro dentro de un campo, el navegador lanza el evento `submit` como si se hubiera hecho clic en ese botón. Por eso no hay un oyente de `click` en «Entrar» o «Guardar».
+- **Botones que no envían.** Cualquier `<button>` dentro de un formulario envía por defecto. Los que no deben hacerlo (el ojo de la contraseña, «Añadir vacuna», «Quitar esta vacuna») llevan `type="button"`. Los de fuera de un formulario (filtros, «Borrar», «Cerrar sesión») también lo llevan, para que dejen claro que no envían nada.
+- **Atributos de validación con `novalidate`.** Los tres formularios llevan `novalidate`: así el navegador no saca sus globos de error y los mensajes son los del proyecto. Pero `required`, `minlength`, `maxlength`, `pattern`, `min`, `max` y los tipos `email`, `date`, `number` y `tel` siguen funcionando: el navegador los comprueba y guarda el resultado en `validity`. El código no repite esas reglas; solo les pone texto.
+- **`<label for>`.** Hacer clic en una etiqueta enfoca su campo, o marca la casilla o el botón de opción. Los botones «Hembra» y «Macho» de la ficha son etiquetas de dos radios: no tienen oyente.
+- **`<dialog>`.** `showModal()` pone la capa oscura, atrapa el foco dentro y cierra con Esc, sin código. Dentro, un `<form method="dialog">` cierra el diálogo al pulsar un botón `type="submit"`, sin enviar nada a ningún sitio, y deja en `dialogo.returnValue` el `value` del botón (`cancelar` o `confirmar` en el borrado). El código solo escucha el evento `close`.
+- **Enlaces.** «Editar la ficha» del perfil es un `<a href>`: navegar no necesita oyente.
+
+**Por qué no uso atributos `on…`** (`onclick="guardar()"`):
+
+- Mezclan el HTML con el JavaScript: para saber qué hace un botón hay que mirar en dos sitios.
+- Los scripts son módulos (`type="module"`), y las funciones de un módulo no son globales. Un `onclick="guardar()"` no encontraría la función.
+- Solo cabe uno por evento y elemento, y el código va dentro de una cadena de texto, sin que ESLint ni Prettier lo revisen.
+- Mis módulos reciben el almacenamiento y la navegación como parámetros (así se pueden probar con dobles); desde un atributo no se les puede pasar nada.
+- La Definición de Hecho (condición 8) prohíbe `onclick=` y `onsubmit=` en las páginas, y se comprueba con una búsqueda.
 
 ### Tipos de eventos
 
-<!-- Tabla con los eventos que usas y por qué has elegido cada uno frente a otros parecidos
-     (submit frente a click, input frente a change, blur frente a focusout…). -->
+| Evento | Dónde | Por qué este y no otro parecido |
+|--------|-------|---------------------------------|
+| `submit` | Formularios de acceso, de registro y de la ficha | **Frente a `click` en el botón:** `submit` salta con el clic y también con Intro en un campo (y con `requestSubmit()` en los tests); `click` se perdería el teclado. Además permite parar el envío con `preventDefault()` cuando hay errores. |
+| `input` | Campos de texto de los formularios, buscadores y contraseña del registro | **Frente a `change`:** `input` salta con cada tecla; `change` en un campo de texto solo salta al salir de él. Para que el error desaparezca en cuanto se corrige, los requisitos de la contraseña se vean en vivo y la cartilla se rellene mientras se escribe, hace falta `input`. |
+| `change` | Lista de especies, casilla de esterilizado, botones de estado | **Frente a `input`:** son controles que se eligen de golpe, no se escriben, y `change` es el evento pensado para eso. La cartilla escucha los dos: `input` para lo que se escribe y `change` para lo que se elige. |
+| `blur` (en captura) | Formularios con validación | **Frente a `focusout`:** los dos significan «el foco sale del campo». `blur` no sube por el DOM y `focusout` sí. Uso `blur` para la primera validación porque dice exactamente lo que busco («salir del campo») y obliga a escucharlo en la fase de captura, que explico en «Propagación». Con `focusout` bastaría un oyente normal. |
+| `click` | Botones, tarjetas, filtros, paginación y el propio diálogo | **Frente a `mousedown` o `pointerdown`:** `click` también salta con Intro y Espacio en un `<button>`, así que funciona con teclado, y no se dispara si se arrastra el puntero fuera antes de soltar. |
+| `keydown` | `document` | **Frente a `keyup` o `keypress`:** el atajo `/` necesita `preventDefault()` antes de que la barra se escriba en el buscador, y eso solo se puede hacer en `keydown`. `keypress` está obsoleto. |
+| `close` | Los dos `<dialog>` del listado | Salta al cerrar por cualquier vía: Esc, el botón de un `<form method="dialog">` o `close()` del clic fuera. Un oyente cubre todas. **Frente a `cancel`:** `cancel` solo salta con Esc, no con los botones. |
+| `pointerover` | Rejilla de pisadas | **Frente a `mousemove`:** salta una vez al entrar en cada casilla, no con cada píxel. **Frente a `pointerenter`:** `pointerover` sube por el DOM y permite un solo oyente en el contenedor (delegación); `pointerenter` no sube. **Frente a `mouseover`:** los eventos de puntero valen también para pantallas táctiles y lápices. |
+| `animationend` | Rejilla de pisadas | Avisa de que la animación del CSS ha terminado y la casilla queda libre, sin temporizadores en JavaScript que tengan que coincidir con la duración del CSS. |
+| `aviso` (propio) | `document` | Un `CustomEvent` con `bubbles: true` y el texto en `detail`. Cualquier módulo avisa con `lanzarAviso(elemento, …)` sin saber quién lo muestra; un solo oyente en `document` lo pinta. |
+| `cambio-vacunas` (propio) | Formulario de la ficha | Añadir o quitar una fila de vacunas no lanza `input` ni `change`, así que la cartilla no se enteraría. El grupo de vacunas lanza este evento (con la cantidad en `detail`) y la cartilla lo escucha, sin que un módulo conozca al otro. |
 
 ### Propagación
 
-<!-- 1. Tabla con TODOS tus oyentes: evento, dónde lo registras, en qué fase actúa
-        (captura, objetivo o burbuja) y para qué.
-     2. Dónde usas la delegación y qué ganas con ella.
-     3. Tu uso de la captura y por qué no servía la burbuja.
-     4. Si usas stopPropagation, por qué. -->
+Un evento viaja en tres fases: baja desde `window` hasta el elemento (**captura**), actúa en el elemento donde ha ocurrido (**objetivo**) y vuelve a subir (**burbuja**). `addEventListener` sin tercer argumento escucha en objetivo y burbuja. En la columna «Fase» de la tabla, «objetivo» quiere decir que el oyente está en el mismo elemento donde ocurre el evento, y «burbuja» que está en un antepasado y recibe el evento cuando sube. «Delegación» es un oyente en un contenedor que averigua con `closest` qué elemento de dentro se ha pulsado.
+
+Esta es la tabla con todos los oyentes del código, uno por cada `addEventListener` (`grep -rn "addEventListener" js/` da las mismas 29 líneas):
+
+| Fichero | Elemento | Evento | Fase | Qué hace |
+|---------|----------|--------|------|----------|
+| `js/componentes/atajo-busqueda.js` | `document` | `keydown` | Burbuja | Con la tecla `/` lleva el foco al buscador, salvo que se esté escribiendo en un campo. Lo usan el listado y usuarios |
+| `js/componentes/avisos.js` | `document` | `aviso` | Burbuja | Pinta en `#avisos` cada aviso que se lanza desde cualquier elemento |
+| `js/componentes/campos-condicionales.js` | Formulario de la ficha | `change` | Burbuja | Enseña u oculta los bloques de esterilización y de adopción según la casilla y el estado |
+| `js/componentes/cartilla.js` | Formulario de la ficha | `input` | Burbuja | Rellena la cartilla mientras se escribe en cualquier campo |
+| `js/componentes/cartilla.js` | Formulario de la ficha | `change` | Burbuja | Rellena la cartilla cuando se elige una opción, una casilla o una foto |
+| `js/componentes/cartilla.js` | Formulario de la ficha | `cambio-vacunas` | Burbuja | Pone los sellos de vacunas al añadir o quitar una fila |
+| `js/componentes/controles-paginacion.js` | `#paginacion` | `click` | Burbuja (delegación) | Si se pulsa un botón `[data-pagina]` no desactivado, avisa de la página elegida. Listado y usuarios |
+| `js/componentes/galeria-fotos.js` | Lista `#especie` | `change` | Objetivo | Vuelve a pintar las fotos de la especie elegida |
+| `js/componentes/grupo-vacunas.js` | `#anadir-vacuna` | `click` | Objetivo | Añade una fila de vacuna y pone el foco en su lista |
+| `js/componentes/grupo-vacunas.js` | `#grupo-vacunas` | `click` | Burbuja (delegación) | Quita la fila cuyo botón `[data-accion="quitar"]` se pulsa, también las creadas después |
+| `js/componentes/perfil-animal.js` | `<dialog id="perfil">` | `click` | Objetivo | Cierra el perfil si el clic cae fuera del panel; ignora los que llegan de dentro |
+| `js/componentes/pisadas.js` | `#pisadas` | `pointerover` | Burbuja (delegación) | Marca la casilla por la que pasa el puntero |
+| `js/componentes/pisadas.js` | `#pisadas` | `animationend` | Burbuja (delegación) | Quita la marca de la casilla cuando acaba la animación |
+| `js/componentes/proteccion.js` | `#cerrar-sesion` | `click` | Objetivo | Borra la sesión, deja un aviso y vuelve a `index.html` |
+| `js/componentes/validacion-formulario.js` | Formulario | `blur` | **Captura** | La primera validación de un campo, al salir de él |
+| `js/componentes/validacion-formulario.js` | Formulario | `input` | Burbuja | Vuelve a validar los campos ya tocados con cada cambio y los que dependen de ellos |
+| `js/componentes/validacion-formulario.js` | Formulario | `submit` | Objetivo | Valida todo: con errores avisa y pone el foco en el primero; si todo está bien, llama a `alEnviar` |
+| `js/componentes/ver-clave.js` | Formulario de acceso o de registro | `click` | Burbuja (delegación) | Enseña u oculta la contraseña con el botón `[data-ver-clave]` |
+| `js/paginas/ficha.js` | Formulario de la ficha | `change` | Burbuja | Revalida los campos de los bloques ocultos para quitarles el error viejo |
+| `js/paginas/listado.js` | `#lista-animales` | `click` | Burbuja (delegación) | Abre el perfil (`[data-accion="ver"]`) o pide confirmar el borrado (`[data-accion="borrar"]`) |
+| `js/paginas/listado.js` | `<dialog id="perfil">` | `close` | Objetivo | Devuelve el foco a la foto que abrió el perfil |
+| `js/paginas/listado.js` | `<dialog id="dialogo-borrar">` | `close` | Objetivo | Si `returnValue` es `confirmar`, borra el animal, repinta y avisa |
+| `js/paginas/listado.js` | `#buscador` | `input` | Objetivo | Busca 250 ms después de dejar de teclear (`debounce`) y vuelve a la página 1 |
+| `js/paginas/listado.js` | `.filtros-estado` | `click` | Burbuja (delegación) | Cambia el filtro con el botón `[data-filtro]` pulsado |
+| `js/paginas/listado.js` | `#limpiar-filtros` | `click` | Objetivo | Vacía el buscador, quita el filtro y pone el foco en el buscador |
+| `js/paginas/registro.js` | `#clave` | `input` | Objetivo | Marca los requisitos de la contraseña mientras se escribe |
+| `js/paginas/usuarios.js` | `#lista-usuarios` | `click` | Burbuja (delegación) | Da o quita el rol de administrador con el botón `[data-accion="cambiar-rol"]` |
+| `js/paginas/usuarios.js` | `#buscador` | `input` | Objetivo | Busca 250 ms después de dejar de teclear (`debounce`) y vuelve a la página 1 |
+| `js/paginas/usuarios.js` | `#limpiar-filtros` | `click` | Objetivo | Vacía el buscador y pone el foco en él |
+
+**Dónde uso la delegación y qué gano.** En la lista de animales, la lista de usuarios, los filtros, la paginación, el grupo de vacunas, el ojo de la contraseña y las casillas de las pisadas. El oyente va en el contenedor y, dentro, `evento.target.closest('[data-accion="borrar"]')` sube desde el elemento pulsado hasta el botón que busca (el `target` puede ser el icono SVG de dentro del botón, por eso no basta con mirar `target`). Gano tres cosas:
+
+- Un solo oyente en lugar de uno por tarjeta, por chapa o por casilla (son 700 en las pisadas).
+- Los elementos que se crean después funcionan sin registrar nada: `pintar()` recrea las tarjetas del listado con cada búsqueda o cambio de página, y el grupo de vacunas añade filas.
+- No se acumulan oyentes que haya que quitar al repintar.
+
+En los formularios hago algo parecido sin `closest`: un oyente en el `<form>` para `input` y `change` escucha a todos sus campos, también a las vacunas que se añaden después, y mira `evento.target` para saber cuál.
+
+**Dónde uso la captura y por qué no servía la burbuja.** Solo en la primera validación, con `blur`: `formulario.addEventListener('blur', …, true)`. El evento `blur` no sube por el DOM, así que un oyente normal en el formulario no lo recibiría nunca; solo lo oiría uno puesto en cada campo. En la fase de captura el evento baja desde `window` hasta el campo y pasa por el formulario de camino. Así un único oyente valida todos los campos, también los creados después, y `evento.target` es el campo que ha perdido el foco.
+
+**`stopPropagation`: no lo uso.** Sí hay un `stopImmediatePropagation()`, una vez, en el oyente de `submit` de la validación, cuando el formulario tiene errores. Junto a `preventDefault()` (que impide el envío del navegador), corta el evento para que ningún otro oyente de `submit` del mismo formulario, registrado después, reciba un envío no válido y lo trate como si lo fuera.
 
 ## Pruebas y cobertura
+
+| Tipo | Fichero | Qué prueba | Tests |
+|------|---------|------------|------:|
+| Unitario | `tests/unitarios/sesion.test.js` | El módulo de sesión con `AlmacenFalso` y con `sessionStorage`: guardar y leer, que no guarda la contraseña, borrar y diez formas de datos estropeados | 31 |
+| Unitario | `tests/unitarios/usuarios.test.js` | El módulo de usuarios con `AlmacenFalso`: el primero es administrador, nombres repetidos, contraseña correcta e incorrecta, que solo se guarda el resumen y los datos estropeados | 20 |
+| Unitario | `tests/unitarios/validadores.test.js` | Los validadores del registro con tablas `it.each`: casos válidos con los límites (3 y 20 caracteres, 8 en la contraseña, tildes y ñ) y al menos un caso no válido por cada regla, con su motivo | 40 |
+| Integración | `tests/integracion/proteccion-rol.test.js` | `usuarios.html` real en happy-dom con `AlmacenFalso` y la navegación sustituida por `vi.fn()`: quien no es administrador va a `listado.html` con el aviso de error y no ve nada, sin sesión (o con una estropeada) va a `index.html`, la sesión de administrador que ya no vale según la lista guardada también va al listado, y el administrador se queda y ve la lista | 15 |
+| Integración | `tests/integracion/listado.test.js` | `listado.html` real en happy-dom con `AlmacenFalso` y dobles de navegación y dirección: búsqueda con el debounce de 250 ms (`vi.useFakeTimers()`), cambio de página y `?pagina`, contador y mensajes vacíos, filtros por estado y borrado con el diálogo | 37 |
+| Integración | `tests/integracion/ficha.test.js` | `ficha.html` real en happy-dom con `AlmacenFalso` y dobles de navegación, de la fecha de hoy y de la dirección (`?id`): la validación al salir y al escribir con el mensaje de cada campo (tabla «La entidad»), los condicionales y las vacunas, el envío con errores (no guarda, avisa y lleva el foco al primer error), el envío válido comparando con `toEqual` el objeto completo guardado (adoptado y no adoptado, con vacunas), sin doble envío, y la edición con `?id` sin duplicar | 58 |
+| Extremo a extremo | `e2e/sesion.spec.js` (con `e2e/ayudas.js`) | El recorrido de la sesión en Chromium: el primer usuario se registra y ve «Usuarios», cierra sesión y vuelve a entrar, contraseña incorrecta, un segundo usuario normal sin «Usuarios», acceso sin sesión y con sesión | 6 |
+| Extremo a extremo | `e2e/crud.spec.js` (con `e2e/ayudas.js`) | El recorrido del CRUD en Chromium: dar de alta un animal rellenando la ficha completa (especie, foto, estado, esterilización y vacuna) y verlo en el listado, abrirlo desde «Editar» con todos sus datos, editarlo sin duplicarlo, cancelar el borrado y borrarlo con confirmación; en cada paso se recarga la página para comprobar que lo guardado sigue ahí | 5 |
+
+Son unitarios porque prueban módulos de datos sin DOM: reciben el almacenamiento como parámetro y se les da un `AlmacenFalso`. La función que calcula el resumen de la contraseña también se puede sustituir por un doble (`vi.fn`).
+
+**Cobertura:** `npm run coverage` mide solo las funciones puras (`js/logica/validadores.js` y `js/logica/paginacion.js`) y exige al menos un 90 % de líneas (`thresholds` en `vitest.config.js`): si baja, el comando falla y la CI se pone en rojo. Hoy llega al 100 % de líneas, ramas y funciones en los dos ficheros. Quitar los tests de un validador la hace bajar: comprobado con los tests de validadores y de animales desactivados, la cobertura cayó al 32 % y el comando falló con el 90 % sin cumplir.
 
 <!-- 1. Tabla de la pirámide: tipo (unitario, de integración o de extremo a extremo), fichero,
         qué prueba y cuántos tests tiene. Por qué cada cosa se prueba en ese nivel y no en otro.
@@ -112,22 +236,61 @@
 
 ### ESLint y Prettier
 
-<!-- Sprint 1. Las reglas que has añadido a eslint.config.js (al menos tres): qué comprueba cada una
-     y por qué la quieres. Pega la salida de `npm run lint` y de `npm run format:check`. Cuenta un
-     problema real que encontraras con el depurador de las DevTools y cómo lo resolviste. -->
+Además de las reglas recomendadas y de `no-var`, `prefer-const` y `eqeqeq`, que ya traía el punto de partida, `eslint.config.js` añade estas cuatro:
+
+| Regla | Qué comprueba | Por qué la quiero |
+|-------|---------------|-------------------|
+| `camelcase` (con `properties: 'never'`) | Que las variables y funciones se llamen en *camelCase*: `leerSesion`, no `leer_sesion` | Todo el proyecto nombra así y un nombre distinto despista al leer. Las propiedades quedan fuera porque algunas vienen de fuera, como las claves que guarda el navegador |
+| `curly` (con `multi-line`) | Que un `if`, `else`, `for` o `while` que ocupe más de una línea lleve llaves | Sin llaves, añadir una segunda línea a un `if` la deja fuera de él sin que se note. En una sola línea se permite (`if (vacio) return;`), aunque en el proyecto se usan siempre llaves |
+| `no-param-reassign` | Que no se asigne otro valor a un parámetro (`valor = valor.trim()`) | Los módulos reciben el almacenamiento, la sesión o la navegación como parámetros: si una función los cambiara, quien la llama dejaría de saber con qué trabaja. Se usa una variable nueva (`const usuario = valor.trim()`) |
+| `no-else-return` | Que no haya un `else` después de un `if` que ya termina en `return` | El `else` sobra: el código queda más plano y se lee de arriba abajo, con los casos que salen antes, como en `iniciarAcceso` |
+
+No se usa `no-console`: fallaría en `scripts/construir.js`, que escribe en la terminal y no se modifica.
+
+Para comprobar que funcionan, un fichero con un fallo de cada una da cuatro errores:
+
+```text
+  2:17  error  Identifier 'con_guion_bajo' is not in camel case  camelcase
+  3:3   error  Assignment to function parameter 'valor'          no-param-reassign
+  5:5   error  Expected { after 'if' condition                   curly
+  8:10  error  Unnecessary 'else' after 'return'                 no-else-return
+✖ 4 problems (4 errors, 0 warnings)
+```
+
+Con el código del proyecto, las dos órdenes terminan sin errores:
+
+```text
+$ npm run lint
+> eslint .
+
+$ npm run format:check
+> prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+```
+
+<!-- Pendiente: un problema real que encontraras con el depurador de las DevTools y cómo lo
+     resolviste, contado por ti. -->
 
 ### El workflow
 
-<!-- Sprints 1 y 2. Qué hace ci.yml: cuándo se ejecuta, la tabla de sus trabajos y por qué están en
-     ese orden, qué artefactos sube y para qué sirven, y qué hace concurrency. -->
+`.github/workflows/ci.yml` se ejecuta con cada `push` a `main` y con cada *pull request* hacia `main`. Solo tiene permiso para leer el código (`permissions: contents: read`). Cada trabajo empieza en una máquina limpia de `ubuntu-latest`: descarga el código, instala Node.js 24 con la caché de npm (así no descarga los paquetes cada vez) y las dependencias exactas de `package-lock.json` con `npm ci`.
 
 | Trabajo | Espera a | Pasos | Artefacto |
 |---------|----------|-------|-----------|
-| `Calidad` | — | | — |
-| `Tests` | | | |
-| `E2E` | | | |
+| `Calidad` | — | `npm run lint` y `npm run format:check` | — |
+| `Tests` | `Calidad` (`needs`) | `npm run coverage`: pasa los tests y comprueba el umbral de cobertura | `cobertura`: la carpeta `coverage/` con el informe en HTML |
+| `E2E` | `Tests` (`needs`) | `npx playwright install --with-deps chromium` y `npm run e2e` | `playwright-report`: el informe de Playwright, **solo si algo falla** (`if: failure()`) |
 
-**Ejecución en verde con sus artefactos:** <!-- enlace -->
+**Por qué en ese orden:** revisar el código es lo más rápido y barato. Si falla, no tiene sentido gastar minutos en los tests: `needs` hace que `Tests` ni empiece. Por la misma razón `E2E` espera a `Tests`: instalar Chromium y recorrer la web en un navegador es lo más lento, y no merece la pena si ya fallan los tests o el umbral de cobertura.
+
+**Una sola ejecución por rama:** el bloque `concurrency` agrupa las ejecuciones por *workflow* y por rama (`github.ref`) y, con `cancel-in-progress: true`, cancela la anterior cuando subes otro commit a la misma rama. Así no se gastan minutos en comprobar un commit que ya está desfasado.
+
+**Cómo descargar la cobertura:** en GitHub, pestaña **Actions** → la ejecución que quieras → al final de la página, el apartado **Artifacts** → `cobertura`. Se baja un `.zip`; al descomprimirlo, el informe se abre con `index.html` en el navegador. Si `E2E` falla, ahí aparece también `playwright-report`, que se abre igual. Los artefactos se conservan 90 días.
+
+**Insignia:** la que está al principio de este README muestra el resultado de la última ejecución del *workflow* en `main` (verde si pasa, roja si falla) y enlaza con la lista de ejecuciones.
+
+**Ejecución en verde con sus artefactos:** [ejecución 44555368232](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/actions/runs/44555368232) (*pull request* 66: los tres trabajos en verde y el artefacto `cobertura`)
 
 ## Despliegue continuo
 
@@ -152,10 +315,26 @@
 
 ### Definición de Hecho
 
-<!-- Sprint 1. Tu lista de condiciones para dar una tarea por terminada. Cada una tiene que poder
-     comprobarse. Si la cambias en algún sprint, di qué cambiaste y por qué. -->
+Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condiciones. Cada una se comprueba con una orden, con el tablero o con lo que se ve en GitHub, no con una opinión.
 
-- [ ] <!-- … -->
+| Nº | Condición | Cómo se comprueba |
+|----|-----------|-------------------|
+| 1 | Cumple el «Hecho cuando» de su tarjeta | Se prueba a mano en el navegador o en la terminal, y se tacha la tarjeta solo después |
+| 2 | El código vive en una rama propia y llega a `main` por una *pull request* fusionada con *merge* | La pestaña de la *pull request* en GitHub: rama, fusión y rama conservada |
+| 3 | `npm run lint` y `npm run format:check` terminan sin errores | Se ejecutan en el contenedor y no sale ningún aviso |
+| 4 | Si la tarea tiene lógica, sus tests están en esa tarea o en la tarjeta de tests que la cubre, y `npm test` pasa | Un test unitario para la lógica pura y los datos, y uno de integración para una página; la salida de `npm test` está en verde. Si los tests tienen tarjeta propia (S1-16, S1-17 y S2-22 a S2-25), la tarea se comprueba a mano y sus tests llegan con esa tarjeta |
+| 5 | Desde el sprint 2: `npm run coverage` supera el umbral y, si la tarea toca un recorrido, `npm run e2e` pasa | La salida de ambas órdenes, sin fallos |
+| 6 | Desde que existe el *workflow* (tarjeta S1-18): sus trabajos están en verde en la *pull request* antes de fusionar | La pestaña **Checks** de la *pull request* |
+| 7 | No quedan `console.log`, código comentado, `TODO` sueltos, `var`, `==` ni variables globales | `npm run lint` y una búsqueda de `console.log` y `TODO` en el código |
+| 8 | No hay `innerHTML` con datos, estilos escritos desde JavaScript ni atributos `on…` en el HTML | Una búsqueda de `innerHTML`, `.style` y `onclick=` (o `onsubmit=`…) en `js/` y en las páginas |
+| 9 | Ningún dato es real: nombres, DNI, teléfonos y microchips son inventados | Se revisan los ficheros de la *pull request* antes de fusionar |
+| 10 | Los commits son pequeños y su mensaje dice qué cambia | `git log --oneline` de la rama se lee sin abrir los ficheros |
+| 11 | Si la tarea añade o cambia algo explicado en el README, el JSDoc o la tabla de oyentes, ya está actualizado | Se compara el código de la *pull request* con la sección correspondiente |
+| 12 | Se puede explicar: qué hace cada línea y qué pasaría si se cambiara | Se cuenta en voz alta antes de fusionar, como en la exposición |
+
+**Cambios en la definición:** si se modifica en un sprint, se anota aquí qué cambió y por qué.
+
+- **Sprint 1, 6 de noviembre:** la condición 4 admite que los tests lleguen en su tarjeta propia. El tablero separa los módulos de sus tests (S1-16, S1-17 y S2-22 a S2-25) y la condición pedía lo contrario, así que una tarjeta de módulo no podía cerrarse.
 
 ### Sprints
 
@@ -164,11 +343,11 @@
 
 | Sprint | *Tag* | Qué incluye | Reflexión |
 |--------|-------|-------------|-----------|
-| 1 | `v0.1` | | |
+| 1 | `v0.1` | Las cinco páginas con su diseño; registro con requisitos de la contraseña en vivo; inicio de sesión; roles (el primero es administrador); cabecera común; protección de las páginas por sesión y por rol; cierre de sesión; avisos con evento propio; cuatro reglas de ESLint; 91 tests unitarios; *workflow* con `Calidad` y `Tests` | Salió bien trabajar por tarjetas pequeñas, cada una en su rama y su *pull request*, y que los módulos reciban el almacenamiento y la navegación como parámetros: así los tests con `AlmacenFalso` fueron directos. Salió mal adelantarme: rehíce el diseño con una versión que ya funcionaba entera y tuve que quitar el código que no tocaba todavía (PR 7 a 9). Al revisar la Definición de Hecho vi que la condición 4 chocaba con las tarjetas de tests y la cambié. Para el sprint 2: una tarjeta cada vez, comprobar en el navegador antes de cada *pull request* y no fusionar sin el *workflow* en verde |
 | 2 | `v0.2` | | |
 | 3 | `v1.0` | | |
 
-**Tablero de Trello:** <!-- enlace (compartido con el profesor) -->
+**Tablero de Trello:** <https://trello.com/b/P3FzyJnK/huellas-proyecto-dom-protectora-de-animales>
 
 **Blog del proyecto:** [blog/README.md](blog/README.md) <!-- dificultades y problemas conceptuales de cada sprint -->
 
@@ -180,6 +359,82 @@
 
 | Rama | Funcionalidad | *Pull request* |
 |------|---------------|----------------|
-| | | |
+| `estructura-inicial` | `.gitignore` y esqueleto vacío de páginas y módulos | [#2](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/2) |
+| `package-lock` | `package-lock.json` y saltos de línea LF con `.gitattributes` | [#3](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/3) |
+| `mi-proyecto` | Sección «Mi proyecto» del README | [#4](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/4) |
+| `definicion-de-hecho` | Definición de Hecho del README | [#5](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/5) |
+| `paginas-base` | Las cinco páginas HTML, `css/estilos.css`, las fotos y los SVG de la marca | [#6](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/6) |
+| `limpieza-repositorio` | Deja el repositorio a la par de lo hecho: quita los módulos vacíos que aún no tocan, sus scripts y los estilos del botón de pausa | [#9](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/9) |
+| `definicion-de-hecho-tests` | Ajusta la condición 4 de la Definición de Hecho a las tarjetas de tests | [#10](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/10) |
+| `modulo-sesion` | `js/datos/sesion.js`: guardar, leer y borrar la sesión (usuario y rol) | [#11](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/11) |
+| `cabecera` | Cabecera común de las páginas privadas y sus módulos de página | [#12](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/12) |
+| `modulo-usuarios` | `js/datos/usuarios.js`: alta con rol, nombres repetidos y comprobación de la contraseña | [#13](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/13) |
+| `validadores-registro` | `js/logica/validadores.js`: usuario, correo y requisitos de la contraseña | [#14](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/14) |
+| `avisos` | `js/componentes/avisos.js`: evento propio `aviso`, un único oyente y avisos para la página siguiente | [#15](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/15) |
+| `registro-requisitos` | Registro: requisitos de la contraseña en vivo y error con un nombre ocupado | [#16](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/16) |
+| `ver-clave` | Botón del ojo para ver u ocultar la contraseña | [#17](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/17) |
+| `huella-campo-valido` | La huella de los campos válidos aparece y se va, y deja sitio al ojo | [#18](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/18) |
+| `registro-alta` | Registro: alta, sesión iniciada, aviso y paso al listado, sin doble envío | [#19](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/19) |
+| `inicio-sesion` | Inicio de sesión: entrar, contraseña incorrecta y redirección si ya hay sesión | [#20](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/20) |
+| `proteger-paginas` | Protección de las páginas privadas por sesión y por rol, y «Cerrar sesión» | [#21](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/21) |
+| `reglas-eslint` | Cuatro reglas de ESLint propias, explicadas en el README | [#22](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/22) |
+| `tests-usuarios-sesion` | Tests unitarios de los módulos de sesión y de usuarios | [#23](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/23) |
+| `tests-validadores` | Tests unitarios de los validadores del registro con `it.each` | [#24](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/24) |
+| `workflow-ci` | Workflow de integración continua, paso 1: trabajos `Calidad` y `Tests` | [#25](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/25) |
+| `blog-sprint-1` | Entrada del sprint 1 en el blog | [#26](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/26) |
+| `cierre-sprint-1` | Reflexión del sprint 1 y enlace al tablero | [#27](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/27) |
+| `paginas-privadas-sin-parpadeo` | Las páginas privadas no se ven antes de redirigir sin sesión | [#28](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/28) |
+| `contexto-agente` | Fichero de contexto para continuar o recrear el proyecto | [#29](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/29) |
+| `agentes-de-trabajo` | Agentes de trabajo: desarrollador, probador e integrador, y contexto actualizado | [#30](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/30) |
+| `entidad-animal` | Entidad Animal: tabla de la entidad, letra de control del DNI y `@typedef` | [#31](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/31) |
+| `agentes-paralelo` | Agentes en paralelo, bajo demanda, agentes extra y control de calidad | [#32](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/32) |
+| `puerto-fijo` | La web siempre en el puerto 3901, para no perder las cuentas guardadas | [#33](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/33) |
+| `validadores-ficha` | Validadores de nombre, microchip y teléfono de la ficha | [#34](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/34) |
+| `validador-dni` | Validador del DNI con su letra de control | [#35](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/35) |
+| `modulo-animales` | Módulo de animales: alta, lectura, edición y borrado por usuario | [#36](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/36) |
+| `catalogo-fotos` | Catálogo de fotos por especie | [#37](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/37) |
+| `paginar` | Función pura paginar | [#38](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/38) |
+| `busqueda` | Búsqueda sin tildes ni mayúsculas, y debounce | [#39](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/39) |
+| `modelos-agentes` | Modelos y esfuerzo de los agentes según la tarea | [#40](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/40) |
+| `lectura-por-capas` | Lectura por capas y autoajuste de los agentes | [#41](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/41) |
+| `bloques-y-herramientas` | Bloques, tarjetas en paralelo y herramientas fijas | [#42](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/42) |
+| `tests-unitarios-ficha` | Tests unitarios de los validadores de la ficha, paginar y animales | [#43](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/43) |
+| `controles-paginacion` | Controles de paginación con delegación de eventos | [#44](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/44) |
+| `listado-tarjetas` | Listado paginado con una tarjeta por animal desde un `<template>` | [#45](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/45) |
+| `repaso-formulario-ficha` | Formulario de la ficha ajustado a la tabla de la entidad | [#46](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/46) |
+| `umbral-cobertura` | Umbral de cobertura del 90 % de líneas en las funciones puras | [#47](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/47) |
+| `validacion-tiempo-real` | Componente de validación de formularios en tiempo real | [#48](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/48) |
+| `galeria-fotos` | Galería de fotos de la ficha según la especie | [#49](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/49) |
+| `listado-resumen` | Saludo, resumen y aviso de animales sin vacunas en el listado | [#50](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/50) |
+| `listado-borrar` | Borrar un animal del listado con confirmación en un diálogo | [#51](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/51) |
+| `e2e-sesion` | Recorrido E2E de la sesión: registro, salida y entrada | [#52](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/52) |
+| `listado-perfil` | Perfil lateral de un animal en un diálogo | [#53](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/53) |
+| `listado-buscador` | Buscador con debounce, contador y mensaje vacío del listado | [#54](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/54) |
+| `listado-filtros` | Filtros por estado con contadores en el listado | [#55](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/55) |
+| `listado-pagina-url` | Página del listado en la dirección | [#56](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/56) |
+| `ficha-condicionales` | Campos condicionales de la ficha | [#57](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/57) |
+| `ficha-vacunas` | Grupo dinámico de vacunas de la ficha | [#58](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/58) |
+| `ficha-cartilla` | Cartilla de la ficha que se rellena sola | [#59](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/59) |
+| `ficha-guardado` | Fechas, FormData y guardado de la ficha | [#60](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/60) |
+| `ficha-edicion` | Edición de un animal e id inexistente en la ficha | [#61](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/61) |
+| `tests-integracion-listado` | Test de integración del listado: búsqueda con debounce y paginación | [#62](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/62) |
+| `e2e-crud` | Recorrido E2E del CRUD de animales | [#63](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/63) |
+| `usuarios-listado` | Listado de usuarios con buscador y paginación reutilizados | [#64](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/64) |
+| `usuarios-rol` | Dar y quitar el rol de administrador | [#65](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/65) |
+| `ci-paso-2` | Workflow de CI con E2E, artefacto de cobertura e insignia | [#66](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/66) |
+| `tests-proteccion-rol` | Test de integración de la protección por rol | [#67](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/67) |
+| `validacion-formularios` | Validación en tiempo real en los tres formularios | [#68](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/68) |
+| `readme-eventos` | Sección «Eventos» del README con todos los oyentes | [#69](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/69) |
+| `tests-integracion-ficha` | Test de integración de la ficha: validación, envío y edición | [#70](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/70) |
+| `validacion-grupos` | El error de un grupo de opciones se quita al elegir | [#71](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/71) |
+
+**Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
+
+- El *merge* no reescribe nada: los commits conservan su identificador y la historia refleja lo que pasó de verdad, con la rama y el momento en que se fusionó.
+- Con *rebase* los commits se vuelven a crear con otros identificadores. Es más limpio de leer, pero obliga a forzar el `push` si la rama ya estaba subida, y eso es arriesgado cuando el repositorio es el que se corrige.
+- El enunciado pide no borrar las ramas: con *merge* se ven en el grafo como líneas que salen de `main` y vuelven a él.
+- Los *tags* `v0.1`, `v0.2` y `v1.0` apuntan a commits de `main` que no cambian de identificador.
+
+**`.gitignore`.** Deja fuera `node_modules/` (se reinstala con `npm ci`), lo que generan las herramientas (`dist/`, `docs/`, `coverage/`, `playwright-report/`, `test-results/`), los ficheros del sistema y del editor, los `.env` (por si algún día hubiera un secreto, en un repositorio público) y los registros. **No** deja fuera `package-lock.json`: sin él, `npm ci` falla en el *workflow*.
 
 **Versión de entrega:** `v1.0`

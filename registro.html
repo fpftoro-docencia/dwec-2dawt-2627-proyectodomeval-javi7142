@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Crea tu cuenta de voluntario en Huellas, el cuaderno de una protectora de animales."
+    />
+    <meta name="theme-color" content="#1238c9" />
+    <title>Crear cuenta | Huellas</title>
+    <link rel="icon" href="img/huella.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body class="publica">
+    <a class="salto" href="#contenido">Saltar al contenido</a>
+
+    <div id="avisos" class="avisos avisos--arriba" role="status" aria-live="polite"></div>
+
+    <div class="escena escena--ancha" id="escena" data-mundo="azul">
+      <section class="escena__mundo" aria-label="Animales de la protectora">
+        <div class="pisadas" id="pisadas" aria-hidden="true"></div>
+
+        <p class="escena__titular" aria-hidden="true">
+          <span>h</span><span>u</span><span>e</span><span>l</span><span>l</span><span>a</span
+          ><span>s</span>
+        </p>
+
+        <div class="escena__animales">
+          <img
+            class="escena__animal activo"
+            data-animal
+            data-mundo="azul"
+            data-pie="Coco pasó de la perrera a un sofá."
+            src="img/fotos/perro-4.webp"
+            alt=""
+          />
+          <img
+            class="escena__animal"
+            data-animal
+            data-mundo="sol"
+            data-pie="Pinto necesita casa con ventanas."
+            src="img/fotos/gato-3.webp"
+            alt=""
+          />
+          <img
+            class="escena__animal"
+            data-animal
+            data-mundo="azul"
+            data-pie="Kiwi aprendió a decir hola en acogida."
+            src="img/fotos/otro-2.webp"
+            alt=""
+          />
+          <img
+            class="escena__animal"
+            data-animal
+            data-mundo="sol"
+            data-pie="Copito llegó hace una semana."
+            src="img/fotos/conejo-4.webp"
+            alt=""
+          />
+        </div>
+
+        <div class="escena__pie">
+          <p data-pie-texto>Coco pasó de la perrera a un sofá.</p>
+        </div>
+      </section>
+
+      <main id="contenido" class="acceso">
+        <div class="huella huella--ancha">
+          <div class="huella__dedos" aria-hidden="true">
+            <span class="huella__dedo"></span>
+            <span class="huella__dedo"></span>
+            <span class="huella__dedo"></span>
+            <span class="huella__dedo"></span>
+          </div>
+
+          <div class="huella__almohadilla">
+            <h1>Abre tu casa, nosotros llevamos el papeleo</h1>
+            <p class="huella__intro">
+              Crea tu cuenta de voluntario. La primera persona que se registra administra la
+              protectora.
+            </p>
+
+            <form id="formulario-registro" novalidate>
+              <div class="huella__rejilla">
+                <div class="campo">
+                  <div class="campo__caja">
+                    <svg class="campo__icono" aria-hidden="true">
+                      <use href="img/iconos.svg#usuario"></use>
+                    </svg>
+                    <input
+                      class="form-control"
+                      id="usuario"
+                      name="usuario"
+                      type="text"
+                      placeholder=" "
+                      autocomplete="username"
+                      required
+                      minlength="3"
+                      maxlength="20"
+                      data-validar="usuario"
+                      aria-describedby="ayuda-usuario error-usuario"
+                    />
+                    <label class="form-label" for="usuario">Usuario</label>
+                  </div>
+                  <div class="form-text" id="ayuda-usuario">De 3 a 20 caracteres.</div>
+                  <div class="invalid-feedback" id="error-usuario"></div>
+                </div>
+
+                <div class="campo">
+                  <div class="campo__caja">
+                    <svg class="campo__icono" aria-hidden="true">
+                      <use href="img/iconos.svg#correo"></use>
+                    </svg>
+                    <input
+                      class="form-control"
+                      id="correo"
+                      name="correo"
+                      type="email"
+                      placeholder=" "
+                      autocomplete="email"
+                      required
+                      data-validar="correo"
+                      aria-describedby="error-correo"
+                    />
+                    <label class="form-label" for="correo">Correo electrónico</label>
+                  </div>
+                  <div class="invalid-feedback" id="error-correo"></div>
+                </div>
+
+                <div class="campo">
+                  <div class="campo__caja">
+                    <svg class="campo__icono" aria-hidden="true">
+                      <use href="img/iconos.svg#candado"></use>
+                    </svg>
+                    <input
+                      class="form-control"
+                      id="clave"
+                      name="clave"
+                      type="password"
+                      placeholder=" "
+                      autocomplete="new-password"
+                      required
+                      minlength="8"
+                      data-validar="clave"
+                      aria-describedby="requisitos-clave error-clave"
+                    />
+                    <label class="form-label" for="clave">Contraseña</label>
+                    <button
+                      class="campo__ojo"
+                      data-ver-clave
+                      type="button"
+                      aria-label="Mostrar la contraseña"
+                      aria-pressed="false"
+                    >
+                      <svg class="icono icono--ver" aria-hidden="true">
+                        <use href="img/iconos.svg#ojo"></use>
+                      </svg>
+                      <svg class="icono icono--ocultar" aria-hidden="true">
+                        <use href="img/iconos.svg#ojo-tachado"></use>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="invalid-feedback" id="error-clave"></div>
+                </div>
+
+                <div class="campo">
+                  <div class="campo__caja">
+                    <svg class="campo__icono" aria-hidden="true">
+                      <use href="img/iconos.svg#candado"></use>
+                    </svg>
+                    <input
+                      class="form-control"
+                      id="repetir-clave"
+                      name="repetirClave"
+                      type="password"
+                      placeholder=" "
+                      autocomplete="new-password"
+                      required
+                      data-validar="repetir-clave"
+                      aria-describedby="error-repetir-clave"
+                    />
+                    <label class="form-label" for="repetir-clave">Repite la contraseña</label>
+                  </div>
+                  <div class="invalid-feedback" id="error-repetir-clave"></div>
+                </div>
+              </div>
+
+              <ul class="requisitos" id="requisitos-clave" aria-label="Requisitos de la contraseña">
+                <li data-requisito="longitud">
+                  <svg class="icono" aria-hidden="true">
+                    <use href="img/iconos.svg#huella"></use>
+                  </svg>
+                  8 caracteres o más
+                </li>
+                <li data-requisito="minuscula">
+                  <svg class="icono" aria-hidden="true">
+                    <use href="img/iconos.svg#huella"></use>
+                  </svg>
+                  Una minúscula
+                </li>
+                <li data-requisito="mayuscula">
+                  <svg class="icono" aria-hidden="true">
+                    <use href="img/iconos.svg#huella"></use>
+                  </svg>
+                  Una mayúscula
+                </li>
+                <li data-requisito="cifra">
+                  <svg class="icono" aria-hidden="true">
+                    <use href="img/iconos.svg#huella"></use>
+                  </svg>
+                  Una cifra
+                </li>
+              </ul>
+
+              <div class="campo">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    id="aceptacion"
+                    name="aceptacion"
+                    type="checkbox"
+                    required
+                    aria-describedby="error-aceptacion"
+                  />
+                  <label class="form-check-label" for="aceptacion">
+                    Acepto que mis datos se guarden en este navegador.
+                  </label>
+                </div>
+                <div class="invalid-feedback" id="error-aceptacion"></div>
+              </div>
+
+              <button class="btn btn-primary boton-accion" type="submit">
+                Crear mi cuenta
+                <span class="boton-accion__disco">
+                  <svg class="icono" aria-hidden="true">
+                    <use href="img/iconos.svg#huella"></use>
+                  </svg>
+                </span>
+              </button>
+            </form>
+
+            <p class="huella__cambio">¿Ya tienes cuenta? <a href="index.html">Entra aquí</a></p>
+          </div>
+        </div>
+        <p class="acceso__nota">
+          Aplicación de prácticas. Los datos son inventados y se guardan solo en tu navegador.
+        </p>
+      </main>
+    </div>
+
+    <script type="module" src="js/paginas/registro.js"></script>
+  </body>
+</html>
