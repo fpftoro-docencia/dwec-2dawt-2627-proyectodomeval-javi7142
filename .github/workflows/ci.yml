@@ -1,5 +1,6 @@
 # Integración continua: cada cambio que va a main se revisa antes de fusionarse.
 # Paso 1 (sprint 1): calidad del código y tests unitarios, uno detrás de otro.
+# Paso 2 (sprint 2): tests con cobertura (y su informe como artefacto) y pruebas E2E con Chromium.
 name: Integración continua
 
 on:
@@ -11,6 +12,11 @@ on:
 # El workflow solo necesita leer el código
 permissions:
   contents: read
+
+# Una sola ejecución por rama: si subes otro commit mientras corre la anterior, esa se cancela
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   calidad:
@@ -53,5 +59,45 @@ jobs:
       - name: Instalar las dependencias exactas de package-lock.json
         run: npm ci
 
-      - name: Pasar los tests unitarios y de integración
-        run: npm test
+      - name: Pasar los tests con la cobertura y su umbral
+        run: npm run coverage
+
+      - name: Subir el informe de cobertura como artefacto
+        uses: actions/upload-artifact@v7
+        with:
+          name: cobertura
+          path: coverage/
+          if-no-files-found: error
+
+  e2e:
+    name: E2E
+    # Si los tests fallan, no se gastan minutos en instalar el navegador
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+
+      - name: Instalar Node.js 24 con la caché de npm
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar las dependencias exactas de package-lock.json
+        run: npm ci
+
+      - name: Instalar Chromium y las librerías que necesita
+        run: npx playwright install --with-deps chromium
+
+      # playwright.config.js arranca solo el servidor de la web (serve, en el puerto 3901)
+      - name: Pasar las pruebas de extremo a extremo
+        run: npm run e2e
+
+      - name: Subir el informe de Playwright si algo ha fallado
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
