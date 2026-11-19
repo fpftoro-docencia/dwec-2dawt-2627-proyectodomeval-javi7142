@@ -10,7 +10,7 @@
  *
  * @module paginas/ficha
  */
-import { dejarAviso, iniciarAvisos, lanzarAviso } from '../componentes/avisos.js';
+import { dejarAviso, iniciarAvisos } from '../componentes/avisos.js';
 import { iniciarCabecera } from '../componentes/cabecera.js';
 import { iniciarCamposCondicionales } from '../componentes/campos-condicionales.js';
 import { iniciarCartilla } from '../componentes/cartilla.js';
@@ -18,14 +18,11 @@ import { iniciarGaleriaFotos, pintarGaleria } from '../componentes/galeria-fotos
 import { iniciarGrupoVacunas } from '../componentes/grupo-vacunas.js';
 import { iniciarCierreSesion, protegerPagina } from '../componentes/proteccion.js';
 import { rellenarFicha } from '../componentes/rellenar-ficha.js';
+import { iniciarValidacion } from '../componentes/validacion-formulario.js';
 import { buscarAnimal, crearAnimal, editarAnimal } from '../datos/animales.js';
 import { leerSesion } from '../datos/sesion.js';
 import { fechaDeHoy } from '../logica/fechas.js';
 import { normalizarAnimal } from '../logica/normalizar-animal.js';
-import { validadores } from '../logica/validadores.js';
-
-/** El aviso que sale al intentar guardar una ficha con campos vacíos o con errores. */
-export const AVISO_REVISAR_FICHA = 'Revisa la ficha: hay campos vacíos o con errores.';
 
 /** El aviso del listado cuando se pide editar un animal que no existe (o ya no existe). */
 export const FICHA_NO_ENCONTRADA =
@@ -35,19 +32,36 @@ export const FICHA_NO_ENCONTRADA =
 const SUBTITULO_EDICION = 'Cambia lo que necesites: la cartilla se actualiza sola.';
 
 /**
- * Antes de guardar, pone en cada campo con `data-validar` el mensaje de su validador
- * (`setCustomValidity`) y pregunta al navegador si todo el formulario es válido: también cuentan
- * `required`, `min`, `max`, `step` y `pattern`. Los campos desactivados (los condicionales que no
- * tocan) no cuentan. La validación campo a campo, con sus mensajes a la vista, llega en S2-18.
- * @param {HTMLFormElement} formulario
- * @returns {boolean}
+ * Crea la regla de una fecha que depende del ingreso, para `iniciarValidacion`: no puede ser
+ * futura (pasar del `max` del campo, que es hoy) ni anterior a la fecha de ingreso. Las fechas
+ * `AAAA-MM-DD` se pueden comparar como texto. Si aún no hay ingreso, solo se mira que no sea futura.
+ * @param {string} mensaje El error de esa fecha.
+ * @returns {module:componentes/validacion-formulario~ReglaExtra}
+ * @example
+ * const regla = reglaFechaTrasIngreso('La esterilización no puede ser futura ni anterior al ingreso.');
  */
-function datosValidos(formulario) {
-  formulario.querySelectorAll('[data-validar]').forEach((campo) => {
-    campo.setCustomValidity(validadores[campo.dataset.validar]?.(campo.value) ?? '');
-  });
-  return formulario.checkValidity();
+function reglaFechaTrasIngreso(mensaje) {
+  return (valor, campo, formulario) => {
+    const ingreso = formulario.elements.ingreso.value;
+    const futura = campo.max !== '' && valor > campo.max;
+    return futura || (ingreso !== '' && valor < ingreso) ? mensaje : '';
+  };
 }
+
+/**
+ * Las reglas de la ficha que dependen de otro campo, por el `name` de sus campos: la fecha de
+ * esterilización y las de las vacunas (también las que se añadan después) no pueden ser anteriores
+ * al ingreso. Al cambiar el ingreso, el componente vuelve a mirarlas.
+ * @type {Object<string, module:componentes/validacion-formulario~ReglaExtra>}
+ */
+const REGLAS_FICHA = {
+  fechaEsterilizacion: reglaFechaTrasIngreso(
+    'La esterilización no puede ser futura ni anterior al ingreso.',
+  ),
+  vacunaFecha: reglaFechaTrasIngreso(
+    'La fecha de la vacuna no puede ser futura ni anterior al ingreso.',
+  ),
+};
 
 /**
  * Pone o quita el estado de envío: el formulario queda `aria-busy` y su botón, desactivado.
@@ -69,10 +83,12 @@ function marcarEnvio(formulario, enviando) {
  * condicionales, la foto y las vacunas). Si ese `id` no es de ningún animal del usuario, vuelve al
  * listado con un aviso de error, sin llegar a enseñar la página.
  *
- * Al enviar, si todo es válido, lee el formulario con `FormData` y lo normaliza con
- * `normalizarAnimal`; después da de alta el animal o, si se está editando, sustituye sus datos
- * (conserva su `id`, así que no se duplica). Al acabar deja un aviso y vuelve al listado. Mientras
- * se guarda, otro envío (un doble clic o Intro) no hace nada.
+ * Los campos se validan en tiempo real con `iniciarValidacion` (también las vacunas que se añadan
+ * y, con `REGLAS_FICHA`, las fechas que no pueden ser anteriores al ingreso). Al enviar, si todo es
+ * válido, lee el formulario con `FormData` y lo normaliza con `normalizarAnimal`; después da de
+ * alta el animal o, si se está editando, sustituye sus datos (conserva su `id`, así que no se
+ * duplica). Al acabar deja un aviso y vuelve al listado. Mientras se guarda, otro envío (un doble
+ * clic o Intro) no hace nada.
  * @param {Document} documento
  * @param {object} dependencias
  * @param {Storage} dependencias.almacenSesion Donde está la sesión y los avisos (`sessionStorage`).
@@ -81,7 +97,6 @@ function marcarEnvio(formulario, enviando) {
  * @param {string} [dependencias.busqueda] La parte de la dirección desde `?` (`location.search`),
  *   donde va el `id` del animal que se edita; vacía para dar de alta uno nuevo.
  * @param {string} [dependencias.hoy] La fecha de hoy (`AAAA-MM-DD`); por defecto, la del equipo.
- * @listens submit
  * @fires aviso
  */
 export function iniciarFicha(
@@ -163,9 +178,14 @@ export function iniciarFicha(
 
   /**
    * Guarda el animal de la ficha (lo da de alta o, si se está editando, cambia el que había),
-   * deja el aviso para el listado y vuelve a él.
+   * deja el aviso para el listado y vuelve a él. Solo una vez, aunque se envíe dos veces.
    */
   function guardar() {
+    if (enviando) {
+      return;
+    }
+    enviando = true;
+    marcarEnvio(formulario, true);
     const animal = normalizarAnimal(new FormData(formulario));
     if (!editado) {
       crearAnimal(almacenAnimales, sesion.usuario, animal);
@@ -179,19 +199,7 @@ export function iniciarFicha(
     navegar('listado.html');
   }
 
-  formulario.addEventListener('submit', (evento) => {
-    evento.preventDefault();
-    if (enviando) {
-      return;
-    }
-    if (!datosValidos(formulario)) {
-      lanzarAviso(formulario, AVISO_REVISAR_FICHA, 'danger');
-      return;
-    }
-    enviando = true;
-    marcarEnvio(formulario, true);
-    guardar();
-  });
+  iniciarValidacion(formulario, { reglasExtra: REGLAS_FICHA, alEnviar: guardar });
 }
 
 iniciarFicha(document, {
