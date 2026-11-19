@@ -2,7 +2,7 @@
  * Página del listado de animales (`listado.html`).
  *
  * Necesita del HTML: la lista `#lista-animales`, la plantilla `#plantilla-animal`, el contenedor
- * `#paginacion`, el diálogo de borrado `#dialogo-borrar`, la portada (`#saludo`, `#resumen`, `#pendiente` y `#pendiente-texto`) y la
+ * `#paginacion`, el perfil `#perfil`, el diálogo de borrado `#dialogo-borrar`, la portada (`#saludo`, `#resumen`, `#pendiente` y `#pendiente-texto`) y la
  * cabecera común. Además inicia los avisos, la cabecera y «Cerrar sesión».
  *
  * @module paginas/listado
@@ -10,6 +10,7 @@
 import { iniciarAvisos, lanzarAviso } from '../componentes/avisos.js';
 import { iniciarCabecera } from '../componentes/cabecera.js';
 import { iniciarControles, pintarControles } from '../componentes/controles-paginacion.js';
+import { abrirPerfil, iniciarPerfil } from '../componentes/perfil-animal.js';
 import { iniciarCierreSesion, protegerPagina } from '../componentes/proteccion.js';
 import { crearTarjeta } from '../componentes/tarjeta-animal.js';
 import { borrarAnimal, buscarAnimal, leerAnimales } from '../datos/animales.js';
@@ -34,9 +35,12 @@ const POR_PAGINA = 6;
  * resumen y aviso de animales sin vacunas), así que cualquier cambio en los animales se ve sin
  * recargar.
  *
- * El botón «Borrar» de cada tarjeta se atiende con un solo oyente en la lista (delegación con
- * `closest`): abre `#dialogo-borrar` con el nombre y la foto del animal y, solo si se confirma,
- * se borra, se vuelve a pintar y se avisa. Cancelar o pulsar Esc no borra nada.
+ * Los botones de cada tarjeta se atienden con un solo oyente en la lista (delegación con
+ * `closest`). La foto (`[data-accion="ver"]`) abre el perfil lateral `#perfil` con los datos del
+ * animal; al cerrarlo (Esc, su botón o un clic fuera) el foco vuelve a esa foto. «Borrar» abre
+ * `#dialogo-borrar` con el nombre y la foto del animal y, solo si se confirma, se borra, se vuelve
+ * a pintar, se avisa y el foco pasa a la primera tarjeta (o al buscador si ya no queda ninguna).
+ * Cancelar o pulsar Esc no borra nada.
  * @param {Document} documento
  * @param {object} dependencias
  * @param {Storage} dependencias.almacenSesion Donde está la sesión y los avisos (`sessionStorage`).
@@ -61,8 +65,10 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
   const plantilla = documento.querySelector('#plantilla-animal');
   const controles = documento.querySelector('#paginacion');
   const dialogo = documento.querySelector('#dialogo-borrar');
+  const perfil = documento.querySelector('#perfil');
   let paginaActual = 1;
   let idParaBorrar = null;
+  let retratoDelPerfil = null;
 
   /**
    * Rellena la portada: el saludo, cuántos animales cuida el usuario y los nombres de los que no
@@ -112,12 +118,43 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
     dialogo.showModal();
   }
 
+  /**
+   * Abre el perfil lateral del animal de la tarjeta donde se ha pulsado la foto y guarda esa foto
+   * para devolverle el foco al cerrarlo.
+   * @param {HTMLElement} retrato El botón `[data-accion="ver"]` de la tarjeta.
+   */
+  function verPerfil(retrato) {
+    const animal = buscarAnimal(
+      almacenAnimales,
+      sesion.usuario,
+      retrato.closest('.animal').dataset.id,
+    );
+    if (animal) {
+      retratoDelPerfil = retrato;
+      abrirPerfil(perfil, animal);
+    }
+  }
+
   lista.addEventListener('click', (evento) => {
+    const retrato = evento.target.closest('[data-accion="ver"]');
+    if (retrato) {
+      verPerfil(retrato);
+      return;
+    }
     const boton = evento.target.closest('[data-accion="borrar"]');
     if (boton) {
       pedirConfirmacion(boton.closest('.animal'));
     }
   });
+
+  // Algunos navegadores no devuelven el foco solos (Safari no enfoca los botones al pulsarlos)
+  perfil.addEventListener('close', () => {
+    if (retratoDelPerfil?.isConnected) {
+      retratoDelPerfil.focus();
+    }
+    retratoDelPerfil = null;
+  });
+  iniciarPerfil(perfil);
 
   dialogo.addEventListener('close', () => {
     const id = idParaBorrar;
@@ -128,6 +165,9 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
     const animal = buscarAnimal(almacenAnimales, sesion.usuario, id);
     if (animal && borrarAnimal(almacenAnimales, sesion.usuario, id)) {
       pintar();
+      // La tarjeta con el foco ha desaparecido: el foco pasa a la primera tarjeta o, si no queda
+      // ninguna, al buscador, y no se pierde en el `body`
+      (lista.querySelector('.animal__retrato') ?? documento.querySelector('#buscador'))?.focus();
       // Se avisa desde la lista, porque la tarjeta del animal ya no está en la página
       lanzarAviso(lista, `Has borrado la ficha de ${animal.nombre}.`);
     }
