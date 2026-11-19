@@ -60,16 +60,21 @@ function enlazarCampo(fila, campo, nombre) {
  * @param {HTMLTemplateElement} plantilla La plantilla `#plantilla-vacuna`.
  * @param {number} numero El número de la fila, que no se ha usado antes en la página.
  * @param {?module:datos/animales~Vacuna} [vacuna] Una vacuna guardada para rellenarla, o `null`.
+ * @param {string} [hoy] La fecha de hoy (`AAAA-MM-DD`), que es el `max` de la fecha de la vacuna:
+ *   no puede ser futura. Sin ella, la fecha no tiene `max`.
  * @returns {HTMLElement} La fila `.vacuna`, lista para añadir al grupo.
  * @example
  * crearFilaVacuna(plantilla, 2); // campos #vacuna-tipo-2 y #vacuna-fecha-2
  */
-export function crearFilaVacuna(plantilla, numero, vacuna = null) {
+export function crearFilaVacuna(plantilla, numero, vacuna = null, hoy = '') {
   const fila = plantilla.content.cloneNode(true).querySelector('.vacuna');
   const tipo = fila.querySelector('select');
   const fecha = fila.querySelector('input');
   tipo.id = `vacuna-tipo-${numero}`;
   fecha.id = `vacuna-fecha-${numero}`;
+  if (hoy) {
+    fecha.max = hoy;
+  }
   enlazarCampo(fila, tipo, 'tipo');
   enlazarCampo(fila, fecha, 'fecha');
   if (vacuna) {
@@ -84,14 +89,17 @@ export function crearFilaVacuna(plantilla, numero, vacuna = null) {
  * desactivado en el máximo. Al añadir con el botón, el foco va a la vacuna nueva; al quitar, al
  * botón de añadir.
  * @param {ElementosVacunas} elementos Los elementos de la ficha.
+ * @param {object} [opciones]
+ * @param {string} [opciones.hoy] La fecha de hoy (`AAAA-MM-DD`), el `max` de las fechas de las
+ *   vacunas.
  * @returns {GrupoVacunas}
  * @listens click
  * @fires cambio-vacunas
  * @example
- * const vacunas = iniciarGrupoVacunas({ grupo, boton, contador, plantilla });
+ * const vacunas = iniciarGrupoVacunas({ grupo, boton, contador, plantilla }, { hoy: '2026-11-19' });
  * vacunas.anadir({ tipo: 'rabia', fecha: '2026-10-15' });
  */
-export function iniciarGrupoVacunas(elementos) {
+export function iniciarGrupoVacunas(elementos, { hoy = '' } = {}) {
   const { grupo, boton, contador, plantilla } = elementos;
   let siguiente = 1;
 
@@ -116,7 +124,7 @@ export function iniciarGrupoVacunas(elementos) {
     if (grupo.querySelectorAll('.vacuna').length >= MAX_VACUNAS) {
       return false;
     }
-    grupo.append(crearFilaVacuna(plantilla, siguiente, vacuna));
+    grupo.append(crearFilaVacuna(plantilla, siguiente, vacuna, hoy));
     siguiente += 1;
     actualizar();
     return true;
