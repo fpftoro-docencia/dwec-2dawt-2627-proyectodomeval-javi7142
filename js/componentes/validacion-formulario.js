@@ -314,7 +314,9 @@ export function iniciarValidacion(
     (evento) => {
       const campo = /** @type {HTMLInputElement} */ (evento.target);
       if (esCampo(campo)) {
-        tocados.add(campo);
+        // En un grupo de botones de opción se tocan todas sus opciones: así, al elegir otra, el
+        // error del grupo se quita en el momento
+        gemelos(formulario, campo).forEach((opcion) => tocados.add(opcion));
         validarCampo(campo);
       }
     },
