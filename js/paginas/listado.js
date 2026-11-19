@@ -23,6 +23,7 @@ import { leerSesion } from '../datos/sesion.js';
 import { debounce, filtrarPorTexto, textoContador } from '../logica/busqueda.js';
 import { contarPorEstado, filtrarPorEstado, FILTRO_TODOS } from '../logica/filtros.js';
 import { paginar } from '../logica/paginacion.js';
+import { escribirPagina, leerPagina } from '../logica/pagina-url.js';
 import {
   animalesActivos,
   nombresSinVacunas,
@@ -59,9 +60,11 @@ const TEXTOS_VACIO = Object.freeze({
  * Inicia el listado. Sin sesión, la página protegida lleva a `index.html`. Con sesión, pinta los
  * animales del usuario de seis en seis: una tarjeta por animal, creada desde la plantilla, y
  * debajo los controles de paginación. Al pulsar un control, se pinta esa página. La página actual
- * solo vive en memoria. Cada vez que se pinta, también se actualiza la portada (saludo,
- * resumen y aviso de animales sin vacunas), así que cualquier cambio en los animales se ve sin
- * recargar.
+ * va en la dirección (`?pagina=2`): se lee al empezar y se escribe, ya corregida, cada vez que se
+ * pinta, sin añadir pasos al historial; así, al recargar sigues en la misma página, y una página
+ * que no existe (`?pagina=99`) enseña la última. Cada vez que se pinta, también se actualiza la
+ * portada (saludo, resumen y aviso de animales sin vacunas), así que cualquier cambio en los
+ * animales se ve sin recargar.
  *
  * El buscador filtra por nombre, especie y microchip, sin importar mayúsculas ni tildes, cuando
  * se deja de teclear 250 ms (`debounce`). Al buscar se vuelve a la página 1. El contador dice
@@ -86,12 +89,17 @@ const TEXTOS_VACIO = Object.freeze({
  * @param {Storage} dependencias.almacenSesion Donde está la sesión y los avisos (`sessionStorage`).
  * @param {Storage} dependencias.almacenAnimales Donde están los animales (`localStorage`).
  * @param {function(string): void} dependencias.navegar Cómo ir a otra página.
+ * @param {object} dependencias.direccion Cómo leer y cambiar la dirección de la página.
+ * @param {function(): string} dependencias.direccion.leer Devuelve la consulta de la dirección
+ *   (`location.search`).
+ * @param {function(string): void} dependencias.direccion.guardar Cambia la consulta de la
+ *   dirección sin recargar la página ni añadir un paso al historial (`history.replaceState`).
  * @listens click
  * @listens close
  * @listens input
  * @fires aviso
  */
-export function iniciarListado(documento, { almacenSesion, almacenAnimales, navegar }) {
+export function iniciarListado(documento, { almacenSesion, almacenAnimales, navegar, direccion }) {
   const sesion = leerSesion(almacenSesion);
   if (!protegerPagina(sesion, { almacenSesion, navegar })) {
     return;
@@ -110,7 +118,8 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
   const buscador = documento.querySelector('#buscador');
   let textoBuscado = '';
   let filtroActual = FILTRO_TODOS;
-  let paginaActual = 1;
+  // Sin corregir: `paginar` la lleva a una página que exista la primera vez que se pinta
+  let paginaActual = leerPagina(direccion.leer());
   let idParaBorrar = null;
   let retratoDelPerfil = null;
 
@@ -194,6 +203,7 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
     const encontrados = filtrarPorEstado(buscar(animales), filtroActual);
     const { elementos, pagina, totalPaginas } = paginar(encontrados, paginaActual, POR_PAGINA);
     paginaActual = pagina;
+    direccion.guardar(escribirPagina(direccion.leer(), pagina));
     lista.replaceChildren(...elementos.map((animal) => crearTarjeta(plantilla, animal)));
     pintarControles(controles, pagina, totalPaginas);
     pintarFiltros(animales);
@@ -322,4 +332,9 @@ iniciarListado(document, {
   almacenAnimales: localStorage,
   // `replace`: la página protegida no se queda en el historial, así «Atrás» no vuelve a ella
   navegar: (pagina) => location.replace(pagina),
+  direccion: {
+    leer: () => location.search,
+    // `replaceState`: cambiar de página no llena el historial, y «Atrás» sale del listado
+    guardar: (consulta) => history.replaceState(null, '', consulta),
+  },
 });
