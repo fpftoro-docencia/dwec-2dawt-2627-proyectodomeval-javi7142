@@ -426,6 +426,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `validacion-formularios` | Validación en tiempo real en los tres formularios | [#68](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/68) |
 | `readme-eventos` | Sección «Eventos» del README con todos los oyentes | [#69](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/69) |
 | `tests-integracion-ficha` | Test de integración de la ficha: validación, envío y edición | [#70](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/70) |
+| `validacion-grupos` | El error de un grupo de opciones se quita al elegir | [#71](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/71) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
