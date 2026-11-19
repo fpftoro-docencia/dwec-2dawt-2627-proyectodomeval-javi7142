@@ -423,6 +423,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `ci-paso-2` | Workflow de CI con E2E, artefacto de cobertura e insignia | [#66](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/66) |
 | `tests-proteccion-rol` | Test de integración de la protección por rol | [#67](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/67) |
 | `validacion-formularios` | Validación en tiempo real en los tres formularios | [#68](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/68) |
+| `readme-eventos` | Sección «Eventos» del README con todos los oyentes | [#69](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/69) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
