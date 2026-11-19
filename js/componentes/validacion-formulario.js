@@ -6,7 +6,8 @@
  * El componente no conoce ningún formulario concreto. Elige la regla de cada campo por su
  * `data-validar` en el objeto `validadores` de `logica/validadores.js` y, si hace falta, añade
  * reglas propias de la página (`reglasExtra`), también las que miran otro campo (repetir la
- * contraseña). El error se escribe en la caja `.invalid-feedback` del campo (el CSS la enseña
+ * contraseña). Para lo que ya ve el navegador (vacío, mínimos, máximos…) cada página puede dar sus
+ * propios textos (`mensajes`); si no, sale un mensaje general. El error se escribe en la caja `.invalid-feedback` del campo (el CSS la enseña
  * cuando tiene texto), el campo se marca con `is-invalid` y `aria-invalid`, y el mensaje también va
  * a `setCustomValidity`, de modo que `checkValidity()` del formulario coincide con lo que se ve.
  *
@@ -69,12 +70,51 @@ function fechaLegible(fecha) {
 }
 
 /**
+ * Los fallos que el navegador ya sabe ver en un campo (las propiedades de `validity`), en el orden
+ * en que se miran.
+ */
+const FALLOS_NATIVOS = [
+  'valueMissing',
+  'typeMismatch',
+  'badInput',
+  'rangeUnderflow',
+  'rangeOverflow',
+  'tooShort',
+  'tooLong',
+  'patternMismatch',
+  'stepMismatch',
+];
+
+/**
+ * Los mensajes propios de un campo, uno por fallo del navegador (`valueMissing`, `rangeOverflow`…).
+ * Los que falten usan el mensaje general del componente.
+ * @typedef {Object<string, string>} MensajesCampo
+ * @example
+ * { valueMissing: 'Elige una especie.' }
+ */
+
+/**
  * Escribe el mensaje de error de lo que el navegador ya sabe del campo (`validity`): vacío, formato,
- * mínimos y máximos. Devuelve `''` si el navegador no ve ningún problema.
+ * mínimos y máximos. Usa el mensaje propio del campo si la página lo ha dado y, si no, el general.
+ * Devuelve `''` si el navegador no ve ningún problema.
+ * @param {HTMLInputElement} campo
+ * @param {MensajesCampo} [propios] Los mensajes propios de ese campo.
+ * @returns {string}
+ */
+function mensajeNativo(campo, propios = {}) {
+  const fallo = FALLOS_NATIVOS.find((nombre) => campo.validity[nombre]);
+  if (!fallo) {
+    return '';
+  }
+  return propios[fallo] ?? mensajeGeneral(campo);
+}
+
+/**
+ * El mensaje general de lo que el navegador ve en un campo, para cuando la página no da uno propio.
  * @param {HTMLInputElement} campo
  * @returns {string}
  */
-function mensajeNativo(campo) {
+function mensajeGeneral(campo) {
   const { validity } = campo;
   const esFecha = campo.type === 'date';
   if (validity.valueMissing) {
@@ -163,6 +203,9 @@ function gemelos(formulario, campo) {
  *   válido. Si se da, el componente ya ha hecho `preventDefault()` del envío.
  * @param {Object<string, ReglaExtra>} [opciones.reglasExtra] Reglas propias, por el `data-validar`
  *   del campo (o por su `name` si no lo lleva). Se miran después de la regla de `validadores`.
+ * @param {Object<string, MensajesCampo>} [opciones.mensajes] Los textos propios de la página para
+ *   lo que ve el navegador (vacío, mínimos, máximos…), por el `name` del campo: así todas las
+ *   opciones de un grupo comparten mensaje. Sin ellos, sale el mensaje general.
  * @param {function(EventTarget, string, string): void} [opciones.avisar] Cómo avisar al enviar con
  *   errores; por defecto, `lanzarAviso`.
  * @returns {ValidacionFormulario}
@@ -176,12 +219,13 @@ function gemelos(formulario, campo) {
  *     'repetir-clave': (valor, campo, f) =>
  *       valor === f.elements.clave.value ? '' : 'Las contraseñas no coinciden.',
  *   },
+ *   mensajes: { aceptacion: { valueMissing: 'Debes aceptar las condiciones.' } },
  *   alEnviar: guardar,
  * });
  */
 export function iniciarValidacion(
   formulario,
-  { alEnviar, reglasExtra = {}, avisar = lanzarAviso } = {},
+  { alEnviar, reglasExtra = {}, mensajes = {}, avisar = lanzarAviso } = {},
 ) {
   /** Los campos por los que ya se ha pasado: desde entonces se validan con cada cambio. */
   const tocados = new WeakSet();
@@ -200,15 +244,16 @@ export function iniciarValidacion(
     if (!campo.willValidate) {
       return '';
     }
+    const propios = mensajes[campo.name];
     if (campo.validity.valueMissing) {
-      return mensajeNativo(campo);
+      return mensajeNativo(campo, propios);
     }
     const nombre = campo.dataset.validar ?? '';
     const reglaExtra = reglasExtra[nombre || campo.name];
     return (
       validadores[nombre]?.(campo.value) ||
       reglaExtra?.(campo.value, campo, formulario) ||
-      mensajeNativo(campo)
+      mensajeNativo(campo, propios)
     );
   }
 
