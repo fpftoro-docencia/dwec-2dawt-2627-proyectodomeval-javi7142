@@ -334,6 +334,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `listado-resumen` | Saludo, resumen y aviso de animales sin vacunas en el listado | [#50](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/50) |
 | `listado-borrar` | Borrar un animal del listado con confirmación en un diálogo | [#51](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/51) |
 | `e2e-sesion` | Recorrido E2E de la sesión: registro, salida y entrada | [#52](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/52) |
+| `listado-perfil` | Perfil lateral de un animal en un diálogo | [#53](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/53) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
