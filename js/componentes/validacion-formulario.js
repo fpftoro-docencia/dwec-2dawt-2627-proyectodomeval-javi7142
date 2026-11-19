@@ -278,11 +278,14 @@ export function iniciarValidacion(
 
   formulario.addEventListener('input', (evento) => {
     const campo = /** @type {HTMLInputElement} */ (evento.target);
-    if (!esCampo(campo) || !tocados.has(campo)) {
+    if (!esCampo(campo)) {
       return;
     }
-    validarCampo(campo);
-    // Los campos con regla extra pueden depender de este (repetir la contraseña): se vuelven a mirar
+    if (tocados.has(campo)) {
+      validarCampo(campo);
+    }
+    // Los campos tocados con regla extra pueden depender de este (repetir la contraseña): se vuelven
+    // a mirar aunque este aún no se haya tocado, así su error se quita en cuanto deja de serlo
     campos()
       .filter((otro) => otro !== campo && tocados.has(otro))
       .filter((otro) => reglasExtra[otro.dataset.validar || otro.name])
