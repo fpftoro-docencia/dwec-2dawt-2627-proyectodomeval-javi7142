@@ -2,21 +2,26 @@
  * Página de registro (`registro.html`).
  *
  * Necesita del HTML: `#formulario-registro` con los campos `usuario`, `correo`, `clave`,
- * `repetirClave` y `aceptacion`, su botón de envío, la caja de error `#error-usuario` y la lista
- * `#requisitos-clave` con un `li[data-requisito]` por requisito (`longitud`, `minuscula`,
- * `mayuscula` y `cifra`). Además inicia los avisos, la portada y el ojo de la contraseña.
+ * `repetirClave` y `aceptacion`, su botón de envío, una caja de error `.invalid-feedback` por
+ * campo y la lista `#requisitos-clave` con un `li[data-requisito]` por requisito (`longitud`,
+ * `minuscula`, `mayuscula` y `cifra`). Además inicia los avisos, la portada y el ojo de la
+ * contraseña.
  *
  * @module paginas/registro
  */
 import { dejarAviso, iniciarAvisos, lanzarAviso } from '../componentes/avisos.js';
 import { iniciarEscena } from '../componentes/escena.js';
 import { iniciarPisadas } from '../componentes/pisadas.js';
+import { iniciarValidacion } from '../componentes/validacion-formulario.js';
 import { iniciarVerClave } from '../componentes/ver-clave.js';
 import { guardarSesion } from '../datos/sesion.js';
 import { existeUsuario, registrarUsuario } from '../datos/usuarios.js';
-import { requisitosClave, validadores } from '../logica/validadores.js';
+import { requisitosClave } from '../logica/validadores.js';
 
 const NOMBRE_OCUPADO = 'Ese usuario ya existe. Elige otro nombre.';
+
+/** El error de la repetición cuando no es igual que la contraseña. */
+const CLAVES_DISTINTAS = 'Las contraseñas no coinciden.';
 
 /**
  * Marca con `data-cumple` los requisitos que cumple la contraseña. El CSS pone la huella en los que
@@ -32,38 +37,18 @@ function marcarRequisitos(lista, clave) {
 }
 
 /**
- * Da error si el nombre de usuario ya está ocupado: el mensaje va a `setCustomValidity`, a la caja
- * de error y a `aria-invalid`, y el campo se marca con `is-invalid`.
- * @param {HTMLInputElement} campo
- * @param {HTMLElement} caja La caja de error del campo.
+ * Las reglas del registro que el formato no basta para decidir, para `iniciarValidacion`: el
+ * nombre no puede estar ya registrado y la repetición tiene que ser igual que la contraseña (por
+ * eso, al cambiar la contraseña, el componente vuelve a mirar la repetición).
  * @param {Storage} almacen Donde están los usuarios (`localStorage`).
+ * @returns {Object<string, module:componentes/validacion-formulario~ReglaExtra>}
  */
-function comprobarNombreLibre(campo, caja, almacen) {
-  const mensaje = existeUsuario(almacen, campo.value) ? NOMBRE_OCUPADO : '';
-  campo.setCustomValidity(mensaje);
-  campo.classList.toggle('is-invalid', mensaje !== '');
-  campo.setAttribute('aria-invalid', String(mensaje !== ''));
-  caja.textContent = mensaje;
-}
-
-/**
- * Antes de dar de alta, pone en cada campo el mensaje de sus reglas propias (`setCustomValidity`)
- * y pregunta al navegador si todo el formulario es válido: también cuenta `required`, `type` y la
- * casilla de aceptación. La validación campo a campo, con sus mensajes a la vista, llega en S2-18.
- * @param {HTMLFormElement} formulario
- * @param {Storage} almacen Donde están los usuarios.
- * @returns {boolean}
- */
-function datosValidos(formulario, almacen) {
-  const { usuario, correo, clave, repetirClave } = formulario.elements;
-  const ocupado = existeUsuario(almacen, usuario.value) ? NOMBRE_OCUPADO : '';
-  usuario.setCustomValidity(validadores.usuario(usuario.value) || ocupado);
-  correo.setCustomValidity(validadores.correo(correo.value));
-  clave.setCustomValidity(validadores.clave(clave.value));
-  repetirClave.setCustomValidity(
-    repetirClave.value === clave.value ? '' : 'Las contraseñas no coinciden.',
-  );
-  return formulario.checkValidity();
+function reglasRegistro(almacen) {
+  return {
+    usuario: (valor) => (existeUsuario(almacen, valor) ? NOMBRE_OCUPADO : ''),
+    'repetir-clave': (valor, campo, formulario) =>
+      valor === formulario.elements.clave.value ? '' : CLAVES_DISTINTAS,
+  };
 }
 
 /**
@@ -77,9 +62,11 @@ function marcarEnvio(formulario, enviando) {
 }
 
 /**
- * Inicia el formulario de registro: requisitos de la contraseña en vivo, aviso de nombre ocupado y
- * alta. Al registrarse guarda el usuario, inicia la sesión, deja un aviso para el listado y va a él.
- * Mientras se calcula el resumen de la contraseña, otro envío (un clic o Intro) no hace nada.
+ * Inicia el formulario de registro: requisitos de la contraseña en vivo, validación en tiempo real
+ * con `iniciarValidacion` (formato de cada campo, nombre ya registrado y repetición de la
+ * contraseña) y alta. Al registrarse guarda el usuario, inicia la sesión, deja un aviso para el
+ * listado y va a él. Mientras se calcula el resumen de la contraseña, otro envío (un clic o Intro)
+ * no hace nada.
  * @param {Document} documento
  * @param {object} dependencias
  * @param {Storage} dependencias.almacenUsuarios Donde se guardan los usuarios (`localStorage`).
@@ -88,52 +75,39 @@ function marcarEnvio(formulario, enviando) {
  * @param {function(string): Promise<string>} [dependencias.resumir] Calcula el resumen de la
  *   contraseña; por defecto, `resumirClave`.
  * @listens input
- * @listens blur
- * @listens submit
  * @fires aviso
  */
 export function iniciarRegistro(documento, { almacenUsuarios, almacenSesion, navegar, resumir }) {
   const formulario = documento.querySelector('#formulario-registro');
-  const usuario = formulario.elements.usuario;
-  const cajaUsuario = documento.querySelector('#error-usuario');
+  const { usuario, correo, clave } = formulario.elements;
   const requisitos = documento.querySelector('#requisitos-clave');
   let enviando = false;
 
-  formulario.elements.clave.addEventListener('input', (evento) => {
-    marcarRequisitos(requisitos, evento.target.value);
+  clave.addEventListener('input', () => marcarRequisitos(requisitos, clave.value));
+
+  const validacion = iniciarValidacion(formulario, {
+    reglasExtra: reglasRegistro(almacenUsuarios),
+    alEnviar: registrar,
   });
 
-  usuario.addEventListener('blur', () =>
-    comprobarNombreLibre(usuario, cajaUsuario, almacenUsuarios),
-  );
-  usuario.addEventListener('input', () => {
-    if (usuario.classList.contains('is-invalid')) {
-      comprobarNombreLibre(usuario, cajaUsuario, almacenUsuarios);
-    }
-  });
-
-  formulario.addEventListener('submit', async (evento) => {
-    evento.preventDefault();
+  /** Da de alta al usuario, inicia su sesión y va al listado. */
+  async function registrar() {
     if (enviando) {
       return;
     }
-    if (!datosValidos(formulario, almacenUsuarios)) {
-      lanzarAviso(formulario, 'Revisa el formulario: hay campos vacíos o con errores.', 'danger');
-      return;
-    }
-
     enviando = true;
     marcarEnvio(formulario, true);
-    const { correo, clave } = formulario.elements;
     const nuevo = await registrarUsuario(
       almacenUsuarios,
       { usuario: usuario.value, correo: correo.value, clave: clave.value },
       resumir,
     );
     if (!nuevo) {
+      // Alguien ha usado ese nombre mientras tanto (por ejemplo, en otra pestaña)
       enviando = false;
       marcarEnvio(formulario, false);
-      comprobarNombreLibre(usuario, cajaUsuario, almacenUsuarios);
+      validacion.validarCampo(usuario);
+      usuario.focus();
       lanzarAviso(formulario, NOMBRE_OCUPADO, 'danger');
       return;
     }
@@ -144,7 +118,7 @@ export function iniciarRegistro(documento, { almacenUsuarios, almacenSesion, nav
       `Te has registrado, ${nuevo.usuario}. Ya puedes dar de alta a tus animales.`,
     );
     navegar('listado.html');
-  });
+  }
 }
 
 iniciarAvisos(document, sessionStorage);
