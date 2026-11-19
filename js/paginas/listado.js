@@ -2,7 +2,8 @@
  * Página del listado de animales (`listado.html`).
  *
  * Necesita del HTML: la lista `#lista-animales`, la plantilla `#plantilla-animal`, el contenedor
- * `#paginacion`, el buscador (`#buscador`, `#contador`, `#sin-resultados`, `#vacio-titulo`,
+ * `#paginacion`, los filtros por estado (`.filtros-estado`, con `[data-filtro]` y
+ * `[data-estadistica]`), el buscador (`#buscador`, `#contador`, `#sin-resultados`, `#vacio-titulo`,
  * `#vacio-texto` y `#limpiar-filtros`), el perfil `#perfil`, el diálogo de borrado
  * `#dialogo-borrar`, la portada (`#saludo`, `#resumen`, `#pendiente` y `#pendiente-texto`) y la
  * cabecera común. Además inicia los avisos, la cabecera y «Cerrar sesión».
@@ -20,6 +21,7 @@ import { borrarAnimal, buscarAnimal, leerAnimales } from '../datos/animales.js';
 import { buscarFoto } from '../datos/fotos.js';
 import { leerSesion } from '../datos/sesion.js';
 import { debounce, filtrarPorTexto, textoContador } from '../logica/busqueda.js';
+import { contarPorEstado, filtrarPorEstado, FILTRO_TODOS } from '../logica/filtros.js';
 import { paginar } from '../logica/paginacion.js';
 import {
   animalesActivos,
@@ -45,7 +47,11 @@ const TEXTOS_VACIO = Object.freeze({
   },
   sinResultados: {
     titulo: 'No hay ningún animal con ese nombre',
-    texto: 'Prueba con otra búsqueda.',
+    texto: 'Prueba con otra búsqueda o cambia de filtro.',
+  },
+  sinAnimalesDeEseEstado: {
+    titulo: 'No hay animales en ese estado',
+    texto: 'Cambia de filtro para ver el resto de tus animales.',
   },
 });
 
@@ -61,7 +67,13 @@ const TEXTOS_VACIO = Object.freeze({
  * se deja de teclear 250 ms (`debounce`). Al buscar se vuelve a la página 1. El contador dice
  * cuántos animales coinciden en total (no solo los de la página) y, si no hay ninguno, se enseña
  * `#sin-resultados`: con otro texto si el usuario todavía no tiene ningún animal. «Limpiar la
- * búsqueda» vacía el buscador, y la tecla `/` lleva el foco a él.
+ * búsqueda» vacía el buscador y quita el filtro, y la tecla `/` lleva el foco al buscador.
+ *
+ * Los botones de estado (`[data-filtro]`: todos, en acogida, disponibles y adoptados) se atienden
+ * con un solo oyente en su contenedor. El filtro activo se marca con `aria-pressed` y se combina
+ * con el buscador; al cambiarlo se vuelve a la página 1. Cada botón muestra en `[data-estadistica]`
+ * cuántos animales hay de ese estado, sin tener en cuenta la búsqueda, y las tres cifras suman el
+ * total. Todo se pinta de una vez y de forma síncrona, así que se pueden pulsar muy deprisa.
  *
  * Los botones de cada tarjeta se atienden con un solo oyente en la lista (delegación con
  * `closest`). La foto (`[data-accion="ver"]`) abre el perfil lateral `#perfil` con los datos del
@@ -97,6 +109,7 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
   const perfil = documento.querySelector('#perfil');
   const buscador = documento.querySelector('#buscador');
   let textoBuscado = '';
+  let filtroActual = FILTRO_TODOS;
   let paginaActual = 1;
   let idParaBorrar = null;
   let retratoDelPerfil = null;
@@ -132,13 +145,34 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
   }
 
   /**
-   * Rellena el contador y enseña u oculta el mensaje de «no hay nada»: sin ningún animal o sin
-   * resultados de la búsqueda.
-   * @param {number} coincidencias Cuántos animales coinciden con la búsqueda, en todas las páginas.
+   * Pinta los botones de estado: marca el activo con `aria-pressed` y escribe en cada uno cuántos
+   * animales hay de su estado.
+   * @param {Array<module:datos/animales~Animal>} animales Todos los animales del usuario.
+   */
+  function pintarFiltros(animales) {
+    const cuentas = contarPorEstado(animales);
+    documento.querySelectorAll('[data-filtro]').forEach((boton) => {
+      boton.setAttribute('aria-pressed', String(boton.dataset.filtro === filtroActual));
+    });
+    documento.querySelectorAll('[data-estadistica]').forEach((cifra) => {
+      cifra.textContent = String(cuentas[cifra.dataset.estadistica]);
+    });
+  }
+
+  /**
+   * Rellena el contador y enseña u oculta el mensaje de «no hay nada»: sin ningún animal, sin
+   * animales en el estado elegido o sin resultados de la búsqueda.
+   * @param {number} coincidencias Cuántos animales coinciden con la búsqueda y el filtro, en todas
+   *   las páginas.
    * @param {number} total Cuántos animales tiene el usuario.
    */
   function pintarBusqueda(coincidencias, total) {
-    const textos = total === 0 ? TEXTOS_VACIO.sinAnimales : TEXTOS_VACIO.sinResultados;
+    let textos = TEXTOS_VACIO.sinResultados;
+    if (total === 0) {
+      textos = TEXTOS_VACIO.sinAnimales;
+    } else if (textoBuscado.trim() === '') {
+      textos = TEXTOS_VACIO.sinAnimalesDeEseEstado;
+    }
     documento.querySelector('#contador').textContent = textoContador(
       coincidencias,
       'animal',
@@ -152,16 +186,17 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
   }
 
   /**
-   * Pinta la página actual de los animales que coinciden con la búsqueda: todas las tarjetas a la
-   * vez, los controles, el contador y la portada.
+   * Pinta la página actual de los animales que coinciden con la búsqueda y el filtro: todas las
+   * tarjetas a la vez, los controles, los botones de estado, el contador y la portada.
    */
   function pintar() {
     const animales = leerAnimales(almacenAnimales, sesion.usuario);
-    const encontrados = buscar(animales);
+    const encontrados = filtrarPorEstado(buscar(animales), filtroActual);
     const { elementos, pagina, totalPaginas } = paginar(encontrados, paginaActual, POR_PAGINA);
     paginaActual = pagina;
     lista.replaceChildren(...elementos.map((animal) => crearTarjeta(plantilla, animal)));
     pintarControles(controles, pagina, totalPaginas);
+    pintarFiltros(animales);
     pintarBusqueda(encontrados.length, animales.length);
     pintarResumen(animales);
   }
@@ -253,9 +288,20 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
     }, ESPERA_BUSCADOR),
   );
 
+  // Un solo oyente para los cuatro botones de estado (delegación con `closest`)
+  documento.querySelector('.filtros-estado').addEventListener('click', (evento) => {
+    const boton = evento.target.closest('[data-filtro]');
+    if (boton) {
+      filtroActual = boton.dataset.filtro;
+      paginaActual = 1;
+      pintar();
+    }
+  });
+
   documento.querySelector('#limpiar-filtros').addEventListener('click', () => {
     buscador.value = '';
     textoBuscado = '';
+    filtroActual = FILTRO_TODOS;
     paginaActual = 1;
     pintar();
     // El botón desaparece al volver a haber resultados: el foco pasa al buscador
