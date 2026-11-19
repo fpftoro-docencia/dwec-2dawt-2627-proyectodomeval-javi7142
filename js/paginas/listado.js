@@ -2,7 +2,9 @@
  * Página del listado de animales (`listado.html`).
  *
  * Necesita del HTML: la lista `#lista-animales`, la plantilla `#plantilla-animal`, el contenedor
- * `#paginacion`, el perfil `#perfil`, el diálogo de borrado `#dialogo-borrar`, la portada (`#saludo`, `#resumen`, `#pendiente` y `#pendiente-texto`) y la
+ * `#paginacion`, el buscador (`#buscador`, `#contador`, `#sin-resultados`, `#vacio-titulo`,
+ * `#vacio-texto` y `#limpiar-filtros`), el perfil `#perfil`, el diálogo de borrado
+ * `#dialogo-borrar`, la portada (`#saludo`, `#resumen`, `#pendiente` y `#pendiente-texto`) y la
  * cabecera común. Además inicia los avisos, la cabecera y «Cerrar sesión».
  *
  * @module paginas/listado
@@ -10,12 +12,14 @@
 import { iniciarAvisos, lanzarAviso } from '../componentes/avisos.js';
 import { iniciarCabecera } from '../componentes/cabecera.js';
 import { iniciarControles, pintarControles } from '../componentes/controles-paginacion.js';
+import { iniciarAtajoBusqueda } from '../componentes/atajo-busqueda.js';
 import { abrirPerfil, iniciarPerfil } from '../componentes/perfil-animal.js';
 import { iniciarCierreSesion, protegerPagina } from '../componentes/proteccion.js';
-import { crearTarjeta } from '../componentes/tarjeta-animal.js';
+import { crearTarjeta, ESPECIES } from '../componentes/tarjeta-animal.js';
 import { borrarAnimal, buscarAnimal, leerAnimales } from '../datos/animales.js';
 import { buscarFoto } from '../datos/fotos.js';
 import { leerSesion } from '../datos/sesion.js';
+import { debounce, filtrarPorTexto, textoContador } from '../logica/busqueda.js';
 import { paginar } from '../logica/paginacion.js';
 import {
   animalesActivos,
@@ -27,6 +31,24 @@ import {
 /** Cuántos animales se ven en cada página del listado. */
 const POR_PAGINA = 6;
 
+/** Los milisegundos sin teclear que se esperan antes de buscar. */
+const ESPERA_BUSCADOR = 250;
+
+/**
+ * Lo que dice el mensaje de `#sin-resultados`, según por qué no hay nada que enseñar.
+ * @type {Readonly<Record<string, {titulo: string, texto: string}>>}
+ */
+const TEXTOS_VACIO = Object.freeze({
+  sinAnimales: {
+    titulo: 'Todavía no tienes animales',
+    texto: 'Pulsa «Registrar un animal» y dale de alta al primero.',
+  },
+  sinResultados: {
+    titulo: 'No hay ningún animal con ese nombre',
+    texto: 'Prueba con otra búsqueda.',
+  },
+});
+
 /**
  * Inicia el listado. Sin sesión, la página protegida lleva a `index.html`. Con sesión, pinta los
  * animales del usuario de seis en seis: una tarjeta por animal, creada desde la plantilla, y
@@ -34,6 +56,12 @@ const POR_PAGINA = 6;
  * solo vive en memoria. Cada vez que se pinta, también se actualiza la portada (saludo,
  * resumen y aviso de animales sin vacunas), así que cualquier cambio en los animales se ve sin
  * recargar.
+ *
+ * El buscador filtra por nombre, especie y microchip, sin importar mayúsculas ni tildes, cuando
+ * se deja de teclear 250 ms (`debounce`). Al buscar se vuelve a la página 1. El contador dice
+ * cuántos animales coinciden en total (no solo los de la página) y, si no hay ninguno, se enseña
+ * `#sin-resultados`: con otro texto si el usuario todavía no tiene ningún animal. «Limpiar la
+ * búsqueda» vacía el buscador, y la tecla `/` lleva el foco a él.
  *
  * Los botones de cada tarjeta se atienden con un solo oyente en la lista (delegación con
  * `closest`). La foto (`[data-accion="ver"]`) abre el perfil lateral `#perfil` con los datos del
@@ -48,6 +76,7 @@ const POR_PAGINA = 6;
  * @param {function(string): void} dependencias.navegar Cómo ir a otra página.
  * @listens click
  * @listens close
+ * @listens input
  * @fires aviso
  */
 export function iniciarListado(documento, { almacenSesion, almacenAnimales, navegar }) {
@@ -66,6 +95,8 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
   const controles = documento.querySelector('#paginacion');
   const dialogo = documento.querySelector('#dialogo-borrar');
   const perfil = documento.querySelector('#perfil');
+  const buscador = documento.querySelector('#buscador');
+  let textoBuscado = '';
   let paginaActual = 1;
   let idParaBorrar = null;
   let retratoDelPerfil = null;
@@ -86,13 +117,52 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
       sinVacunas.length === 0 ? '' : textoPendiente(sinVacunas);
   }
 
-  /** Pinta la página actual: todas las tarjetas a la vez, los controles y la portada. */
+  /**
+   * Deja los animales que coinciden con lo escrito en el buscador. Se busca en el nombre, en el
+   * microchip y en cómo se lee la especie («Perro»), que no es lo mismo que el valor guardado.
+   * @param {Array<module:datos/animales~Animal>} animales Todos los animales del usuario.
+   * @returns {Array<module:datos/animales~Animal>}
+   */
+  function buscar(animales) {
+    const conEspecie = animales.map((animal) => ({
+      ...animal,
+      especieTexto: ESPECIES[animal.especie] ?? '',
+    }));
+    return filtrarPorTexto(conEspecie, textoBuscado, ['nombre', 'especieTexto', 'microchip']);
+  }
+
+  /**
+   * Rellena el contador y enseña u oculta el mensaje de «no hay nada»: sin ningún animal o sin
+   * resultados de la búsqueda.
+   * @param {number} coincidencias Cuántos animales coinciden con la búsqueda, en todas las páginas.
+   * @param {number} total Cuántos animales tiene el usuario.
+   */
+  function pintarBusqueda(coincidencias, total) {
+    const textos = total === 0 ? TEXTOS_VACIO.sinAnimales : TEXTOS_VACIO.sinResultados;
+    documento.querySelector('#contador').textContent = textoContador(
+      coincidencias,
+      'animal',
+      'animales',
+    );
+    documento.querySelector('#sin-resultados').hidden = coincidencias > 0;
+    documento.querySelector('#vacio-titulo').textContent = textos.titulo;
+    documento.querySelector('#vacio-texto').textContent = textos.texto;
+    // Sin animales no hay búsqueda que limpiar
+    documento.querySelector('#limpiar-filtros').hidden = total === 0;
+  }
+
+  /**
+   * Pinta la página actual de los animales que coinciden con la búsqueda: todas las tarjetas a la
+   * vez, los controles, el contador y la portada.
+   */
   function pintar() {
     const animales = leerAnimales(almacenAnimales, sesion.usuario);
-    const { elementos, pagina, totalPaginas } = paginar(animales, paginaActual, POR_PAGINA);
+    const encontrados = buscar(animales);
+    const { elementos, pagina, totalPaginas } = paginar(encontrados, paginaActual, POR_PAGINA);
     paginaActual = pagina;
     lista.replaceChildren(...elementos.map((animal) => crearTarjeta(plantilla, animal)));
     pintarControles(controles, pagina, totalPaginas);
+    pintarBusqueda(encontrados.length, animales.length);
     pintarResumen(animales);
   }
 
@@ -172,6 +242,27 @@ export function iniciarListado(documento, { almacenSesion, almacenAnimales, nave
       lanzarAviso(lista, `Has borrado la ficha de ${animal.nombre}.`);
     }
   });
+
+  // Se busca al dejar de teclear, no con cada tecla; al buscar se vuelve a la página 1
+  buscador.addEventListener(
+    'input',
+    debounce(() => {
+      textoBuscado = buscador.value;
+      paginaActual = 1;
+      pintar();
+    }, ESPERA_BUSCADOR),
+  );
+
+  documento.querySelector('#limpiar-filtros').addEventListener('click', () => {
+    buscador.value = '';
+    textoBuscado = '';
+    paginaActual = 1;
+    pintar();
+    // El botón desaparece al volver a haber resultados: el foco pasa al buscador
+    buscador.focus();
+  });
+
+  iniciarAtajoBusqueda(documento, buscador);
 
   iniciarControles(controles, (pagina) => {
     paginaActual = pagina;
