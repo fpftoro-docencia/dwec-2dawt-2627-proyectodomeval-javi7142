@@ -173,7 +173,7 @@ Además de las reglas recomendadas y de `no-var`, `prefer-const` y `eqeqeq`, que
 | Regla | Qué comprueba | Por qué la quiero |
 |-------|---------------|-------------------|
 | `camelcase` (con `properties: 'never'`) | Que las variables y funciones se llamen en *camelCase*: `leerSesion`, no `leer_sesion` | Todo el proyecto nombra así y un nombre distinto despista al leer. Las propiedades quedan fuera porque algunas vienen de fuera, como las claves que guarda el navegador |
-| `curly` (con `multi-line`) | Que un `if`, `else`, `for` o `while` que ocupe más de una línea lleve llaves | Sin llaves, añadir una segunda línea a un `if` la deja fuera de él sin que se note. En una sola línea se permite, como en los `if` cortos de `tests/integracion/listado.test.js` |
+| `curly` (con `multi-line`) | Que un `if`, `else`, `for` o `while` que ocupe más de una línea lleve llaves | Sin llaves, añadir una segunda línea a un `if` la deja fuera de él sin que se note. En una sola línea se permite (`if (vacio) return;`), aunque en el proyecto se usan siempre llaves |
 | `no-param-reassign` | Que no se asigne otro valor a un parámetro (`valor = valor.trim()`) | Los módulos reciben el almacenamiento, la sesión o la navegación como parámetros: si una función los cambiara, quien la llama dejaría de saber con qué trabaja. Se usa una variable nueva (`const usuario = valor.trim()`) |
 | `no-else-return` | Que no haya un `else` después de un `if` que ya termina en `return` | El `else` sobra: el código queda más plano y se lee de arriba abajo, con los casos que salen antes, como en `iniciarAcceso` |
 
