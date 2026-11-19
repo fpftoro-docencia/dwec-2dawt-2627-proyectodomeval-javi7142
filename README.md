@@ -147,6 +147,7 @@ Las reglas de formato están en `js/logica/validadores.js`: cada validador devue
 | Unitario | `tests/unitarios/sesion.test.js` | El módulo de sesión con `AlmacenFalso` y con `sessionStorage`: guardar y leer, que no guarda la contraseña, borrar y diez formas de datos estropeados | 31 |
 | Unitario | `tests/unitarios/usuarios.test.js` | El módulo de usuarios con `AlmacenFalso`: el primero es administrador, nombres repetidos, contraseña correcta e incorrecta, que solo se guarda el resumen y los datos estropeados | 20 |
 | Unitario | `tests/unitarios/validadores.test.js` | Los validadores del registro con tablas `it.each`: casos válidos con los límites (3 y 20 caracteres, 8 en la contraseña, tildes y ñ) y al menos un caso no válido por cada regla, con su motivo | 40 |
+| Extremo a extremo | `e2e/sesion.spec.js` (con `e2e/ayudas.js`) | El recorrido de la sesión en Chromium: el primer usuario se registra y ve «Usuarios», cierra sesión y vuelve a entrar, contraseña incorrecta, un segundo usuario normal sin «Usuarios», acceso sin sesión y con sesión | 6 |
 
 Son unitarios porque prueban módulos de datos sin DOM: reciben el almacenamiento como parámetro y se les da un `AlmacenFalso`. La función que calcula el resumen de la contraseña también se puede sustituir por un doble (`vi.fn`).
 
@@ -332,6 +333,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `galeria-fotos` | Galería de fotos de la ficha según la especie | [#49](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/49) |
 | `listado-resumen` | Saludo, resumen y aviso de animales sin vacunas en el listado | [#50](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/50) |
 | `listado-borrar` | Borrar un animal del listado con confirmación en un diálogo | [#51](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/51) |
+| `e2e-sesion` | Recorrido E2E de la sesión: registro, salida y entrada | [#52](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/52) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
