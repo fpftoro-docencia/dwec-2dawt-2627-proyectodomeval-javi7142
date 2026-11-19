@@ -123,21 +123,88 @@ Las reglas de formato están en `js/logica/validadores.js`: cada validador devue
 
 ### Eventos en el HTML
 
-<!-- Qué consigues con el HTML sin escribir oyentes (envío con Intro, novalidate y los atributos de
-     validación, dialog, label for…) y por qué no usas atributos on…. -->
+Antes de escribir un solo oyente, el HTML ya hace bastante. Esto no necesita JavaScript:
+
+- **Enviar con Intro.** Los formularios de acceso, registro y ficha llevan un `<button type="submit">`. Al pulsar Intro dentro de un campo, el navegador lanza el evento `submit` como si se hubiera hecho clic en ese botón. Por eso no hay un oyente de `click` en «Entrar» o «Guardar».
+- **Botones que no envían.** Cualquier `<button>` dentro de un formulario envía por defecto. Los que no deben hacerlo (el ojo de la contraseña, «Añadir vacuna», «Quitar esta vacuna») llevan `type="button"`. Los de fuera de un formulario (filtros, «Borrar», «Cerrar sesión») también lo llevan, para que dejen claro que no envían nada.
+- **Atributos de validación con `novalidate`.** Los tres formularios llevan `novalidate`: así el navegador no saca sus globos de error y los mensajes son los del proyecto. Pero `required`, `minlength`, `maxlength`, `pattern`, `min`, `max` y los tipos `email`, `date`, `number` y `tel` siguen funcionando: el navegador los comprueba y guarda el resultado en `validity`. El código no repite esas reglas; solo les pone texto.
+- **`<label for>`.** Hacer clic en una etiqueta enfoca su campo, o marca la casilla o el botón de opción. Los botones «Hembra» y «Macho» de la ficha son etiquetas de dos radios: no tienen oyente.
+- **`<dialog>`.** `showModal()` pone la capa oscura, atrapa el foco dentro y cierra con Esc, sin código. Dentro, un `<form method="dialog">` cierra el diálogo al pulsar un botón `type="submit"`, sin enviar nada a ningún sitio, y deja en `dialogo.returnValue` el `value` del botón (`cancelar` o `confirmar` en el borrado). El código solo escucha el evento `close`.
+- **Enlaces.** «Editar la ficha» del perfil es un `<a href>`: navegar no necesita oyente.
+
+**Por qué no uso atributos `on…`** (`onclick="guardar()"`):
+
+- Mezclan el HTML con el JavaScript: para saber qué hace un botón hay que mirar en dos sitios.
+- Los scripts son módulos (`type="module"`), y las funciones de un módulo no son globales. Un `onclick="guardar()"` no encontraría la función.
+- Solo cabe uno por evento y elemento, y el código va dentro de una cadena de texto, sin que ESLint ni Prettier lo revisen.
+- Mis módulos reciben el almacenamiento y la navegación como parámetros (así se pueden probar con dobles); desde un atributo no se les puede pasar nada.
+- La Definición de Hecho (condición 8) prohíbe `onclick=` y `onsubmit=` en las páginas, y se comprueba con una búsqueda.
 
 ### Tipos de eventos
 
-<!-- Tabla con los eventos que usas y por qué has elegido cada uno frente a otros parecidos
-     (submit frente a click, input frente a change, blur frente a focusout…). -->
+| Evento | Dónde | Por qué este y no otro parecido |
+|--------|-------|---------------------------------|
+| `submit` | Formularios de acceso, de registro y de la ficha | **Frente a `click` en el botón:** `submit` salta con el clic y también con Intro en un campo (y con `requestSubmit()` en los tests); `click` se perdería el teclado. Además permite parar el envío con `preventDefault()` cuando hay errores. |
+| `input` | Campos de texto de los formularios, buscadores y contraseña del registro | **Frente a `change`:** `input` salta con cada tecla; `change` en un campo de texto solo salta al salir de él. Para que el error desaparezca en cuanto se corrige, los requisitos de la contraseña se vean en vivo y la cartilla se rellene mientras se escribe, hace falta `input`. |
+| `change` | Lista de especies, casilla de esterilizado, botones de estado | **Frente a `input`:** son controles que se eligen de golpe, no se escriben, y `change` es el evento pensado para eso. La cartilla escucha los dos: `input` para lo que se escribe y `change` para lo que se elige. |
+| `blur` (en captura) | Formularios con validación | **Frente a `focusout`:** los dos significan «el foco sale del campo». `blur` no sube por el DOM y `focusout` sí. Uso `blur` para la primera validación porque dice exactamente lo que busco («salir del campo») y obliga a escucharlo en la fase de captura, que explico en «Propagación». Con `focusout` bastaría un oyente normal. |
+| `click` | Botones, tarjetas, filtros, paginación y el propio diálogo | **Frente a `mousedown` o `pointerdown`:** `click` también salta con Intro y Espacio en un `<button>`, así que funciona con teclado, y no se dispara si se arrastra el puntero fuera antes de soltar. |
+| `keydown` | `document` | **Frente a `keyup` o `keypress`:** el atajo `/` necesita `preventDefault()` antes de que la barra se escriba en el buscador, y eso solo se puede hacer en `keydown`. `keypress` está obsoleto. |
+| `close` | Los dos `<dialog>` del listado | Salta al cerrar por cualquier vía: Esc, el botón de un `<form method="dialog">` o `close()` del clic fuera. Un oyente cubre todas. **Frente a `cancel`:** `cancel` solo salta con Esc, no con los botones. |
+| `pointerover` | Rejilla de pisadas | **Frente a `mousemove`:** salta una vez al entrar en cada casilla, no con cada píxel. **Frente a `pointerenter`:** `pointerover` sube por el DOM y permite un solo oyente en el contenedor (delegación); `pointerenter` no sube. **Frente a `mouseover`:** los eventos de puntero valen también para pantallas táctiles y lápices. |
+| `animationend` | Rejilla de pisadas | Avisa de que la animación del CSS ha terminado y la casilla queda libre, sin temporizadores en JavaScript que tengan que coincidir con la duración del CSS. |
+| `aviso` (propio) | `document` | Un `CustomEvent` con `bubbles: true` y el texto en `detail`. Cualquier módulo avisa con `lanzarAviso(elemento, …)` sin saber quién lo muestra; un solo oyente en `document` lo pinta. |
+| `cambio-vacunas` (propio) | Formulario de la ficha | Añadir o quitar una fila de vacunas no lanza `input` ni `change`, así que la cartilla no se enteraría. El grupo de vacunas lanza este evento (con la cantidad en `detail`) y la cartilla lo escucha, sin que un módulo conozca al otro. |
 
 ### Propagación
 
-<!-- 1. Tabla con TODOS tus oyentes: evento, dónde lo registras, en qué fase actúa
-        (captura, objetivo o burbuja) y para qué.
-     2. Dónde usas la delegación y qué ganas con ella.
-     3. Tu uso de la captura y por qué no servía la burbuja.
-     4. Si usas stopPropagation, por qué. -->
+Un evento viaja en tres fases: baja desde `window` hasta el elemento (**captura**), actúa en el elemento donde ha ocurrido (**objetivo**) y vuelve a subir (**burbuja**). `addEventListener` sin tercer argumento escucha en objetivo y burbuja. En la columna «Fase» de la tabla, «objetivo» quiere decir que el oyente está en el mismo elemento donde ocurre el evento, y «burbuja» que está en un antepasado y recibe el evento cuando sube. «Delegación» es un oyente en un contenedor que averigua con `closest` qué elemento de dentro se ha pulsado.
+
+Esta es la tabla con todos los oyentes del código, uno por cada `addEventListener` (`grep -rn "addEventListener" js/` da las mismas 29 líneas):
+
+| Fichero | Elemento | Evento | Fase | Qué hace |
+|---------|----------|--------|------|----------|
+| `js/componentes/atajo-busqueda.js` | `document` | `keydown` | Burbuja | Con la tecla `/` lleva el foco al buscador, salvo que se esté escribiendo en un campo. Lo usan el listado y usuarios |
+| `js/componentes/avisos.js` | `document` | `aviso` | Burbuja | Pinta en `#avisos` cada aviso que se lanza desde cualquier elemento |
+| `js/componentes/campos-condicionales.js` | Formulario de la ficha | `change` | Burbuja | Enseña u oculta los bloques de esterilización y de adopción según la casilla y el estado |
+| `js/componentes/cartilla.js` | Formulario de la ficha | `input` | Burbuja | Rellena la cartilla mientras se escribe en cualquier campo |
+| `js/componentes/cartilla.js` | Formulario de la ficha | `change` | Burbuja | Rellena la cartilla cuando se elige una opción, una casilla o una foto |
+| `js/componentes/cartilla.js` | Formulario de la ficha | `cambio-vacunas` | Burbuja | Pone los sellos de vacunas al añadir o quitar una fila |
+| `js/componentes/controles-paginacion.js` | `#paginacion` | `click` | Burbuja (delegación) | Si se pulsa un botón `[data-pagina]` no desactivado, avisa de la página elegida. Listado y usuarios |
+| `js/componentes/galeria-fotos.js` | Lista `#especie` | `change` | Objetivo | Vuelve a pintar las fotos de la especie elegida |
+| `js/componentes/grupo-vacunas.js` | `#anadir-vacuna` | `click` | Objetivo | Añade una fila de vacuna y pone el foco en su lista |
+| `js/componentes/grupo-vacunas.js` | `#grupo-vacunas` | `click` | Burbuja (delegación) | Quita la fila cuyo botón `[data-accion="quitar"]` se pulsa, también las creadas después |
+| `js/componentes/perfil-animal.js` | `<dialog id="perfil">` | `click` | Objetivo | Cierra el perfil si el clic cae fuera del panel; ignora los que llegan de dentro |
+| `js/componentes/pisadas.js` | `#pisadas` | `pointerover` | Burbuja (delegación) | Marca la casilla por la que pasa el puntero |
+| `js/componentes/pisadas.js` | `#pisadas` | `animationend` | Burbuja (delegación) | Quita la marca de la casilla cuando acaba la animación |
+| `js/componentes/proteccion.js` | `#cerrar-sesion` | `click` | Objetivo | Borra la sesión, deja un aviso y vuelve a `index.html` |
+| `js/componentes/validacion-formulario.js` | Formulario | `blur` | **Captura** | La primera validación de un campo, al salir de él |
+| `js/componentes/validacion-formulario.js` | Formulario | `input` | Burbuja | Vuelve a validar los campos ya tocados con cada cambio y los que dependen de ellos |
+| `js/componentes/validacion-formulario.js` | Formulario | `submit` | Objetivo | Valida todo: con errores avisa y pone el foco en el primero; si todo está bien, llama a `alEnviar` |
+| `js/componentes/ver-clave.js` | Formulario de acceso o de registro | `click` | Burbuja (delegación) | Enseña u oculta la contraseña con el botón `[data-ver-clave]` |
+| `js/paginas/ficha.js` | Formulario de la ficha | `change` | Burbuja | Revalida los campos de los bloques ocultos para quitarles el error viejo |
+| `js/paginas/listado.js` | `#lista-animales` | `click` | Burbuja (delegación) | Abre el perfil (`[data-accion="ver"]`) o pide confirmar el borrado (`[data-accion="borrar"]`) |
+| `js/paginas/listado.js` | `<dialog id="perfil">` | `close` | Objetivo | Devuelve el foco a la foto que abrió el perfil |
+| `js/paginas/listado.js` | `<dialog id="dialogo-borrar">` | `close` | Objetivo | Si `returnValue` es `confirmar`, borra el animal, repinta y avisa |
+| `js/paginas/listado.js` | `#buscador` | `input` | Objetivo | Busca 250 ms después de dejar de teclear (`debounce`) y vuelve a la página 1 |
+| `js/paginas/listado.js` | `.filtros-estado` | `click` | Burbuja (delegación) | Cambia el filtro con el botón `[data-filtro]` pulsado |
+| `js/paginas/listado.js` | `#limpiar-filtros` | `click` | Objetivo | Vacía el buscador, quita el filtro y pone el foco en el buscador |
+| `js/paginas/registro.js` | `#clave` | `input` | Objetivo | Marca los requisitos de la contraseña mientras se escribe |
+| `js/paginas/usuarios.js` | `#lista-usuarios` | `click` | Burbuja (delegación) | Da o quita el rol de administrador con el botón `[data-accion="cambiar-rol"]` |
+| `js/paginas/usuarios.js` | `#buscador` | `input` | Objetivo | Busca 250 ms después de dejar de teclear (`debounce`) y vuelve a la página 1 |
+| `js/paginas/usuarios.js` | `#limpiar-filtros` | `click` | Objetivo | Vacía el buscador y pone el foco en él |
+
+**Dónde uso la delegación y qué gano.** En la lista de animales, la lista de usuarios, los filtros, la paginación, el grupo de vacunas, el ojo de la contraseña y las casillas de las pisadas. El oyente va en el contenedor y, dentro, `evento.target.closest('[data-accion="borrar"]')` sube desde el elemento pulsado hasta el botón que busca (el `target` puede ser el icono SVG de dentro del botón, por eso no basta con mirar `target`). Gano tres cosas:
+
+- Un solo oyente en lugar de uno por tarjeta, por chapa o por casilla (son 700 en las pisadas).
+- Los elementos que se crean después funcionan sin registrar nada: `pintar()` recrea las tarjetas del listado con cada búsqueda o cambio de página, y el grupo de vacunas añade filas.
+- No se acumulan oyentes que haya que quitar al repintar.
+
+En los formularios hago algo parecido sin `closest`: un oyente en el `<form>` para `input` y `change` escucha a todos sus campos, también a las vacunas que se añaden después, y mira `evento.target` para saber cuál.
+
+**Dónde uso la captura y por qué no servía la burbuja.** Solo en la primera validación, con `blur`: `formulario.addEventListener('blur', …, true)`. El evento `blur` no sube por el DOM, así que un oyente normal en el formulario no lo recibiría nunca; solo lo oiría uno puesto en cada campo. En la fase de captura el evento baja desde `window` hasta el campo y pasa por el formulario de camino. Así un único oyente valida todos los campos, también los creados después, y `evento.target` es el campo que ha perdido el foco.
+
+**`stopPropagation`: no lo uso.** Sí hay un `stopImmediatePropagation()`, una vez, en el oyente de `submit` de la validación, cuando el formulario tiene errores. Junto a `preventDefault()` (que impide el envío del navegador), corta el evento para que ningún otro oyente de `submit` del mismo formulario, registrado después, reciba un envío no válido y lo trate como si lo fuera.
 
 ## Pruebas y cobertura
 
@@ -222,7 +289,7 @@ All matched files use Prettier code style!
 
 **Insignia:** la que está al principio de este README muestra el resultado de la última ejecución del *workflow* en `main` (verde si pasa, roja si falla) y enlaza con la lista de ejecuciones.
 
-**Ejecución en verde con sus artefactos:** <!-- enlace -->
+**Ejecución en verde con sus artefactos:** [ejecución 44555368232](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/actions/runs/44555368232) (*pull request* 66: los tres trabajos en verde y el artefacto `cobertura`)
 
 ## Despliegue continuo
 
@@ -356,6 +423,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `ci-paso-2` | Workflow de CI con E2E, artefacto de cobertura e insignia | [#66](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/66) |
 | `tests-proteccion-rol` | Test de integración de la protección por rol | [#67](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/67) |
 | `validacion-formularios` | Validación en tiempo real en los tres formularios | [#68](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/68) |
+| `readme-eventos` | Sección «Eventos» del README con todos los oyentes | [#69](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/69) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
