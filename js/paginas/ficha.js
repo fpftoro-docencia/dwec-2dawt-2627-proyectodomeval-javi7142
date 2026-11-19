@@ -48,6 +48,15 @@ function reglaFechaTrasIngreso(mensaje) {
   };
 }
 
+/** El error de la fecha de esterilización (tabla «La entidad» del README). */
+const ESTERILIZACION_MAL = 'La esterilización no puede ser futura ni anterior al ingreso.';
+
+/** El error de la fecha de una vacuna (tabla «La entidad» del README). */
+const VACUNA_MAL = 'La fecha de la vacuna no puede ser futura ni anterior al ingreso.';
+
+/** El error del peso (tabla «La entidad» del README). */
+const PESO_MAL = 'El peso debe estar entre 0,1 y 100 kg, con un decimal como mucho.';
+
 /**
  * Las reglas de la ficha que dependen de otro campo, por el `name` de sus campos: la fecha de
  * esterilización y las de las vacunas (también las que se añadan después) no pueden ser anteriores
@@ -55,12 +64,48 @@ function reglaFechaTrasIngreso(mensaje) {
  * @type {Object<string, module:componentes/validacion-formulario~ReglaExtra>}
  */
 const REGLAS_FICHA = {
-  fechaEsterilizacion: reglaFechaTrasIngreso(
-    'La esterilización no puede ser futura ni anterior al ingreso.',
-  ),
-  vacunaFecha: reglaFechaTrasIngreso(
-    'La fecha de la vacuna no puede ser futura ni anterior al ingreso.',
-  ),
+  fechaEsterilizacion: reglaFechaTrasIngreso(ESTERILIZACION_MAL),
+  vacunaFecha: reglaFechaTrasIngreso(VACUNA_MAL),
+};
+
+/**
+ * Los textos de la ficha para lo que ve el navegador, por el `name` de cada campo: los de la tabla
+ * «La entidad» del README y, si falta un campo obligatorio, qué hay que escribir o elegir. Los
+ * errores de formato (nombre, microchip, DNI y teléfono) los dan los validadores.
+ * @type {Object<string, module:componentes/validacion-formulario~MensajesCampo>}
+ */
+const MENSAJES_FICHA = {
+  nombre: { valueMissing: 'Escribe el nombre del animal.' },
+  especie: { valueMissing: 'Elige una especie.' },
+  sexo: { valueMissing: 'Elige el sexo.' },
+  ingreso: {
+    valueMissing: 'Escribe la fecha de ingreso.',
+    badInput: 'Escribe la fecha de ingreso completa.',
+    rangeOverflow: 'La fecha de ingreso no puede ser futura.',
+  },
+  peso: {
+    valueMissing: 'Escribe el peso en kilos.',
+    badInput: PESO_MAL,
+    rangeUnderflow: PESO_MAL,
+    rangeOverflow: PESO_MAL,
+    stepMismatch: PESO_MAL,
+  },
+  microchip: { valueMissing: 'Escribe el microchip: 15 dígitos.' },
+  foto: { valueMissing: 'Elige una foto.' },
+  estado: { valueMissing: 'Elige el estado.' },
+  fechaEsterilizacion: {
+    valueMissing: 'Escribe la fecha de esterilización.',
+    badInput: 'Escribe la fecha de esterilización completa.',
+    rangeOverflow: ESTERILIZACION_MAL,
+  },
+  adoptanteNombre: { valueMissing: 'Escribe el nombre del adoptante.' },
+  adoptanteDni: { valueMissing: 'Escribe el DNI del adoptante, como 12345678Z.' },
+  vacunaTipo: { valueMissing: 'Elige la vacuna.' },
+  vacunaFecha: {
+    valueMissing: 'Escribe la fecha de la vacuna.',
+    badInput: 'Escribe la fecha de la vacuna completa.',
+    rangeOverflow: VACUNA_MAL,
+  },
 };
 
 /**
@@ -84,8 +129,9 @@ function marcarEnvio(formulario, enviando) {
  * listado con un aviso de error, sin llegar a enseñar la página.
  *
  * Los campos se validan en tiempo real con `iniciarValidacion` (también las vacunas que se añadan
- * y, con `REGLAS_FICHA`, las fechas que no pueden ser anteriores al ingreso). Al enviar, si todo es
- * válido, lee el formulario con `FormData` y lo normaliza con `normalizarAnimal`; después da de
+ * y, con `REGLAS_FICHA`, las fechas que no pueden ser anteriores al ingreso), con los textos de
+ * `MENSAJES_FICHA`; al ocultar un bloque condicional, sus campos pierden el error. Al enviar, si
+ * todo es válido, lee el formulario con `FormData` y lo normaliza con `normalizarAnimal`; después da de
  * alta el animal o, si se está editando, sustituye sus datos (conserva su `id`, así que no se
  * duplica). Al acabar deja un aviso y vuelve al listado. Mientras se guarda, otro envío (un doble
  * clic o Intro) no hace nada.
@@ -97,6 +143,7 @@ function marcarEnvio(formulario, enviando) {
  * @param {string} [dependencias.busqueda] La parte de la dirección desde `?` (`location.search`),
  *   donde va el `id` del animal que se edita; vacía para dar de alta uno nuevo.
  * @param {string} [dependencias.hoy] La fecha de hoy (`AAAA-MM-DD`); por defecto, la del equipo.
+ * @listens change
  * @fires aviso
  */
 export function iniciarFicha(
@@ -199,7 +246,19 @@ export function iniciarFicha(
     navegar('listado.html');
   }
 
-  iniciarValidacion(formulario, { reglasExtra: REGLAS_FICHA, alEnviar: guardar });
+  const validacion = iniciarValidacion(formulario, {
+    reglasExtra: REGLAS_FICHA,
+    mensajes: MENSAJES_FICHA,
+    alEnviar: guardar,
+  });
+
+  // Después del oyente de los condicionales: cuando un bloque se oculta, sus campos ya están
+  // desactivados y validarlos les quita el error viejo, que así no reaparece al volver a enseñarlo
+  formulario.addEventListener('change', () => {
+    formulario
+      .querySelectorAll('.condicional[hidden] input')
+      .forEach((campo) => validacion.validarCampo(campo));
+  });
 }
 
 iniciarFicha(document, {
