@@ -146,6 +146,7 @@ Las reglas de formato están en `js/logica/validadores.js`: cada validador devue
 | Unitario | `tests/unitarios/sesion.test.js` | El módulo de sesión con `AlmacenFalso` y con `sessionStorage`: guardar y leer, que no guarda la contraseña, borrar y diez formas de datos estropeados | 31 |
 | Unitario | `tests/unitarios/usuarios.test.js` | El módulo de usuarios con `AlmacenFalso`: el primero es administrador, nombres repetidos, contraseña correcta e incorrecta, que solo se guarda el resumen y los datos estropeados | 20 |
 | Unitario | `tests/unitarios/validadores.test.js` | Los validadores del registro con tablas `it.each`: casos válidos con los límites (3 y 20 caracteres, 8 en la contraseña, tildes y ñ) y al menos un caso no válido por cada regla, con su motivo | 40 |
+| Integración | `tests/integracion/proteccion-rol.test.js` | `usuarios.html` real en happy-dom con `AlmacenFalso` y la navegación sustituida por `vi.fn()`: quien no es administrador va a `listado.html` con el aviso de error y no ve nada, sin sesión (o con una estropeada) va a `index.html`, la sesión de administrador que ya no vale según la lista guardada también va al listado, y el administrador se queda y ve la lista | 15 |
 | Integración | `tests/integracion/listado.test.js` | `listado.html` real en happy-dom con `AlmacenFalso` y dobles de navegación y dirección: búsqueda con el debounce de 250 ms (`vi.useFakeTimers()`), cambio de página y `?pagina`, contador y mensajes vacíos, filtros por estado y borrado con el diálogo | 37 |
 | Extremo a extremo | `e2e/sesion.spec.js` (con `e2e/ayudas.js`) | El recorrido de la sesión en Chromium: el primer usuario se registra y ve «Usuarios», cierra sesión y vuelve a entrar, contraseña incorrecta, un segundo usuario normal sin «Usuarios», acceso sin sesión y con sesión | 6 |
 | Extremo a extremo | `e2e/crud.spec.js` (con `e2e/ayudas.js`) | El recorrido del CRUD en Chromium: dar de alta un animal rellenando la ficha completa (especie, foto, estado, esterilización y vacuna) y verlo en el listado, abrirlo desde «Editar» con todos sus datos, editarlo sin duplicarlo, cancelar el borrado y borrarlo con confirmación; en cada paso se recarga la página para comprobar que lo guardado sigue ahí | 5 |
@@ -172,7 +173,7 @@ Además de las reglas recomendadas y de `no-var`, `prefer-const` y `eqeqeq`, que
 | Regla | Qué comprueba | Por qué la quiero |
 |-------|---------------|-------------------|
 | `camelcase` (con `properties: 'never'`) | Que las variables y funciones se llamen en *camelCase*: `leerSesion`, no `leer_sesion` | Todo el proyecto nombra así y un nombre distinto despista al leer. Las propiedades quedan fuera porque algunas vienen de fuera, como las claves que guarda el navegador |
-| `curly` (con `multi-line`) | Que un `if`, `else`, `for` o `while` que ocupe más de una línea lleve llaves | Sin llaves, añadir una segunda línea a un `if` la deja fuera de él sin que se note. En una sola línea se permite, como en `tests/integracion/ejemplo.test.js` |
+| `curly` (con `multi-line`) | Que un `if`, `else`, `for` o `while` que ocupe más de una línea lleve llaves | Sin llaves, añadir una segunda línea a un `if` la deja fuera de él sin que se note. En una sola línea se permite (`if (vacio) return;`), aunque en el proyecto se usan siempre llaves |
 | `no-param-reassign` | Que no se asigne otro valor a un parámetro (`valor = valor.trim()`) | Los módulos reciben el almacenamiento, la sesión o la navegación como parámetros: si una función los cambiara, quien la llama dejaría de saber con qué trabaja. Se usa una variable nueva (`const usuario = valor.trim()`) |
 | `no-else-return` | Que no haya un `else` después de un `if` que ya termina en `return` | El `else` sobra: el código queda más plano y se lee de arriba abajo, con los casos que salen antes, como en `iniciarAcceso` |
 
@@ -353,6 +354,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `usuarios-listado` | Listado de usuarios con buscador y paginación reutilizados | [#64](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/64) |
 | `usuarios-rol` | Dar y quitar el rol de administrador | [#65](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/65) |
 | `ci-paso-2` | Workflow de CI con E2E, artefacto de cobertura e insignia | [#66](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/66) |
+| `tests-proteccion-rol` | Test de integración de la protección por rol | [#67](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/67) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
