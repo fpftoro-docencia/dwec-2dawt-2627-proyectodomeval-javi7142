@@ -2,7 +2,14 @@
 // cerrar la sesión y volver a entrar. Cada prueba empieza con el almacenamiento vacío porque
 // Playwright le da un contexto de navegador nuevo.
 import { test, expect } from '@playwright/test';
-import { USUARIO_PRUEBA, enlaceUsuarios, entrar, registrarse, salir } from './ayudas.js';
+import {
+  URL_LISTADO,
+  USUARIO_PRUEBA,
+  enlaceUsuarios,
+  entrar,
+  registrarse,
+  salir,
+} from './ayudas.js';
 
 const { usuario, clave } = USUARIO_PRUEBA;
 
@@ -27,7 +34,7 @@ test.describe('Sesión', () => {
 
     await entrar(page, usuario, clave);
 
-    await expect(page).toHaveURL(/listado\.html$/);
+    await expect(page).toHaveURL(URL_LISTADO);
     await expect(page.getByText(`Hola de nuevo, ${usuario}.`)).toBeVisible();
     await expect(page.getByText('administrador', { exact: true })).toBeVisible();
     await expect(enlaceUsuarios(page)).toBeVisible();
@@ -72,6 +79,6 @@ test.describe('Sesión', () => {
 
     await page.goto('/index.html');
 
-    await expect(page).toHaveURL(/listado\.html$/);
+    await expect(page).toHaveURL(URL_LISTADO);
   });
 });
