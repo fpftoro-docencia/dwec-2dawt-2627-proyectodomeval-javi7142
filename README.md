@@ -45,7 +45,7 @@ La entidad es el **animal** que el voluntario tiene a su cargo. La ficha (`ficha
 | **Vacunas** (grupo dinámico, de **0 a 3**): tipo | Lista desplegable (`vacunaTipo`, desde `#plantilla-vacuna`) | Sí, en cada vacuna | `rabia`, `polivalente`, `triple-felina`, `leucemia-felina`, `mixomatosis` u `otra` | «Elige la vacuna.» | `vacunas[i].tipo` |
 | **Vacunas** (grupo dinámico, de **0 a 3**): fecha | Fecha (`vacunaFecha`, desde `#plantilla-vacuna`) | Sí, en cada vacuna | No futura y no anterior al ingreso | «La fecha de la vacuna no puede ser futura ni anterior al ingreso.» | `vacunas[i].fecha` |
 
-Además, cada animal tiene un `id` único, que pone el módulo de datos al darlo de alta, y `adopcion` vale `null` si el estado no es «Adoptado». Las fechas se guardan como las da el campo de fecha (`AAAA-MM-DD`).
+Además, cada animal tiene un `id` único, que pone el módulo de datos al darlo de alta, y `adopcion` vale `null` si el estado no es «Adoptado». Las fechas se guardan como las da el campo de fecha (`AAAA-MM-DD`). Si falta un campo obligatorio, el mensaje dice qué hay que escribir o elegir («Escribe la fecha de ingreso.», «Elige el sexo.»); los textos de cada campo están en `MENSAJES_FICHA` de `js/paginas/ficha.js`.
 
 **Cómo cumple los mínimos del requisito 13:**
 
@@ -60,15 +60,15 @@ Las fotos de los animales son recortes de imágenes de Unsplash (licencia gratui
 
 ### El registro de usuarios
 
-Las reglas de formato están en `js/logica/validadores.js`: cada validador devuelve el mensaje de error, o nada si el valor es válido. Un campo vacío lo controla el atributo `required`.
+Las reglas de formato están en `js/logica/validadores.js`: cada validador devuelve el mensaje de error, o nada si el valor es válido. Un campo vacío lo controla el atributo `required`, y su mensaje dice qué hay que escribir («Escribe una contraseña.», «Repite la contraseña.»).
 
 | Campo | Control | Regla | Mensaje |
 |-------|---------|-------|---------|
-| Usuario | Texto | Expresión regular `^\p{L}[\p{L}\d_.-]{2,19}$` con la bandera `u`, y que no esté ocupado | «El usuario empieza por una letra y tiene de 3 a 20 caracteres: letras, cifras, puntos o guiones.» / «Ese usuario ya existe» |
+| Usuario | Texto | Expresión regular `^\p{L}[\p{L}\d_.-]{2,19}$` con la bandera `u`, y que no esté ocupado | «El usuario empieza por una letra y tiene de 3 a 20 caracteres: letras, cifras, puntos o guiones.» / «Ese usuario ya existe. Elige otro nombre.» |
 | Correo | Correo | Expresión regular `^[^\s@]+@[^\s@]+\.[^\s@]+$` | «Escribe un correo como nombre@ejemplo.org.» |
 | Contraseña | Contraseña | Al menos 8 caracteres, una minúscula `\p{Ll}`, una mayúscula `\p{Lu}` y una cifra `\d`. Los requisitos se marcan mientras se escribe | «La contraseña necesita 8 caracteres o más, una minúscula, una mayúscula y una cifra.» |
-| Repetir contraseña | Contraseña | Igual que la contraseña | «Las contraseñas no coinciden» |
-| Aceptación | Casilla | Marcada | «Debes aceptar las condiciones» |
+| Repetir contraseña | Contraseña | Igual que la contraseña | «Las contraseñas no coinciden.» |
+| Aceptación | Casilla | Marcada | «Debes aceptar las condiciones.» |
 
 ### Páginas
 
@@ -355,6 +355,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `usuarios-rol` | Dar y quitar el rol de administrador | [#65](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/65) |
 | `ci-paso-2` | Workflow de CI con E2E, artefacto de cobertura e insignia | [#66](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/66) |
 | `tests-proteccion-rol` | Test de integración de la protección por rol | [#67](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/67) |
+| `validacion-formularios` | Validación en tiempo real en los tres formularios | [#68](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/68) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 

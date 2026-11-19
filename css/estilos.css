@@ -2234,6 +2234,16 @@ input[type='number']::-webkit-inner-spin-button {
   animation: opcion-cuelga 420ms var(--al-entrar);
 }
 
+/* Grupo de opciones con error (sexo, estado): el código marca sus radios con `aria-invalid` */
+.opciones:has([aria-invalid='true']) {
+  box-shadow: inset 0 0 0 2px var(--peligro);
+  animation: temblor 320ms ease-in-out;
+}
+
+.grupo-opciones:has([aria-invalid='true']) > legend {
+  color: var(--peligro);
+}
+
 @keyframes opcion-cuelga {
   30% {
     rotate: 2deg;
@@ -2301,6 +2311,13 @@ input[type='number']::-webkit-inner-spin-button {
   padding: 0.35rem 0.35rem 0.8rem;
   overflow-x: auto;
   scroll-snap-type: x proximity;
+}
+
+/* Galería sin foto elegida al enviar: el código marca sus radios con `aria-invalid` */
+.galeria:has([aria-invalid='true']) {
+  border-radius: 1.1rem;
+  box-shadow: inset 0 0 0 2px var(--peligro);
+  animation: temblor 320ms ease-in-out;
 }
 
 /* `position: relative` retiene el radio oculto: si no, ensancharía toda la página */
