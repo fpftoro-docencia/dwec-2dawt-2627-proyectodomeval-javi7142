@@ -342,6 +342,7 @@ Una tarea pasa a «Hecho» en Trello solo cuando cumple **todas** estas condicio
 | `ficha-vacunas` | Grupo dinámico de vacunas de la ficha | [#58](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/58) |
 | `ficha-cartilla` | Cartilla de la ficha que se rellena sola | [#59](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/59) |
 | `ficha-guardado` | Fechas, FormData y guardado de la ficha | [#60](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/60) |
+| `ficha-edicion` | Edición de un animal e id inexistente en la ficha | [#61](https://github.com/fpftoro-docencia/dwec-2dawt-2627-proyectodomeval-javi7142/pull/61) |
 
 **Integración con *merge*.** Cada rama llega a `main` con una *pull request* fusionada con *merge*, no con *rebase*:
 
